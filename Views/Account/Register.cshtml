@@ -1,0 +1,58 @@
+@model AuthDemo.Models.User
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = "_LayoutEmpty"; // Sử dụng layout trống
+}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card col-md-4">
+        <div class="card-body">
+            <h2 class="text-center mb-4">Sign Up</h2>
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Username" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <input asp-for="Username" class="form-control form-control-lg" placeholder="Choose a username" />
+                    </div>
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Password" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Choose a password" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group d-grid gap-2 mb-4">
+                    <button type="submit" class="btn gradient-button">SIGN UP</button>
+                </div>
+            </form>
+
+            <p class="text-center text-muted mb-4">Or Sign Up Using</p>
+            <div class="social-login text-center mb-4">
+                <a href="#" class="btn facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="btn twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="btn google"><i class="fab fa-google-plus-g"></i></a>
+            </div>
+
+            <p class="text-center text-muted mb-4">Already have an account?</p>
+            <div class="text-center">
+                <a asp-action="Login" class="btn btn-link">LOGIN</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 
