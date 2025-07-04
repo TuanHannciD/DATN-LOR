@@ -15,7 +15,7 @@ namespace AuthDemo.Models
 
         public Guid? ID_Don_Hang { get; set; }
 
-        public DateTime NgayPhanCongGiaoHang { get; set; } = DateTime.Now;
+        public DateTime NgayPhanCongGiaoHang { get; set; }
 
         [Required]
         public DateTime ThoiGianDuKienGiaoHang { get; set; }
@@ -26,9 +26,9 @@ namespace AuthDemo.Models
         [StringLength(50)]
         public required string TrangThaiGiaoHang { get; set; }
 
-        public DateTime NgayTao { get; set; } = DateTime.Now;
+        public DateTime NgayTao { get; set; }
 
-        public DateTime NgayCapNhap { get; set; } = DateTime.Now;
+        public DateTime NgayCapNhap { get; set; }
 
         [ForeignKey("ID_ThanhToan")]
         public virtual ThanhToan ThanhToan { get; set; }

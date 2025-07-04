@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AuthDemo.Models
 {
-    public class SanPhamChiTiet
+    public class  SanPhamChiTiet
     {
         [Key]
         public Guid ID_Spct { get; set; }

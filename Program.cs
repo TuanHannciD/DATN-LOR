@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using AuthDemo.Data;
+using AuthDemo.Areas.Admin.Interface;
+using AuthDemo.Areas.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,14 @@ builder.Services.AddControllersWithViews();
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Đăng ký DI cho SanPhamService
+builder.Services.AddScoped<ISanPhamService, SanPhamService>();
+builder.Services.AddScoped<IHangSXService, HangSXService>();
+builder.Services.AddScoped<IChatLieuService, ChatLieuService>();
+builder.Services.AddScoped<IMauSacService, MauSacService>();
+builder.Services.AddScoped<ISizeService, SizeService>();
+builder.Services.AddScoped<ISanPhamChiTietService, SanPhamChiTietService>();
 
 builder.Services.AddSession(options =>
 {
@@ -35,6 +45,10 @@ app.UseRouting();
 app.UseSession();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=HomeAdmin}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

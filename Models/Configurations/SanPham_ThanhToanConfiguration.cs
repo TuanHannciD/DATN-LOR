@@ -25,8 +25,8 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new SanPham_ThanhToan
                 {
-                    ID_Sp_ThanhToan = Guid.NewGuid(),
-                    ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"), // ID_ThanhToan đã seed (giả định)
+                    ID_Sp_ThanhToan = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                    ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"), // ID_ThanhToan đã seed (giả định một GUID)
                     ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"), // ID_Spct đã seed (giả định)
                     SoLuong = 1
                 }

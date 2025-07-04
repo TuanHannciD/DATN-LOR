@@ -1,3 +1,4 @@
+#nullable disable
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,11 +11,11 @@ namespace AuthDemo.Models
         public Guid ID_User { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public required string HoTen { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public required string UserName { get; set; }
 
         [Required]
@@ -25,7 +26,7 @@ namespace AuthDemo.Models
         [ForeignKey("UserName")]
         public virtual User User { get; set; }
 
-        // Khóa ngoại tổng hợp đến KhachHang sẽ được cấu hình trong DbContext
+        // Khóa ngoại tổng hợp đến KhachHang sẽ được cấu hình trong DbContext       
         public virtual KhachHang KhachHang { get; set; }
     }
 } 

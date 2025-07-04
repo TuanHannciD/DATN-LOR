@@ -18,7 +18,8 @@ namespace AuthDemo.Models.Configurations
 
             // Seed dữ liệu mẫu (đảm bảo ID_User từ User_KhachHang tồn tại)
             builder.HasData(
-                new Gio_Hang { ID_Gio_Hang = Guid.NewGuid(), ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b") } // ID_User từ User_KhachHang đã seed
+                new Gio_Hang { ID_Gio_Hang = new Guid("b2c7d81c-7d81-4e9c-8e0a-0a4a8b0e7a2b"), ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b") },
+                new Gio_Hang { ID_Gio_Hang = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"), ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b") }
             );
         }
     }

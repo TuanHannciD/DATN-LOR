@@ -23,7 +23,7 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new NCC
                 {
-                    Ma_NCC = Guid.NewGuid(),
+                    Ma_NCC = new Guid("22222222-3333-4444-5555-666666666666"),
                     NameNCC = "Nhà cung cấp A",
                     NameNLH = "Nguyen Van Test",
                     SDT = "0123456789",
@@ -33,11 +33,14 @@ namespace AuthDemo.Models.Configurations
                     QuocGia = "Việt Nam",
                     MoTa = "Chuyên cung cấp vải cotton",
                     TrangThai = "Hoạt động",
-                    CreatedDate = DateTime.Now,
-                    UpdatedDate = DateTime.Now,
-                    HoTenAdmin = "Admin Demo" // Admin đã seed
+                    CreatedDate = new DateTime(2025, 6, 10),
+                    UpdatedDate = new DateTime(2025, 6, 15),
+                    HoTenAdmin = "Admin Demo"
                 }
             );
+
+            builder.Property(ncc => ncc.CreatedDate).HasDefaultValueSql("GETDATE()");
+            builder.Property(ncc => ncc.UpdatedDate).HasDefaultValueSql("GETDATE()");
         }
     }
 } 

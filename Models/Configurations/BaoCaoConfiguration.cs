@@ -33,8 +33,8 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new BaoCao
                 {
-                    ID_BaoCao = Guid.NewGuid(),
-                    NgayBaoCao = DateTime.Now,
+                    ID_BaoCao = new Guid("cccccccc-dddd-eeee-ffff-111111111111"),
+                    NgayBaoCao = new DateTime(2025, 6, 15),
                     LoaiBaoCao = "DoanhSo",
                     DoanhThu = 10000000.0m,
                     SoLuongHangBanRa = 500,
@@ -46,11 +46,14 @@ namespace AuthDemo.Models.Configurations
                     TongSoKhachHang = 200,
                     SoKhachHangMoi = 20,
                     SoKhachHangTroLai = 180,
-                    NgayTao = DateTime.Now,
-                    NgayCapNhap = DateTime.Now,
-                    HoTenAdmin = "Admin Demo" // Admin đã seed
+                    NgayTao = new DateTime(2025, 6, 10),
+                    NgayCapNhap = new DateTime(2025, 6, 12),
+                    HoTenAdmin = "Admin Demo"
                 }
             );
+
+            builder.Property(bc => bc.NgayTao).HasDefaultValueSql("GETDATE()");
+            builder.Property(bc => bc.NgayCapNhap).HasDefaultValueSql("GETDATE()");
         }
     }
 } 

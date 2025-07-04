@@ -14,7 +14,7 @@ namespace AuthDemo.Models
         public Guid ID_Spct { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public required string UserName { get; set; }
 
         [Required]

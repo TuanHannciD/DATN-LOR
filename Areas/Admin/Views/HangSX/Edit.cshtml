@@ -1,0 +1,32 @@
+@model AuthDemo.Models.HangSX
+@{
+    ViewData["Title"] = "Sửa hãng sản xuất";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0"><i class="mdi mdi-pencil"></i> Sửa hãng sản xuất</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" asp-controller="HangSX" asp-area="Admin" method="post">
+                    <input type="hidden" asp-for="ID_Hang" />
+                    <div class="form-group">
+                        <label asp-for="HangSXName" class="form-label fw-bold">Tên hãng sản xuất</label>
+                        <input asp-for="HangSXName" class="form-control rounded-3" placeholder="Nhập tên hãng..." />
+                        <span asp-validation-for="HangSXName" class="text-danger"></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="mdi mdi-content-save"></i> Lưu
+                        </button>
+                        <a class="btn btn-secondary px-4" href="@Url.Action("Index", "HangSX", new { area = "Admin" })">
+                            <i class="mdi mdi-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

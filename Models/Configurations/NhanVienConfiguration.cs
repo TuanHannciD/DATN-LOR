@@ -30,20 +30,37 @@ namespace AuthDemo.Models.Configurations
             // Seed nhân viên mẫu
             builder.HasData(new NhanVien
             {
-                MaNV = Guid.NewGuid(),
+                MaNV = new Guid("ffffffff-1111-2222-3333-444444444444"),
                 HoTenNV = "Nguyen Van A",
-                HoTenAdmin = "Admin Demo", // Đảm bảo Admin này đã có trong DB
+                HoTenAdmin = "Admin Demo",
                 Sdt = "0987654321",
                 Email = "nhanvienA@example.com",
                 DiaChi = "Hà Nội",
                 NgaySinh = new DateTime(1995, 5, 10),
                 GioiTinh = "Nam",
                 TrangThai = "Hoạt động",
-                NgayVaoLam = new DateTime(2020, 1, 1),
+                NgayVaoLam = new DateTime(2025, 1, 1),
                 ChucVu = "Quản lý",
                 LuongCoBan = 15000000,
                 SoGioLamViec = 160,
-                UserName = "testuser" // Đảm bảo User này đã có trong DB
+                UserName = "testuser"
+            },
+            new NhanVien
+            {
+                MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
+                HoTenNV = "Nguyen Van B",
+                HoTenAdmin = "Admin Demo",
+                Sdt = "0912345678",
+                Email = "nhanvienB@example.com",
+                DiaChi = "Hà Nội",
+                NgaySinh = new DateTime(1996, 6, 15),
+                GioiTinh = "Nam",
+                TrangThai = "Hoạt động",
+                NgayVaoLam = new DateTime(2025, 2, 1),
+                ChucVu = "Nhân viên",
+                LuongCoBan = 12000000,
+                SoGioLamViec = 160,
+                UserName = "testuser"
             });
         }
     }

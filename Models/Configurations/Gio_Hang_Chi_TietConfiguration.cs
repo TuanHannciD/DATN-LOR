@@ -24,13 +24,13 @@ namespace AuthDemo.Models.Configurations
             builder.HasOne(ghct => ghct.KhuyenMai)
                 .WithMany()
                 .HasForeignKey(ghct => ghct.Ma_Km)
-                .OnDelete(DeleteBehavior.SetNull); // Có thể SetNull nếu KhuyenMai bị xóa
+                .OnDelete(DeleteBehavior.NoAction); // Đổi từ SetNull sang NoAction để tránh cycles
 
             // Seed dữ liệu mẫu (đảm bảo ID_Gio_Hang, ID_Spct, Ma_Km tồn tại)
             builder.HasData(
                 new Gio_Hang_Chi_Tiet
                 {
-                    ID_Gio_Hang_Chi_Tiet = Guid.NewGuid(),
+                    ID_Gio_Hang_Chi_Tiet = new Guid("66666666-6666-6666-6666-666666666666"),
                     ID_Gio_Hang = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"), // ID_Gio_Hang đã seed
                     ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"), // ID_Spct đã seed
                     Ma_Km = new Guid("f8e1d2c3-b4a5-6d7e-8c9b-0a1b2c3d4e5f"), // Ma_Km đã seed
@@ -39,9 +39,9 @@ namespace AuthDemo.Models.Configurations
                 },
                 new Gio_Hang_Chi_Tiet
                 {
-                    ID_Gio_Hang_Chi_Tiet = Guid.NewGuid(),
+                    ID_Gio_Hang_Chi_Tiet = new Guid("77777777-7777-7777-7777-777777777777"),
                     ID_Gio_Hang = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"), // ID_Gio_Hang đã seed
-                    ID_Spct = new Guid("b1c7d81c-7d81-4e9c-8e0a-0a4a8b0e7a2b"), // ID_Spct đã seed
+                    ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"), // ID_Spct đã seed
                     Ma_Km = null, // Không có khuyến mãi
                     SoLuong = 2,
                     Gia = 450000

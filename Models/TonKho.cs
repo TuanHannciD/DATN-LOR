@@ -1,3 +1,4 @@
+#nullable disable
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,7 +16,7 @@ namespace AuthDemo.Models
         [Required]
         public int SoLuongTonKho { get; set; }
 
-        public DateTime NgayCapNhap { get; set; } = DateTime.Now;
+        public DateTime NgayCapNhap { get; set; }
 
         [ForeignKey("ID_Spct")]
         public virtual SanPhamChiTiet SanPhamChiTiet { get; set; }

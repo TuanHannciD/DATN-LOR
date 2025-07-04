@@ -38,9 +38,8 @@ namespace AuthDemo.Models
 
         public int? SoKhachHangTroLai { get; set; }
 
-        public DateTime NgayTao { get; set; } = DateTime.Now;
-
-        public DateTime NgayCapNhap { get; set; } = DateTime.Now;
+        public DateTime NgayTao { get; set; }
+        public DateTime NgayCapNhap { get; set; }
 
         [Required]
         [StringLength(30)]

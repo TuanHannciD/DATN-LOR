@@ -30,7 +30,7 @@ namespace AuthDemo.Models
         public required string DiaChi { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public required string UserName { get; set; }
 
         [ForeignKey("UserName")]

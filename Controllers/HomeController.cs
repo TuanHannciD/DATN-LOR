@@ -16,11 +16,14 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        if (HttpContext.Session.GetInt32("UserId") == null)
+        var username = HttpContext.Session.GetString("Username");
+        if (string.IsNullOrEmpty(username))
         {
+            // Chưa đăng nhập, chuyển về trang Login
             return RedirectToAction("Login", "Account");
         }
-        return View();
+        // Đã đăng nhập, chuyển về trang HomeAdmin
+        return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
     }
 
     public IActionResult Privacy()

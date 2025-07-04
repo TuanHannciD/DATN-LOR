@@ -52,7 +52,7 @@ namespace AuthDemo.Models
         public int SoGioLamViec { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public required string UserName { get; set; }
 
         [ForeignKey("HoTenAdmin")]

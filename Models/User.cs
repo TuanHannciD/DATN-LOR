@@ -1,12 +1,13 @@
 #nullable disable
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AuthDemo.Models
 {
     public class User
     {
         [Key]
-        [StringLength(30)]
+        [StringLength(50)]
         public string Username { get; set; }
 
         [Required]
@@ -14,7 +15,12 @@ namespace AuthDemo.Models
         public string Password { get; set; }
 
         [Required]
-        [StringLength(30)]
-        public string Role { get; set; }
+        public int RoleId { get; set; }
+
+        [ForeignKey("RoleId")]
+        public virtual Role Role { get; set; }
+
+        // Thêm trường trạng thái hoạt động
+        public bool IsActive { get; set; } = true;
     }
 } 

@@ -1,3 +1,4 @@
+#nullable disable
 namespace AuthDemo.Models;
 
 public class ErrorViewModel

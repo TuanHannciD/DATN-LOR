@@ -19,13 +19,13 @@ namespace AuthDemo.Models.Configurations
             builder.HasOne(htkh => htkh.User_KhachHang)
                 .WithMany()
                 .HasForeignKey(htkh => htkh.ID_User)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Seed dữ liệu mẫu (đảm bảo MaNV và ID_User từ User_KhachHang tồn tại)
             builder.HasData(
                 new HoTroKhachHang
                 {
-                    ID_HoTroKhachHang = Guid.NewGuid(),
+                    ID_HoTroKhachHang = new Guid("88888888-8888-8888-8888-888888888888"),
                     MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"), // MaNV của NhanVien đã seed (giả định)
                     ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"), // ID_User từ User_KhachHang đã seed
                     LoaiHT = "Hỗ trợ kỹ thuật",

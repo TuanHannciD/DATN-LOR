@@ -25,7 +25,7 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new SanPhamYeuThichChiTiet
                 {
-                    ID_Spyt_Chi_Tiet = Guid.NewGuid(),
+                    ID_Spyt_Chi_Tiet = new Guid("99999999-9999-9999-9999-999999999999"),
                     ID_Spyt = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"), // ID_Spyt đã seed
                     ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"), // ID_Spct đã seed
                     Gia = 150000

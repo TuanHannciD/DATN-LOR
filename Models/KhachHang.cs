@@ -7,17 +7,20 @@ namespace AuthDemo.Models
 {
     public class KhachHang
     {
+        [Key]
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
+        public string Email { get; set; }
+
+        [Key]
+        [Required]
+        [StringLength(50)]
         public required string HoTen { get; set; }
 
         [Required]
         [StringLength(10)]
         public required string Sdt { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public required string Email { get; set; }
 
         [StringLength(255)]
         public string? DiaChi { get; set; }
@@ -43,7 +46,7 @@ namespace AuthDemo.Models
         public string? HoTenAdmin { get; set; }
 
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public required string UserName { get; set; }
 
         [ForeignKey("HoTenAdmin")]

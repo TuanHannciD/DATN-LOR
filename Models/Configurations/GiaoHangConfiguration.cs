@@ -14,7 +14,7 @@ namespace AuthDemo.Models.Configurations
             builder.HasOne(gh => gh.ThanhToan)
                 .WithMany()
                 .HasForeignKey(gh => gh.ID_ThanhToan)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(gh => gh.DonHang)
                 .WithMany()
@@ -28,17 +28,21 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new GiaoHang
                 {
-                    ID_GiaoHang = Guid.NewGuid(),
-                    ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"), // ID_ThanhToan đã seed (giả định)
-                    ID_Don_Hang = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"), // ID_Don_Hang đã seed (giả định)
-                    NgayPhanCongGiaoHang = DateTime.Now.AddDays(-2),
-                    ThoiGianDuKienGiaoHang = DateTime.Now.AddDays(1),
+                    ID_GiaoHang = new Guid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                    ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
+                    ID_Don_Hang = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
+                    NgayPhanCongGiaoHang = new DateTime(2024, 6, 10),
+                    ThoiGianDuKienGiaoHang = new DateTime(2024, 6, 15),
                     ThoiGianThucTeGiaoHang = null,
                     TrangThaiGiaoHang = "Đang xử lý",
-                    NgayTao = DateTime.Now.AddDays(-3),
-                    NgayCapNhap = DateTime.Now.AddDays(-2)
+                    NgayTao = new DateTime(2025, 6, 8),
+                    NgayCapNhap = new DateTime(2025, 6, 10)
                 }
             );
+
+            builder.Property(gh => gh.NgayPhanCongGiaoHang).HasDefaultValueSql("GETDATE()");
+            builder.Property(gh => gh.NgayTao).HasDefaultValueSql("GETDATE()");
+            builder.Property(gh => gh.NgayCapNhap).HasDefaultValueSql("GETDATE()");
         }
     }
 } 

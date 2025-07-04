@@ -17,7 +17,7 @@ namespace AuthDemo.Models.Configurations
             {
                 Username = "testuser",
                 Password = HashPassword("123456"),
-                Role = "User"
+                RoleId = 1
             });
         }
 

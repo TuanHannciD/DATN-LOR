@@ -20,8 +20,13 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new HoaDon
                 {
-                    ID_HoaDon = Guid.NewGuid(),
-                    ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b") // ID_User từ User_KhachHang đã seed
+                    ID_HoaDon = new Guid("c3c7d81c-7d81-4e9c-8e0a-0a4a8b0e7a2b"),
+                    ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
+                },
+                new HoaDon
+                {
+                    ID_HoaDon = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
+                    ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
                 }
             );
         }

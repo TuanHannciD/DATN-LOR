@@ -26,29 +26,42 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new KhuyenMai
                 {
-                    Ma_Km = Guid.NewGuid(),
+                    Ma_Km = new Guid("dddddddd-eeee-ffff-1111-222222222222"),
                     TenKm = "Giảm giá mùa hè",
                     MoTa = "Giảm 10% cho tất cả sản phẩm",
                     LoaiKm = "Phần trăm",
                     GiaTriKm = 10.0m,
-                    NgayBd = new DateTime(2024, 6, 1),
-                    NgayKt = new DateTime(2024, 8, 31),
+                    NgayBd = new DateTime(2025, 6, 1),
+                    NgayKt = new DateTime(2025, 8, 31),
                     SoLuong = 1000,
                     SoLuong1Ng = 100,
-                    HoTenAdmin = "Admin Demo" // Admin đã seed
+                    HoTenAdmin = "Admin Demo"
                 },
                 new KhuyenMai
                 {
-                    Ma_Km = Guid.NewGuid(),
+                    Ma_Km = new Guid("eeeeeeee-ffff-1111-2222-333333333333"),
                     TenKm = "Miễn phí vận chuyển",
                     MoTa = "Miễn phí giao hàng cho đơn hàng trên 500k",
                     LoaiKm = "Miễn phí giao hàng",
-                    GiaTriKm = 0.0m,
-                    NgayBd = new DateTime(2024, 7, 1),
-                    NgayKt = new DateTime(2024, 7, 31),
+                    GiaTriKm = 12,
+                    NgayBd = new DateTime(2025, 7, 1),
+                    NgayKt = new DateTime(2025, 7, 31),
                     SoLuong = 500,
                     SoLuong1Ng = 50,
-                    HoTenAdmin = "Admin Demo" // Admin đã seed
+                    HoTenAdmin = "Admin Demo"
+                },
+                new KhuyenMai
+                {
+                    Ma_Km = new Guid("f8e1d2c3-b4a5-6d7e-8c9b-0a1b2c3d4e5f"),
+                    TenKm = "Tặng voucher đặc biệt",
+                    MoTa = "Voucher giảm 50k cho đơn hàng trên 300k",
+                    LoaiKm = "Số tiền cố định",
+                    GiaTriKm = 50000.0m,
+                    NgayBd = new DateTime(2025, 7, 1),
+                    NgayKt = new DateTime(2025, 7, 31),
+                    SoLuong = 100,
+                    SoLuong1Ng = 5,
+                    HoTenAdmin = "Admin Demo"
                 }
             );
         }

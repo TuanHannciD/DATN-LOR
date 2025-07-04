@@ -13,10 +13,8 @@ namespace AuthDemo.Models.Configurations
 
             // Seed dữ liệu mẫu
             builder.HasData(
-                new Size { ID_Size = Guid.NewGuid(), SizeName = "S" },
-                new Size { ID_Size = Guid.NewGuid(), SizeName = "M" },
-                new Size { ID_Size = Guid.NewGuid(), SizeName = "L" },
-                new Size { ID_Size = Guid.NewGuid(), SizeName = "XL" }
+                new Size { ID_Size = new Guid("ffeeddcc-bbaa-9988-7766-554433221100"), SizeName = "S" },
+                new Size { ID_Size = new Guid("eeddccbb-aa99-8877-6655-443322110000"), SizeName = "M" }
             );
         }
     }

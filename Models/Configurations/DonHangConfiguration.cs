@@ -20,8 +20,13 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new DonHang
                 {
-                    ID_Don_Hang = Guid.NewGuid(),
+                    ID_Don_Hang = new Guid("55555555-5555-5555-5555-555555555555"),
                     MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c") // MaNV của NhanVien đã seed (giả định)
+                },
+                new DonHang
+                {
+                    ID_Don_Hang = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
+                    MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c")
                 }
             );
         }

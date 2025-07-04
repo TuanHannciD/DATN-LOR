@@ -20,8 +20,8 @@ namespace AuthDemo.Models.Configurations
             builder.HasData(
                 new ThanhToan
                 {
-                    ID_ThanhToan = Guid.NewGuid(),
-                    ID_HoaDon = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"), // ID_HoaDon đã seed (Giả định một GUID)
+                    ID_ThanhToan = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                    ID_HoaDon = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
                     PhuongThucThanhToan = "Chuyển khoản",
                     Status = "Đã thanh toán",
                     SoTienThanhToan = 150000,
@@ -29,6 +29,18 @@ namespace AuthDemo.Models.Configurations
                     SDT = "0912345678",
                     HoTen = "Tran Thi B",
                     GhiChu = "Thanh toán đơn hàng #1"
+                },
+                new ThanhToan
+                {
+                    ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
+                    ID_HoaDon = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
+                    PhuongThucThanhToan = "Chuyển khoản",
+                    Status = "Đã thanh toán",
+                    SoTienThanhToan = 150000,
+                    DiaChi = "Hà Nội",
+                    SDT = "0912345678",
+                    HoTen = "Nguyen Van A",
+                    GhiChu = "Thanh toán đơn hàng #2"
                 }
             );
         }

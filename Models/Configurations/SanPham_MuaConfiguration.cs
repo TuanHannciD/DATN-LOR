@@ -24,13 +24,13 @@ namespace AuthDemo.Models.Configurations
             builder.HasOne(spm => spm.User)
                 .WithMany()
                 .HasForeignKey(spm => spm.UserName)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Seed dữ liệu mẫu (đảm bảo ID_Spct, Ma_Km, UserName tồn tại)
             builder.HasData(
                 new SanPham_Mua
                 {
-                    ID_SP_Mua = Guid.NewGuid(),
+                    ID_SP_Mua = new Guid("44444444-4444-4444-4444-444444444444"),
                     ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"), // ID_Spct đã seed
                     UserName = "testuser", // UserName đã seed
                     SoLuong = 1,

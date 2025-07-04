@@ -40,9 +40,8 @@ namespace AuthDemo.Models
         [StringLength(30)]
         public required string TrangThai { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
-
-        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
 
         [Required]
         [StringLength(30)]
