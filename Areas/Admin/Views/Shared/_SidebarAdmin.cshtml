@@ -1,9 +1,9 @@
 <nav class="sidebar sidebar-offcanvas position-relative" id="sidebar">
   <!-- Thông tin user login -->
   <div class="sidebar-user-info text-center py-4">
-    <img src="https://ui-avatars.com/api/?name=@(Context.Session.GetString("Username") ?? "User")&background=6f42c1&color=fff&size=64" class="rounded-circle mb-2" width="64" height="64" alt="User Avatar">
-    <div class="fw-bold">@(Context.Session.GetString("Username") ?? "User")</div>
-    <div class="text-muted small">Admin</div>
+    <img src="https://ui-avatars.com/api/?name=@(Context.Session.GetString("TenDangNhap") ?? "User")&background=6f42c1&color=fff&size=64" class="rounded-circle mb-2" width="64" height="64" alt="User Avatar">
+    <div class="fw-bold">@(Context.Session.GetString("TenDangNhap") ?? "User")</div>
+    <div class="text-muted small">@((Context.Session.GetString("VaiTro") ?? "Vai trò"))</div>
   </div>
   <ul class="nav mb-5">
     <li class="nav-item">
@@ -21,13 +21,13 @@
       <div class="collapse" id="product-management">
         <ul class="nav flex-column sub-menu ms-4">
           <li class="nav-item">
-            <a class="nav-link" href="@Url.Action("Index", "SanPham", new { area = "Admin" })">
+            <a class="nav-link" href="@Url.Action("Index", "Giay", new { area = "Admin" })">
               <i class="mdi mdi-cube menu-icon"></i>
               <span class="menu-title">Sản phẩm</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="@Url.Action("Index", "SanPhamChiTiet", new { area = "Admin" })">
+            <a class="nav-link" href="@Url.Action("Index", "GiayChiTiet", new { area = "Admin" })">
               <i class="mdi mdi-view-list menu-icon"></i>
               <span class="menu-title">Sản phẩm chi tiết</span>
             </a>
