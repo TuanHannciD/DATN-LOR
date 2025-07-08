@@ -1,3 +1,4 @@
+@model AuthDemo.Models.ViewModels.LoginViewModel
 @{
     ViewData["Title"] = "Login";
     Layout = "_LayoutEmpty"; // Sử dụng layout trống
@@ -24,23 +25,25 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="form-group mb-3">
-                    <label for="username" class="control-label">Username</label>
+                    <label asp-for="TenDangNhap" class="control-label">Username</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
-                        <input name="username" class="form-control form-control-lg" placeholder="Type your username" required />
+                        <input asp-for="TenDangNhap" class="form-control form-control-lg" placeholder="Type your username" required />
                     </div>
+                    <span asp-validation-for="TenDangNhap" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="password" class="control-label">Password</label>
+                    <label asp-for="MatKhau" class="control-label">Password</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-lock"></i></span>
                         </div>
-                        <input name="password" type="password" class="form-control form-control-lg" placeholder="Type your password" required />
+                        <input asp-for="MatKhau" type="password" class="form-control form-control-lg" placeholder="Type your password" required />
                     </div>
+                    <span asp-validation-for="MatKhau" class="text-danger"></span>
                     <div class="text-end mt-2">
                         <a href="#" class="forgot-password-link">Forgot password?</a>
                     </div>
@@ -64,4 +67,8 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

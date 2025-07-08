@@ -23,12 +23,12 @@
     @foreach (var item in Model)
     {
         <tr>
-                        <td>@item.ChatLieuName</td>
+                        <td>@item.TenChatLieu</td>
                         <td class="text-center">
-                            <a class="btn btn-warning btn-sm" href="@Url.Action("Edit", "ChatLieu", new { id = item.ID_ChatLieu, area = "Admin" })">
+                            <a class="btn btn-warning btn-sm" href="@Url.Action("Edit", "ChatLieu", new { id = item.MaterialID, area = "Admin" })">
                                 <i class="mdi mdi-pencil"></i> Sửa
                             </a>
-                                <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "ChatLieu", new { id = item.ID_ChatLieu, area = "Admin" })" onclick="return confirm('Bạn có chắc muốn xóa?');">
+                                <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "ChatLieu", new { id = item.MaterialID, area = "Admin" })" onclick="return confirm('Bạn có chắc muốn xóa?');">
                                 <i class="mdi mdi-delete"></i> Xóa
                             </a>
                         </td>

@@ -7,7 +7,7 @@ namespace AuthDemo.Areas.Admin.Interface
     public interface IChatLieuService
     {
         IEnumerable<ChatLieu> GetAll();
-        ChatLieu GetById(Guid id);
+        ChatLieu? GetById(Guid id);
         void Add(ChatLieu entity);
         void Update(ChatLieu entity);
         void Delete(Guid id);

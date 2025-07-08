@@ -1,16 +1,17 @@
-#nullable disable
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace AuthDemo.Models
 {
-    public class MauSac
+    public class MauSac : ThongTinChung
     {
         [Key]
-        public Guid ID_MauSac { get; set; }
-
-        [Required]
-        [StringLength(30)]
-        public string MauSacName { get; set; }
+        public Guid ColorID { get; set; } // giữ nguyên
+        [StringLength(50)]
+        public string TenMau { get; set; }
+        [StringLength(50)]
+        public string MaMau { get; set; }
+        public ICollection<ChiTietGiay> ChiTietGiays { get; set; }
     }
 } 

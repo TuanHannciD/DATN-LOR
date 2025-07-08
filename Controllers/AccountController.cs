@@ -26,49 +26,76 @@ namespace AuthDemo.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(AuthDemo.Models.ViewModels.LoginViewModel model)
         {
-            _logger.LogInformation($"Login attempt for username: {username}");
+            _logger.LogInformation($"Login attempt for username: {model.TenDangNhap}");
             
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin");
-                return View();
+                return View(model);
             }
 
-            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == username);
+            var user = await _context.NguoiDungs
+                .Include(u => u.VaiTroNguoiDungs)
+                    .ThenInclude(vtnd => vtnd.VaiTro)
+                .FirstOrDefaultAsync(u => u.TenDangNhap == model.TenDangNhap);
+
             if (user == null)
             {
-                _logger.LogWarning($"User not found: {username}");
+                // User không tồn tại
+                _logger.LogWarning($"User not found: {model.TenDangNhap}");
                 ModelState.AddModelError("", "Tên đăng nhập không tồn tại");
-                return View();
+                return View(model);
             }
 
-            var passwordHash = HashPassword(password);
-            _logger.LogInformation($"Password check - Input hash: {passwordHash}, DB hash: {user.Password}");
-            
-            if (user.Password != passwordHash)
-            {
-                _logger.LogWarning($"Password mismatch for user: {username}");
-                ModelState.AddModelError("", "Mật khẩu không đúng");
-                return View();
-            }
+            var isAdmin = user.VaiTroNguoiDungs
+                .Any(x => x.VaiTro != null && x.VaiTro.TenVaiTro.ToLower() == "admin");
 
-            // PHÂN QUYỀN: Chỉ cho phép Admin đăng nhập
-            if (user.Role == null || user.Role.Name.ToLower() != "admin")
+            if (!isAdmin)
             {
-                _logger.LogWarning($"User {username} không phải Admin, bị chặn đăng nhập.");
+                // Không cho đăng nhập
+                _logger.LogWarning($"User {model.TenDangNhap} không phải Admin, bị chặn đăng nhập.");
                 ModelState.AddModelError("", "Chỉ Admin mới được phép đăng nhập.");
-                return View();
+                return View(model);
             }
 
-            // Đăng nhập thành công, lưu session
-            HttpContext.Session.SetString("Username", user.Username);
-            HttpContext.Session.SetString("Role", user.Role?.Name ?? "");
+            var passwordHash = HashPassword(model.MatKhau);
+            _logger.LogInformation($"Password check - Input hash: {passwordHash}, DB hash: {user.MatKhau}");
+            
+            if (user.MatKhau != passwordHash)
+            {
+                _logger.LogWarning($"Password mismatch for user: {model.TenDangNhap}");
+                ModelState.AddModelError("", "Mật khẩu không đúng");
+                return View(model);
+            }
 
-            _logger.LogInformation($"User logged in successfully: {user.Username}, Role: {user.Role?.Name}");
+            // Lấy danh sách vai trò, luôn non-null
+            List<string?> tenVaiTroList;
+            if (user.VaiTroNguoiDungs != null)
+            {
+                tenVaiTroList = user.VaiTroNguoiDungs
+                    .Select(x => x.VaiTro?.TenVaiTro)
+                    .ToList();
+            }
+            else
+            {
+                tenVaiTroList = new List<string?>();
+            }
 
-            // Chuyển hướng vào trang Admin
+            var tenVaiTroLower = tenVaiTroList.Select(vt => vt?.ToLower()).ToList();
+
+            if (!tenVaiTroLower.Contains("admin"))
+            {
+                _logger.LogWarning($"User {model.TenDangNhap} không phải Admin, bị chặn đăng nhập.");
+                ModelState.AddModelError("", "Chỉ Admin mới được phép đăng nhập.");
+                return View(model);
+            }
+
+            HttpContext.Session.SetString("TenDangNhap", user.TenDangNhap);
+            HttpContext.Session.SetString("VaiTro", string.Join(",", tenVaiTroList));
+
+            _logger.LogInformation($"User logged in successfully: {user.TenDangNhap}, Role: {string.Join(",", tenVaiTroList)}");
+
             return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
         }
 
@@ -78,19 +105,18 @@ namespace AuthDemo.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(User model)
+        public async Task<IActionResult> Register(NguoiDung model)
         {
             if (ModelState.IsValid)
             {
-                if (await _context.Users.AnyAsync(u => u.Username == model.Username))
+                if (await _context.NguoiDungs.AnyAsync(u => u.TenDangNhap == model.TenDangNhap))
                 {
-                    ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
+                    ModelState.AddModelError("TenDangNhap", "Tên đăng nhập đã tồn tại");
                     return View(model);
                 }
 
-                model.Password = HashPassword(model.Password);
-                model.RoleId = 1; // 1 là Id của Role "User" hoặc "Khách Hàng"
-                _context.Users.Add(model);
+                model.MatKhau = HashPassword(model.MatKhau);
+                _context.NguoiDungs.Add(model);
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("Login");
@@ -120,12 +146,18 @@ namespace AuthDemo.Controllers
         // Action để xem danh sách user trong database
         public async Task<IActionResult> DebugUsers()
         {
-            var users = await _context.Users.Include(u => u.Role).ToListAsync();
+            var users = await _context.NguoiDungs
+                .Include(u => u.VaiTroNguoiDungs)
+                    .ThenInclude(vtnd => vtnd.VaiTro)
+                .ToListAsync();
             var result = "Danh sách users:\n";
             
             foreach (var user in users)
             {
-                result += $"Username: {user.Username}, Role: {user.Role?.Name}, Password: {user.Password}\n";
+                var vaiTros = user.VaiTroNguoiDungs?
+                    .Select(x => x.VaiTro?.TenVaiTro)
+                    .ToList() ?? new List<string?>();
+                result += $"TenDangNhap: {user.TenDangNhap}, VaiTro: {string.Join(",", vaiTros)}, MatKhau: {user.MatKhau}\n";
             }
             
             return Content(result);
@@ -138,19 +170,25 @@ namespace AuthDemo.Controllers
         }
 
         // Action để test login trực tiếp
-        public async Task<IActionResult> TestLogin(string username)
+        public async Task<IActionResult> TestLogin(string tenDangNhap)
         {
-            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == username);
+            var user = await _context.NguoiDungs
+                .Include(u => u.VaiTroNguoiDungs)
+                    .ThenInclude(vtnd => vtnd.VaiTro)
+                .FirstOrDefaultAsync(u => u.TenDangNhap == tenDangNhap);
             if (user == null)
             {
-                return Content($"User {username} not found");
+                return Content($"User {tenDangNhap} not found");
             }
 
-            // Lưu session
-            HttpContext.Session.SetString("Username", user.Username);
-            HttpContext.Session.SetString("Role", user.Role?.Name ?? "");
+            var tenVaiTroList = user.VaiTroNguoiDungs?
+                .Select(x => x.VaiTro?.TenVaiTro)
+                .ToList() ?? new List<string?>();
 
-            if (user.Role?.Name.ToLower() == "admin" || user.Role?.Name.ToLower() == "quản lý")
+            HttpContext.Session.SetString("TenDangNhap", user.TenDangNhap);
+            HttpContext.Session.SetString("VaiTro", string.Join(",", tenVaiTroList));
+
+            if (tenVaiTroList.Any(vt => vt?.ToLower() == "admin" || vt?.ToLower() == "quản lý"))
             {
                 return RedirectToAction("Index", "Admin");
             }

@@ -16,7 +16,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var username = HttpContext.Session.GetString("Username");
+        var username = HttpContext.Session.GetString("TenDangNhap");
         if (string.IsNullOrEmpty(username))
         {
             // Chưa đăng nhập, chuyển về trang Login

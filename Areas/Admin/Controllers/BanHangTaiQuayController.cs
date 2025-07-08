@@ -23,22 +23,34 @@ namespace DATN_Lor.Areas.Admin.Controllers
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                var all = _db.SanPhamChiTiets.Select(sp => new {
-                    sp.ID_Spct,
-                    TenSp = sp.TenSp,
-                    Gia = sp.Gia,
-                    SoLuong = sp.SoLuongBan
+                var all = _db.ChiTietGiays.Select(sp => new {
+                    sp.ShoeDetailID,
+                    TenSp = sp.Giay.TenGiay,
+                    sp.Gia,
+                    sp.SoLuong,
+                    MauSac = sp.MauSac.TenMau,
+                    KichThuoc = sp.KichThuoc.TenKichThuoc,
+                    ChatLieu = sp.ChatLieu.TenChatLieu,
+                    ThuongHieu = sp.ThuongHieu.TenThuongHieu,
+                    DanhMuc = sp.DanhMuc.TenDanhMuc,
+                    Giay = sp.Giay.TenGiay
                 }).Take(20).ToList();
                 return Json(all);
             }
             var tuKhoa = keyword.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var result = _db.SanPhamChiTiets
-                .Where(sp => tuKhoa.All(k => sp.TenSp.ToLower().Contains(k)))
+            var result = _db.ChiTietGiays
+                .Where(sp => tuKhoa.All(k => sp.Giay.TenGiay.ToLower().Contains(k)))
                 .Select(sp => new {
-                    sp.ID_Spct,
-                    TenSp = sp.TenSp,
-                    Gia = sp.Gia,
-                    SoLuong = sp.SoLuongBan
+                    sp.ShoeDetailID,
+                    TenSp = sp.Giay.TenGiay,
+                    sp.Gia,
+                    sp.SoLuong,
+                    MauSac = sp.MauSac.TenMau,
+                    KichThuoc = sp.KichThuoc.TenKichThuoc,
+                    ChatLieu = sp.ChatLieu.TenChatLieu,
+                    ThuongHieu = sp.ThuongHieu.TenThuongHieu,
+                    DanhMuc = sp.DanhMuc.TenDanhMuc,
+                    Giay = sp.Giay.TenGiay
                 })
                 .Take(20)
                 .ToList();

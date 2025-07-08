@@ -22,1901 +22,1335 @@ namespace AuthDemo.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AuthDemo.Models.Admin", b =>
+            modelBuilder.Entity("AuthDemo.Models.AnhGiay", b =>
                 {
-                    b.Property<string>("HoTenAdmin")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<Guid>("ImageShoeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AnhDaiDien")
+                    b.Property<string>("DuongDanAnh")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("DiaChi")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime?>("NgaySinh")
+                    b.Property<DateTime?>("NgayCapNhat")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Sdt")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("HoTenAdmin");
-
-                    b.HasIndex("UserName");
-
-                    b.ToTable("Admins");
-
-                    b.HasData(
-                        new
-                        {
-                            HoTenAdmin = "Admin Demo",
-                            AnhDaiDien = "avatar.png",
-                            DiaChi = "Hà Nội",
-                            Email = "admin@gmail.com",
-                            NgaySinh = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Sdt = "0123456789",
-                            UserName = "testuser"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.AnhSp", b =>
-                {
-                    b.Property<Guid>("ID_AnhSp")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FileAnh")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<Guid?>("ID_Spct")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ID_AnhSp");
-
-                    b.HasIndex("ID_Spct");
-
-                    b.ToTable("AnhSps");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_AnhSp = new Guid("11111111-1111-1111-1111-111111111111"),
-                            FileAnh = "ao_thun_do_s_1.jpg",
-                            ID_Spct = new Guid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
-                        },
-                        new
-                        {
-                            ID_AnhSp = new Guid("22222222-2222-2222-2222-222222222222"),
-                            FileAnh = "ao_thun_do_s_2.jpg",
-                            ID_Spct = new Guid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
-                        },
-                        new
-                        {
-                            ID_AnhSp = new Guid("33333333-3333-3333-3333-333333333333"),
-                            FileAnh = "quan_jean_xanh_m_1.jpg",
-                            ID_Spct = new Guid("bbbbbbbb-cccc-dddd-eeee-ffffffffffff")
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.BaoCao", b =>
-                {
-                    b.Property<Guid>("ID_BaoCao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("DoanhThu")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("HoTenAdmin")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("LoaiBaoCao")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("NgayBaoCao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayCapNhap")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("SoKhachHangMoi")
-                        .HasColumnType("int");
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("SoKhachHangTroLai")
-                        .HasColumnType("int");
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("SoLuongDonHangBiHuy")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ShoeDetailID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("SoLuongDonHangDangXuLy")
-                        .HasColumnType("int");
+                    b.HasKey("ImageShoeID");
 
-                    b.Property<int?>("SoLuongDonHangHoanThanh")
-                        .HasColumnType("int");
+                    b.HasIndex("ShoeDetailID");
 
-                    b.Property<int?>("SoLuongHangBanRa")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SoLuongHangTon")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TongSoDonHang")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TongSoKhachHang")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID_BaoCao");
-
-                    b.HasIndex("HoTenAdmin");
-
-                    b.ToTable("BaoCaos", t =>
-                        {
-                            t.HasCheckConstraint("CK_BaoCao_DoanhThu", "DoanhThu >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_LoaiBaoCao", "LoaiBaoCao IN (N'DoanhSo', N'HangTon', N'DonHang', N'KhachHang')");
-
-                            t.HasCheckConstraint("CK_BaoCao_SoKhachHangMoi", "SoKhachHangMoi >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_SoKhachHangTroLai", "SoKhachHangTroLai >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_SoLuongDonHangBiHuy", "SoLuongDonHangBiHuy >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_SoLuongDonHangDangXuLy", "SoLuongDonHangDangXuLy >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_SoLuongDonHangHoanThanh", "SoLuongDonHangHoanThanh >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_SoLuongHangBanRa", "SoLuongHangBanRa >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_SoLuongHangTon", "SoLuongHangTon >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_TongSoDonHang", "TongSoDonHang >= 0");
-
-                            t.HasCheckConstraint("CK_BaoCao_TongSoKhachHang", "TongSoKhachHang >= 0");
-                        });
+                    b.ToTable("AnhGiays");
 
                     b.HasData(
                         new
                         {
-                            ID_BaoCao = new Guid("cccccccc-dddd-eeee-ffff-111111111111"),
-                            DoanhThu = 10000000.0m,
-                            HoTenAdmin = "Admin Demo",
-                            LoaiBaoCao = "DoanhSo",
-                            NgayBaoCao = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayCapNhap = new DateTime(2025, 6, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayTao = new DateTime(2025, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SoKhachHangMoi = 20,
-                            SoKhachHangTroLai = 180,
-                            SoLuongDonHangBiHuy = 5,
-                            SoLuongDonHangDangXuLy = 15,
-                            SoLuongDonHangHoanThanh = 80,
-                            SoLuongHangBanRa = 500,
-                            SoLuongHangTon = 2000,
-                            TongSoDonHang = 100,
-                            TongSoKhachHang = 200
+                            ImageShoeID = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            DuongDanAnh = "/images/airmax1.jpg",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            ShoeDetailID = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+                        },
+                        new
+                        {
+                            ImageShoeID = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            DuongDanAnh = "/images/airmax2.jpg",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            ShoeDetailID = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
                         });
                 });
 
             modelBuilder.Entity("AuthDemo.Models.ChatLieu", b =>
                 {
-                    b.Property<Guid>("ID_ChatLieu")
+                    b.Property<Guid>("MaterialID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ChatLieuName")
+                    b.Property<string>("MaChatLieuCode")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ID_ChatLieu");
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenChatLieu")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("MaterialID");
 
                     b.ToTable("ChatLieus");
 
                     b.HasData(
                         new
                         {
-                            ID_ChatLieu = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
-                            ChatLieuName = "Cotton"
+                            MaterialID = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
+                            MaChatLieuCode = "CTN",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenChatLieu = "Cotton"
                         },
                         new
                         {
-                            ID_ChatLieu = new Guid("8a9b0c1d-2e3f-4a5b-6c7d-8e9f0a1b2c3d"),
-                            ChatLieuName = "Len"
+                            MaterialID = new Guid("8a9b0c1d-2e3f-4a5b-6c7d-8e9f0a1b2c3d"),
+                            MaChatLieuCode = "LEN",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenChatLieu = "Len"
                         });
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.DonHang", b =>
+            modelBuilder.Entity("AuthDemo.Models.ChiTietGiay", b =>
                 {
-                    b.Property<Guid>("ID_Don_Hang")
+                    b.Property<Guid>("ShoeDetailID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MaNV")
+                    b.Property<Guid>("BrandID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("ID_Don_Hang");
-
-                    b.HasIndex("MaNV");
-
-                    b.ToTable("DonHangs");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Don_Hang = new Guid("55555555-5555-5555-5555-555555555555"),
-                            MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c")
-                        },
-                        new
-                        {
-                            ID_Don_Hang = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
-                            MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c")
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Don_Hang_Thanh_Toan", b =>
-                {
-                    b.Property<Guid>("ID_Don_Hang_Thanh_Toan")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("CategoryID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ID_Don_Hang")
+                    b.Property<Guid>("ColorID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ID_ThanhToan")
+                    b.Property<decimal>("Gia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("MaterialID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("KieuTT")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("NgayTT")
+                    b.Property<DateTime?>("NgayCapNhat")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("ID_Don_Hang_Thanh_Toan");
-
-                    b.HasIndex("ID_Don_Hang");
-
-                    b.HasIndex("ID_ThanhToan");
-
-                    b.ToTable("Don_Hang_Thanh_Toans");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Don_Hang_Thanh_Toan = new Guid("11111111-aaaa-bbbb-cccc-555555555555"),
-                            ID_Don_Hang = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
-                            ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
-                            KieuTT = "Tiền mặt",
-                            NgayTT = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = "Hoàn thành"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.GiaoHang", b =>
-                {
-                    b.Property<Guid>("ID_GiaoHang")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ID_Don_Hang")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_ThanhToan")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("NgayCapNhap")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("NgayPhanCongGiaoHang")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("NgayTao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("ThoiGianDuKienGiaoHang")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ThoiGianThucTeGiaoHang")
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("ShoeID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SizeID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShoeDetailID");
+
+                    b.HasIndex("BrandID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.HasIndex("ColorID");
+
+                    b.HasIndex("MaterialID");
+
+                    b.HasIndex("ShoeID");
+
+                    b.HasIndex("SizeID");
+
+                    b.ToTable("ChiTietGiays");
+
+                    b.HasData(
+                        new
+                        {
+                            ShoeDetailID = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            BrandID = new Guid("55555555-5555-5555-5555-555555555555"),
+                            CategoryID = new Guid("77777777-7777-7777-7777-777777777777"),
+                            ColorID = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Gia = 2500000m,
+                            MaterialID = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            ShoeID = new Guid("99999999-9999-9999-9999-999999999999"),
+                            SizeID = new Guid("33333333-3333-3333-3333-333333333333"),
+                            SoLuong = 10
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.ChiTietGioHang", b =>
+                {
+                    b.Property<Guid>("CartDetailID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CartID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("KichThuoc")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("TrangThaiGiaoHang")
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ID_GiaoHang");
-
-                    b.HasIndex("ID_Don_Hang");
-
-                    b.HasIndex("ID_ThanhToan");
-
-                    b.ToTable("GiaoHangs", t =>
-                        {
-                            t.HasCheckConstraint("CK_GiaoHang_TrangThaiGiaoHang", "TrangThaiGiaoHang IN (N'Chưa phân công', N'Đang giao', N'Đã giao', N'Đang xử lý', N'Đang chờ giao hàng', N'Gặp sự cố', N'Bị hủy', N'Giao lại')");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            ID_GiaoHang = new Guid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
-                            ID_Don_Hang = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
-                            ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
-                            NgayCapNhap = new DateTime(2025, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayPhanCongGiaoHang = new DateTime(2024, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayTao = new DateTime(2025, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ThoiGianDuKienGiaoHang = new DateTime(2024, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TrangThaiGiaoHang = "Đang xử lý"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Gio_Hang", b =>
-                {
-                    b.Property<Guid>("ID_Gio_Hang")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_User")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ID_Gio_Hang");
-
-                    b.HasIndex("ID_User");
-
-                    b.ToTable("Gio_Hangs");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Gio_Hang = new Guid("b2c7d81c-7d81-4e9c-8e0a-0a4a8b0e7a2b"),
-                            ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
-                        },
-                        new
-                        {
-                            ID_Gio_Hang = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"),
-                            ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Gio_Hang_Chi_Tiet", b =>
-                {
-                    b.Property<Guid>("ID_Gio_Hang_Chi_Tiet")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("Gia")
-                        .HasColumnType("real");
-
-                    b.Property<Guid>("ID_Gio_Hang")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_Spct")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("Ma_Km")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("SoLuong")
-                        .HasColumnType("real");
-
-                    b.HasKey("ID_Gio_Hang_Chi_Tiet");
-
-                    b.HasIndex("ID_Gio_Hang");
-
-                    b.HasIndex("ID_Spct");
-
-                    b.HasIndex("Ma_Km");
-
-                    b.ToTable("Gio_Hang_Chi_Tiets");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Gio_Hang_Chi_Tiet = new Guid("66666666-6666-6666-6666-666666666666"),
-                            Gia = 150000f,
-                            ID_Gio_Hang = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"),
-                            ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            Ma_Km = new Guid("f8e1d2c3-b4a5-6d7e-8c9b-0a1b2c3d4e5f"),
-                            SoLuong = 1f
-                        },
-                        new
-                        {
-                            ID_Gio_Hang_Chi_Tiet = new Guid("77777777-7777-7777-7777-777777777777"),
-                            Gia = 450000f,
-                            ID_Gio_Hang = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"),
-                            ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            SoLuong = 2f
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.HangSX", b =>
-                {
-                    b.Property<Guid>("ID_Hang")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("HangSXName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("ID_Hang");
-
-                    b.ToTable("HangSXs");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Hang = new Guid("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6e"),
-                            HangSXName = "Nike"
-                        },
-                        new
-                        {
-                            ID_Hang = new Guid("f1e2d3c4-b5a6-9d8e-7c6b-5a4d3c2b1a0e"),
-                            HangSXName = "Adidas"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.HoTroKhachHang", b =>
-                {
-                    b.Property<Guid>("ID_HoTroKhachHang")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_User")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("LoaiHT")
+                    b.Property<string>("NguoiTao")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("MaNV")
+                    b.Property<Guid>("ShoeDetailID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("PTLienLac")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
 
-                    b.HasKey("ID_HoTroKhachHang");
+                    b.HasKey("CartDetailID");
 
-                    b.HasIndex("ID_User");
+                    b.HasIndex("CartID");
 
-                    b.HasIndex("MaNV");
+                    b.HasIndex("ShoeDetailID");
 
-                    b.ToTable("HoTroKhachHangs");
+                    b.ToTable("ChiTietGioHangs");
 
                     b.HasData(
                         new
                         {
-                            ID_HoTroKhachHang = new Guid("88888888-8888-8888-8888-888888888888"),
-                            ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"),
-                            LoaiHT = "Hỗ trợ kỹ thuật",
-                            MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
-                            PTLienLac = "Email"
+                            CartDetailID = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
+                            CartID = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
+                            KichThuoc = "M",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            ShoeDetailID = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            SoLuong = 2
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.ChiTietHoaDon", b =>
+                {
+                    b.Property<Guid>("BillDetailID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BillID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("DonGia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("ShoeDetailID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.HasKey("BillDetailID");
+
+                    b.HasIndex("BillID");
+
+                    b.HasIndex("ShoeDetailID");
+
+                    b.ToTable("ChiTietHoaDons");
+
+                    b.HasData(
+                        new
+                        {
+                            BillDetailID = new Guid("22223333-4444-5555-6666-777788889999"),
+                            BillID = new Guid("11112222-3333-4444-5555-666677778888"),
+                            DonGia = 2500000m,
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            ShoeDetailID = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            SoLuong = 1
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.DanhMuc", b =>
+                {
+                    b.Property<Guid>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MaDanhMucCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MoTa")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("ParentID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TenDanhMuc")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("CategoryID");
+
+                    b.ToTable("DanhMucs");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryID = new Guid("77777777-7777-7777-7777-777777777777"),
+                            MaDanhMucCode = "SPORT",
+                            MoTa = "Sản phẩm thể thao",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenDanhMuc = "Thể thao"
+                        },
+                        new
+                        {
+                            CategoryID = new Guid("88888888-8888-8888-8888-888888888888"),
+                            MaDanhMucCode = "FASHION",
+                            MoTa = "Sản phẩm thời trang",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenDanhMuc = "Thời trang"
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.DiaChi", b =>
+                {
+                    b.Property<Guid>("AddressID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DiaChiDayDu")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AddressID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("DiaChis");
+
+                    b.HasData(
+                        new
+                        {
+                            AddressID = new Guid("44445555-6666-7777-8888-9999aaaabbbb"),
+                            DiaChiDayDu = "123 Đường ABC, Quận 1, TP.HCM",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            UserID = new Guid("11111111-1111-1111-1111-111111111111")
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.Giay", b =>
+                {
+                    b.Property<Guid>("ShoeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MaGiayCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MoTa")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenGiay")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ShoeID");
+
+                    b.ToTable("Giays");
+
+                    b.HasData(
+                        new
+                        {
+                            ShoeID = new Guid("99999999-9999-9999-9999-999999999999"),
+                            MaGiayCode = "AMX",
+                            MoTa = "Giày thể thao Nike",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenGiay = "Air Max",
+                            TrangThai = "Còn hàng"
+                        },
+                        new
+                        {
+                            ShoeID = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            MaGiayCode = "UBS",
+                            MoTa = "Giày thể thao Adidas",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenGiay = "Ultraboost",
+                            TrangThai = "Còn hàng"
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.GioHang", b =>
+                {
+                    b.Property<Guid>("CartID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CartID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("GioHangs");
+
+                    b.HasData(
+                        new
+                        {
+                            CartID = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            UserID = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
 
             modelBuilder.Entity("AuthDemo.Models.HoaDon", b =>
                 {
-                    b.Property<Guid>("ID_HoaDon")
+                    b.Property<Guid>("BillID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ID_User")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("DaHuy")
+                        .HasColumnType("bit");
 
-                    b.HasKey("ID_HoaDon");
-
-                    b.HasIndex("ID_User");
-
-                    b.ToTable("HoaDons");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_HoaDon = new Guid("c3c7d81c-7d81-4e9c-8e0a-0a4a8b0e7a2b"),
-                            ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
-                        },
-                        new
-                        {
-                            ID_HoaDon = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
-                            ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.KhachHang", b =>
-                {
-                    b.Property<string>("HoTen")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<bool>("DaThanhToan")
+                        .HasColumnType("bit");
 
                     b.Property<string>("DiaChi")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("DiemTichLuy")
-                        .HasColumnType("int");
-
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("GioiTinh")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("HoTenAdmin")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("LoaiKhachHang")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("NgayDangKy")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("NgaySinh")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Sdt")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("TrangThai")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("HoTen");
-
-                    b.HasIndex("HoTenAdmin");
-
-                    b.HasIndex("UserName");
-
-                    b.ToTable("KhachHangs", t =>
-                        {
-                            t.HasCheckConstraint("CK_KhachHang_DiemTichLuy", "DiemTichLuy >= 0");
-
-                            t.HasCheckConstraint("CK_KhachHang_Email", "Email LIKE N'%_@gmail.com'");
-
-                            t.HasCheckConstraint("CK_KhachHang_GioiTinh", "GioiTinh IN (N'Nam', N'Nữ', N'Khác')");
-
-                            t.HasCheckConstraint("CK_KhachHang_HoTen", "HoTen LIKE N'%[^a-zA-Z]% '");
-
-                            t.HasCheckConstraint("CK_KhachHang_LoaiKhachHang", "LoaiKhachHang IN (N'VIP', N'Thường', N'Mới')");
-
-                            t.HasCheckConstraint("CK_KhachHang_NgaySinh", "NgaySinh <= GETDATE()");
-
-                            t.HasCheckConstraint("CK_KhachHang_TrangThai", "TrangThai IN (N'Hoạt động', N'Không hoạt động', N'Bị cấm')");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            HoTen = "Tran Thi B ",
-                            DiaChi = "Hà Nội",
-                            DiemTichLuy = 0,
-                            Email = "khachhangB@gmail.com",
-                            GioiTinh = "Nữ",
-                            HoTenAdmin = "Admin Demo",
-                            LoaiKhachHang = "Thường",
-                            NgayDangKy = new DateTime(2025, 6, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgaySinh = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Sdt = "0987654321",
-                            TrangThai = "Hoạt động",
-                            UserName = "testuser"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.KhuyenMai", b =>
-                {
-                    b.Property<Guid>("Ma_Km")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("GiaTriKm")
-                        .HasColumnType("decimal(10, 2)");
-
-                    b.Property<string>("HoTenAdmin")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("LoaiKm")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("MoTa")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<DateTime>("NgayBd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayKt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("SoLuong")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SoLuong1Ng")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TenKm")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Ma_Km");
-
-                    b.HasIndex("HoTenAdmin");
-
-                    b.ToTable("KhuyenMais", t =>
-                        {
-                            t.HasCheckConstraint("CK_KhuyenMai_GiaTriKm", "GiaTriKm > 0");
-
-                            t.HasCheckConstraint("CK_KhuyenMai_LoaiKm", "LoaiKm IN (N'Phần trăm', N'Số tiền cố định', N'Miễn phí giao hàng')");
-
-                            t.HasCheckConstraint("CK_KhuyenMai_SoLuong", "SoLuong >= 0");
-
-                            t.HasCheckConstraint("CK_KhuyenMai_SoLuong1Ng", "SoLuong1Ng >= 0");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            Ma_Km = new Guid("dddddddd-eeee-ffff-1111-222222222222"),
-                            GiaTriKm = 10.0m,
-                            HoTenAdmin = "Admin Demo",
-                            LoaiKm = "Phần trăm",
-                            MoTa = "Giảm 10% cho tất cả sản phẩm",
-                            NgayBd = new DateTime(2025, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayKt = new DateTime(2025, 8, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SoLuong = 1000,
-                            SoLuong1Ng = 100,
-                            TenKm = "Giảm giá mùa hè"
-                        },
-                        new
-                        {
-                            Ma_Km = new Guid("eeeeeeee-ffff-1111-2222-333333333333"),
-                            GiaTriKm = 12m,
-                            HoTenAdmin = "Admin Demo",
-                            LoaiKm = "Miễn phí giao hàng",
-                            MoTa = "Miễn phí giao hàng cho đơn hàng trên 500k",
-                            NgayBd = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayKt = new DateTime(2025, 7, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SoLuong = 500,
-                            SoLuong1Ng = 50,
-                            TenKm = "Miễn phí vận chuyển"
-                        },
-                        new
-                        {
-                            Ma_Km = new Guid("f8e1d2c3-b4a5-6d7e-8c9b-0a1b2c3d4e5f"),
-                            GiaTriKm = 50000.0m,
-                            HoTenAdmin = "Admin Demo",
-                            LoaiKm = "Số tiền cố định",
-                            MoTa = "Voucher giảm 50k cho đơn hàng trên 300k",
-                            NgayBd = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayKt = new DateTime(2025, 7, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SoLuong = 100,
-                            SoLuong1Ng = 5,
-                            TenKm = "Tặng voucher đặc biệt"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.MauSac", b =>
-                {
-                    b.Property<Guid>("ID_MauSac")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("MauSacName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("ID_MauSac");
-
-                    b.ToTable("MauSacs");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_MauSac = new Guid("b1a7e8c2-3f4d-4e6a-9b2c-1a2b3c4d5e6f"),
-                            MauSacName = "Đỏ"
-                        },
-                        new
-                        {
-                            ID_MauSac = new Guid("22334455-6677-8899-aabb-ccddeeff2233"),
-                            MauSacName = "Xanh"
-                        },
-                        new
-                        {
-                            ID_MauSac = new Guid("11111111-2222-3333-4444-555555555555"),
-                            MauSacName = "Đen"
-                        },
-                        new
-                        {
-                            ID_MauSac = new Guid("66666666-7777-8888-9999-aaaaaaaaaaaa"),
-                            MauSacName = "Trắng"
-                        },
-                        new
-                        {
-                            ID_MauSac = new Guid("11223344-5566-7788-99aa-bbccddeeff11"),
-                            MauSacName = "Vàng"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.NCC", b =>
-                {
-                    b.Property<Guid>("Ma_NCC")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("DiaChi")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("HoTenAdmin")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("MoTa")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("NameNCC")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("NameNLH")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("QuocGia")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("SDT")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("ThanhPho")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("TrangThai")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.HasKey("Ma_NCC");
-
-                    b.HasIndex("HoTenAdmin");
-
-                    b.ToTable("NCCs", t =>
-                        {
-                            t.HasCheckConstraint("CK_NCC_TrangThai", "TrangThai IN (N'Hoạt động', N'Không hoạt động')");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            Ma_NCC = new Guid("22222222-3333-4444-5555-666666666666"),
-                            CreatedDate = new DateTime(2025, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DiaChi = "Hà Nội",
-                            Email = "nccA@example.com",
-                            HoTenAdmin = "Admin Demo",
-                            MoTa = "Chuyên cung cấp vải cotton",
-                            NameNCC = "Nhà cung cấp A",
-                            NameNLH = "Nguyen Van Test",
-                            QuocGia = "Việt Nam",
-                            SDT = "0123456789",
-                            ThanhPho = "Hà Nội",
-                            TrangThai = "Hoạt động",
-                            UpdatedDate = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.NhanVien", b =>
-                {
-                    b.Property<Guid>("MaNV")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ChucVu")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("DiaChi")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("GioiTinh")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("HoTenAdmin")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("HoTenNV")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<decimal>("LuongCoBan")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<DateTime?>("NgaySinh")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayVaoLam")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Sdt")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("SoGioLamViec")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TrangThai")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("MaNV");
-
-                    b.HasIndex("HoTenAdmin");
-
-                    b.HasIndex("UserName");
-
-                    b.ToTable("NhanViens", t =>
-                        {
-                            t.HasCheckConstraint("CK_NhanVien_GioiTinh", "GioiTinh IN (N'Nam', N'Nữ', N'Khác')");
-
-                            t.HasCheckConstraint("CK_NhanVien_LuongCoBan", "LuongCoBan > 0");
-
-                            t.HasCheckConstraint("CK_NhanVien_NgaySinh", "NgaySinh <= GETDATE()");
-
-                            t.HasCheckConstraint("CK_NhanVien_SoGioLamViec", "SoGioLamViec >= 0");
-
-                            t.HasCheckConstraint("CK_NhanVien_TrangThai", "TrangThai IN (N'Hoạt động', N'Không hoạt động', N'Bị cấm')");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            MaNV = new Guid("ffffffff-1111-2222-3333-444444444444"),
-                            ChucVu = "Quản lý",
-                            DiaChi = "Hà Nội",
-                            Email = "nhanvienA@example.com",
-                            GioiTinh = "Nam",
-                            HoTenAdmin = "Admin Demo",
-                            HoTenNV = "Nguyen Van A",
-                            LuongCoBan = 15000000m,
-                            NgaySinh = new DateTime(1995, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayVaoLam = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Sdt = "0987654321",
-                            SoGioLamViec = 160,
-                            TrangThai = "Hoạt động",
-                            UserName = "testuser"
-                        },
-                        new
-                        {
-                            MaNV = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2c"),
-                            ChucVu = "Nhân viên",
-                            DiaChi = "Hà Nội",
-                            Email = "nhanvienB@example.com",
-                            GioiTinh = "Nam",
-                            HoTenAdmin = "Admin Demo",
-                            HoTenNV = "Nguyen Van B",
-                            LuongCoBan = 12000000m,
-                            NgaySinh = new DateTime(1996, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NgayVaoLam = new DateTime(2025, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Sdt = "0912345678",
-                            SoGioLamViec = 160,
-                            TrangThai = "Hoạt động",
-                            UserName = "testuser"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "User"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Admin"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPham", b =>
-                {
-                    b.Property<Guid>("ID_Sp")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("MoTa")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int>("SoLuongTong")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Ten_Sp")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("TrangThai")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("ID_Sp");
-
-                    b.ToTable("SanPhams");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Sp = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            MoTa = "Áo thun cổ tròn, vải cotton mềm mại.",
-                            SoLuongTong = 100,
-                            Ten_Sp = "Áo thun cơ bản",
-                            TrangThai = "Còn hàng"
-                        },
-                        new
-                        {
-                            ID_Sp = new Guid("b1c7d81c-7d81-4e9c-8e0a-0a4a8b0e7a2b"),
-                            MoTa = "Quần jean dáng ôm, co giãn tốt.",
-                            SoLuongTong = 50,
-                            Ten_Sp = "Quần jean slim fit",
-                            TrangThai = "Còn hàng"
-                        },
-                        new
-                        {
-                            ID_Sp = new Guid("33333333-4444-5555-6666-777777777777"),
-                            MoTa = "Giày thể thao thoáng khí, nhẹ nhàng.",
-                            SoLuongTong = 75,
-                            Ten_Sp = "Giày thể thao A",
-                            TrangThai = "Còn hàng"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPhamChiTiet", b =>
-                {
-                    b.Property<Guid>("ID_Spct")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AnhDaiDien")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("DanhGia")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<float>("Gia")
-                        .HasColumnType("real");
-
-                    b.Property<Guid?>("ID_ChatLieu")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ID_Hang")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ID_MauSac")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ID_Size")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_Sp")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("MoTa")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("SoLuongBan")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TenSp")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("ID_Spct");
-
-                    b.HasIndex("ID_ChatLieu");
-
-                    b.HasIndex("ID_Hang");
-
-                    b.HasIndex("ID_MauSac");
-
-                    b.HasIndex("ID_Size");
-
-                    b.HasIndex("ID_Sp");
-
-                    b.ToTable("SanPhamChiTiets", t =>
-                        {
-                            t.HasCheckConstraint("CK_SanPhamChiTiet_Gia", "Gia > 0");
-
-                            t.HasCheckConstraint("CK_SanPhamChiTiet_SoLuongBan", "SoLuongBan >= 0");
-                        });
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Spct = new Guid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
-                            AnhDaiDien = "ao_thun_do_s.jpg",
-                            DanhGia = "Tốt",
-                            Gia = 150000f,
-                            ID_ChatLieu = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
-                            ID_Hang = new Guid("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6e"),
-                            ID_MauSac = new Guid("11223344-5566-7788-99aa-bbccddeeff11"),
-                            ID_Size = new Guid("ffeeddcc-bbaa-9988-7766-554433221100"),
-                            ID_Sp = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            MoTa = "Áo thun cổ tròn, vải cotton mềm mại, màu đỏ, size S.",
-                            SoLuongBan = 10,
-                            TenSp = "Áo thun cơ bản Đỏ S"
-                        },
-                        new
-                        {
-                            ID_Spct = new Guid("bbbbbbbb-cccc-dddd-eeee-ffffffffffff"),
-                            AnhDaiDien = "quan_jean_xanh_m.jpg",
-                            DanhGia = "Tuyệt vời",
-                            Gia = 450000f,
-                            ID_ChatLieu = new Guid("8a9b0c1d-2e3f-4a5b-6c7d-8e9f0a1b2c3d"),
-                            ID_Hang = new Guid("f1e2d3c4-b5a6-9d8e-7c6b-5a4d3c2b1a0e"),
-                            ID_MauSac = new Guid("22334455-6677-8899-aabb-ccddeeff2233"),
-                            ID_Size = new Guid("eeddccbb-aa99-8877-6655-443322110000"),
-                            ID_Sp = new Guid("b1c7d81c-7d81-4e9c-8e0a-0a4a8b0e7a2b"),
-                            MoTa = "Quần jean dáng ôm, co giãn tốt, màu xanh, size M.",
-                            SoLuongBan = 5,
-                            TenSp = "Quần jean slim fit Xanh M"
-                        },
-                        new
-                        {
-                            ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            AnhDaiDien = "ao_thun_dac_biet.jpg",
-                            DanhGia = "Xuất sắc",
-                            Gia = 250000f,
-                            ID_ChatLieu = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
-                            ID_Hang = new Guid("a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6e"),
-                            ID_MauSac = new Guid("11111111-2222-3333-4444-555555555555"),
-                            ID_Size = new Guid("ffeeddcc-bbaa-9988-7766-554433221100"),
-                            ID_Sp = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            MoTa = "Áo thun đặc biệt, vải cao cấp, màu đen, size M.",
-                            SoLuongBan = 20,
-                            TenSp = "Áo thun đặc biệt"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPhamYeuThich", b =>
-                {
-                    b.Property<Guid>("ID_Spyt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_User")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ID_Spyt");
-
-                    b.HasIndex("ID_User");
-
-                    b.ToTable("SanPhamYeuThiches");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Spyt = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"),
-                            ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPhamYeuThichChiTiet", b =>
-                {
-                    b.Property<Guid>("ID_Spyt_Chi_Tiet")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("Gia")
-                        .HasColumnType("real");
-
-                    b.Property<Guid>("ID_Spct")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_Spyt")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ID_Spyt_Chi_Tiet");
-
-                    b.HasIndex("ID_Spct");
-
-                    b.HasIndex("ID_Spyt");
-
-                    b.ToTable("SanPhamYeuThichChiTiets");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Spyt_Chi_Tiet = new Guid("99999999-9999-9999-9999-999999999999"),
-                            Gia = 150000f,
-                            ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            ID_Spyt = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b")
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPham_Mua", b =>
-                {
-                    b.Property<Guid>("ID_SP_Mua")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("Gia")
-                        .HasColumnType("real");
-
-                    b.Property<Guid>("ID_Spct")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Ma_Km")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("SoLuong")
-                        .HasColumnType("real");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("ID_SP_Mua");
-
-                    b.HasIndex("ID_Spct");
-
-                    b.HasIndex("Ma_Km");
-
-                    b.HasIndex("UserName");
-
-                    b.ToTable("SanPham_Muas");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_SP_Mua = new Guid("44444444-4444-4444-4444-444444444444"),
-                            Gia = 150000f,
-                            ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            Ma_Km = new Guid("f8e1d2c3-b4a5-6d7e-8c9b-0a1b2c3d4e5f"),
-                            SoLuong = 1f,
-                            UserName = "testuser"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPham_ThanhToan", b =>
-                {
-                    b.Property<Guid>("ID_Sp_ThanhToan")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_Spct")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ID_ThanhToan")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("SoLuong")
-                        .HasColumnType("real");
-
-                    b.HasKey("ID_Sp_ThanhToan");
-
-                    b.HasIndex("ID_Spct");
-
-                    b.HasIndex("ID_ThanhToan");
-
-                    b.ToTable("SanPham_ThanhToans");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Sp_ThanhToan = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                            ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
-                            SoLuong = 1f
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Size", b =>
-                {
-                    b.Property<Guid>("ID_Size")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SizeName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("ID_Size");
-
-                    b.ToTable("Sizes");
-
-                    b.HasData(
-                        new
-                        {
-                            ID_Size = new Guid("ffeeddcc-bbaa-9988-7766-554433221100"),
-                            SizeName = "S"
-                        },
-                        new
-                        {
-                            ID_Size = new Guid("eeddccbb-aa99-8877-6655-443322110000"),
-                            SizeName = "M"
-                        });
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.ThanhToan", b =>
-                {
-                    b.Property<Guid>("ID_ThanhToan")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DiaChi")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("GhiChu")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("HoTen")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("ID_HoaDon")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("LyDo")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NgayGiaoHang")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhuongThucThanhToan")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("SDT")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<float>("SoTienThanhToan")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Status")
+                    b.Property<string>("SoDienThoai")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("ID_ThanhToan");
+                    b.Property<decimal>("TongTien")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.HasIndex("ID_HoaDon");
+                    b.Property<string>("TrangThai")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.ToTable("ThanhToans");
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BillID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("HoaDons");
 
                     b.HasData(
                         new
                         {
-                            ID_ThanhToan = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            BillID = new Guid("11112222-3333-4444-5555-666677778888"),
+                            DaHuy = false,
+                            DaThanhToan = true,
                             DiaChi = "Hà Nội",
-                            GhiChu = "Thanh toán đơn hàng #1",
-                            HoTen = "Tran Thi B",
-                            ID_HoaDon = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
-                            PhuongThucThanhToan = "Chuyển khoản",
-                            SDT = "0912345678",
-                            SoTienThanhToan = 150000f,
-                            Status = "Đã thanh toán"
+                            Email = "admin@example.com",
+                            GhiChu = "",
+                            HoTen = "Nguyễn Văn A",
+                            LyDo = "",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            PhuongThucThanhToan = "Tiền mặt",
+                            SoDienThoai = "0123456789",
+                            TongTien = 5000000m,
+                            TrangThai = "Đã thanh toán",
+                            UserID = new Guid("11111111-1111-1111-1111-111111111111")
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.KichThuoc", b =>
+                {
+                    b.Property<Guid>("SizeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MaKichThuocCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenKichThuoc")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("SizeID");
+
+                    b.ToTable("KichThuocs");
+
+                    b.HasData(
+                        new
+                        {
+                            SizeID = new Guid("33333333-3333-3333-3333-333333333333"),
+                            MaKichThuocCode = "S",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenKichThuoc = "S"
                         },
                         new
                         {
-                            ID_ThanhToan = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
-                            DiaChi = "Hà Nội",
-                            GhiChu = "Thanh toán đơn hàng #2",
-                            HoTen = "Nguyen Van A",
-                            ID_HoaDon = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3a"),
-                            PhuongThucThanhToan = "Chuyển khoản",
-                            SDT = "0912345678",
-                            SoTienThanhToan = 150000f,
-                            Status = "Đã thanh toán"
+                            SizeID = new Guid("44444444-4444-4444-4444-444444444444"),
+                            MaKichThuocCode = "M",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenKichThuoc = "M"
                         });
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.TonKho", b =>
+            modelBuilder.Entity("AuthDemo.Models.LichSuHoaDon", b =>
                 {
-                    b.Property<Guid>("ID_TonKho")
+                    b.Property<Guid>("BillHistoryID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ID_Spct")
+                    b.Property<string>("BillCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("BillID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("NgayCapNhap")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                    b.Property<string>("DiaChiCu")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("SoLuongTonKho")
-                        .HasColumnType("int");
+                    b.Property<string>("DiaChiMoi")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("ID_TonKho");
+                    b.Property<string>("GhiChu")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.HasIndex("ID_Spct");
+                    b.Property<string>("HoTen")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.ToTable("TonKhos");
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TrangThaiCu")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TrangThaiMoi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BillHistoryID");
+
+                    b.HasIndex("BillID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("LichSuHoaDons");
 
                     b.HasData(
                         new
                         {
-                            ID_TonKho = new Guid("bbbbbbbb-cccc-dddd-eeee-ffffffffffff"),
-                            ID_Spct = new Guid("a0e6c70b-6c4a-4b9e-9d2a-0a4a8b0e7a2b"),
-                            NgayCapNhap = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SoLuongTonKho = 50
+                            BillHistoryID = new Guid("33334444-5555-6666-7777-88889999aaaa"),
+                            BillCode = "HD001",
+                            BillID = new Guid("11112222-3333-4444-5555-666677778888"),
+                            DiaChiCu = "Hà Nội",
+                            DiaChiMoi = "Hồ Chí Minh",
+                            GhiChu = "Chuyển địa chỉ giao hàng",
+                            HoTen = "Nguyễn Văn A",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TrangThaiCu = "Chờ xác nhận",
+                            TrangThaiMoi = "Đã thanh toán",
+                            UserID = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.User", b =>
+            modelBuilder.Entity("AuthDemo.Models.MauSac", b =>
                 {
-                    b.Property<string>("Username")
+                    b.Property<Guid>("ColorID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MaMau")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenMau")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ColorID");
+
+                    b.ToTable("MauSacs");
+
+                    b.HasData(
+                        new
+                        {
+                            ColorID = new Guid("11111111-1111-1111-1111-111111111111"),
+                            MaMau = "RED",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenMau = "Đỏ"
+                        },
+                        new
+                        {
+                            ColorID = new Guid("22222222-2222-2222-2222-222222222222"),
+                            MaMau = "BLUE",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenMau = "Xanh"
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.NguoiDung", b =>
+                {
+                    b.Property<Guid>("UserID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AnhDaiDien")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("HoTen")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("MatKhau")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NgayHetHanToken")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("RoleId")
-                        .HasMaxLength(30)
-                        .HasColumnType("int");
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Username");
+                    b.Property<string>("SoDienThoai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
-                    b.HasIndex("RoleId");
+                    b.Property<string>("TenDangNhap")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.ToTable("Users");
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("UserID");
+
+                    b.ToTable("NguoiDungs");
 
                     b.HasData(
                         new
                         {
-                            Username = "testuser",
+                            UserID = new Guid("11111111-1111-1111-1111-111111111111"),
+                            AnhDaiDien = "admin.jpg",
+                            Email = "admin@example.com",
+                            HoTen = "Quản trị viên",
                             IsActive = true,
-                            Password = "jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=",
-                            RoleId = 1
+                            MatKhau = "OMadiOjAeYhAtMTjppvsDgOzcynJf9uc8ZC8/+0i1L8=",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            SoDienThoai = "0123456789",
+                            TenDangNhap = "admin",
+                            Token = "1234567890"
                         });
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.User_KhachHang", b =>
+            modelBuilder.Entity("AuthDemo.Models.ThuongHieu", b =>
                 {
-                    b.Property<Guid>("ID_User")
+                    b.Property<Guid>("BrandID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("MaThuongHieuCode")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("HoTen")
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("NguoiTao")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ID_User");
+                    b.Property<string>("TenThuongHieu")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.HasIndex("UserName");
+                    b.HasKey("BrandID");
 
-                    b.HasIndex("HoTen", "Email");
-
-                    b.ToTable("User_KhachHangs");
+                    b.ToTable("ThuongHieus");
 
                     b.HasData(
                         new
                         {
-                            ID_User = new Guid("ae0f3e6e-21a4-4f5b-9d2c-8a7e6f5d4c3b"),
-                            Email = "khachhangB@gmail.com",
-                            HoTen = "Tran Thi B ",
-                            UserName = "testuser"
+                            BrandID = new Guid("55555555-5555-5555-5555-555555555555"),
+                            MaThuongHieuCode = "NIKE",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenThuongHieu = "Nike"
+                        },
+                        new
+                        {
+                            BrandID = new Guid("66666666-6666-6666-6666-666666666666"),
+                            MaThuongHieuCode = "ADIDAS",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenThuongHieu = "Adidas"
                         });
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.Admin", b =>
+            modelBuilder.Entity("AuthDemo.Models.VaiTro", b =>
                 {
-                    b.HasOne("AuthDemo.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserName")
+                    b.Property<Guid>("RoleID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MoTa")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NguoiTao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TenVaiTro")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("RoleID");
+
+                    b.ToTable("VaiTros");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleID = new Guid("11111111-1111-1111-1111-111111111111"),
+                            MoTa = "Quản trị viên",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenVaiTro = "admin"
+                        },
+                        new
+                        {
+                            RoleID = new Guid("22222222-2222-2222-2222-222222222222"),
+                            MoTa = "Người dùng thường",
+                            NgayTao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NguoiCapNhat = "system",
+                            NguoiTao = "system",
+                            TenVaiTro = "user"
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.VaiTroNguoiDung", b =>
+                {
+                    b.Property<Guid>("UserRoleID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserRoleID");
+
+                    b.HasIndex("RoleID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("VaiTroNguoiDungs");
+
+                    b.HasData(
+                        new
+                        {
+                            UserRoleID = new Guid("aaaa1111-1111-1111-1111-111111111111"),
+                            RoleID = new Guid("22222222-2222-2222-2222-222222222222"),
+                            UserID = new Guid("11111111-1111-1111-1111-111111111111")
+                        });
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.AnhGiay", b =>
+                {
+                    b.HasOne("AuthDemo.Models.ChiTietGiay", "ChiTietGiay")
+                        .WithMany("AnhGiays")
+                        .HasForeignKey("ShoeDetailID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_AnhGiay_ChiTietGiay");
+
+                    b.Navigation("ChiTietGiay");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.ChiTietGiay", b =>
+                {
+                    b.HasOne("AuthDemo.Models.ThuongHieu", "ThuongHieu")
+                        .WithMany("ChiTietGiays")
+                        .HasForeignKey("BrandID")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGiay_ThuongHieu");
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.AnhSp", b =>
-                {
-                    b.HasOne("AuthDemo.Models.SanPhamChiTiet", "SanPhamChiTiet")
-                        .WithMany()
-                        .HasForeignKey("ID_Spct")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("SanPhamChiTiet");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.BaoCao", b =>
-                {
-                    b.HasOne("AuthDemo.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("HoTenAdmin")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.DonHang", b =>
-                {
-                    b.HasOne("AuthDemo.Models.NhanVien", "NhanVien")
-                        .WithMany()
-                        .HasForeignKey("MaNV")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("NhanVien");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Don_Hang_Thanh_Toan", b =>
-                {
-                    b.HasOne("AuthDemo.Models.DonHang", "DonHang")
-                        .WithMany()
-                        .HasForeignKey("ID_Don_Hang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.ThanhToan", "ThanhToan")
-                        .WithMany()
-                        .HasForeignKey("ID_ThanhToan")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("DonHang");
-
-                    b.Navigation("ThanhToan");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.GiaoHang", b =>
-                {
-                    b.HasOne("AuthDemo.Models.DonHang", "DonHang")
-                        .WithMany()
-                        .HasForeignKey("ID_Don_Hang")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("AuthDemo.Models.ThanhToan", "ThanhToan")
-                        .WithMany()
-                        .HasForeignKey("ID_ThanhToan")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("DonHang");
-
-                    b.Navigation("ThanhToan");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Gio_Hang", b =>
-                {
-                    b.HasOne("AuthDemo.Models.User_KhachHang", "User_KhachHang")
-                        .WithMany()
-                        .HasForeignKey("ID_User")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User_KhachHang");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.Gio_Hang_Chi_Tiet", b =>
-                {
-                    b.HasOne("AuthDemo.Models.Gio_Hang", "Gio_Hang")
-                        .WithMany()
-                        .HasForeignKey("ID_Gio_Hang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.SanPhamChiTiet", "SanPhamChiTiet")
-                        .WithMany()
-                        .HasForeignKey("ID_Spct")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.KhuyenMai", "KhuyenMai")
-                        .WithMany()
-                        .HasForeignKey("Ma_Km")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Gio_Hang");
-
-                    b.Navigation("KhuyenMai");
-
-                    b.Navigation("SanPhamChiTiet");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.HoTroKhachHang", b =>
-                {
-                    b.HasOne("AuthDemo.Models.User_KhachHang", "User_KhachHang")
-                        .WithMany()
-                        .HasForeignKey("ID_User")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.NhanVien", "NhanVien")
-                        .WithMany()
-                        .HasForeignKey("MaNV")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("NhanVien");
-
-                    b.Navigation("User_KhachHang");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.HoaDon", b =>
-                {
-                    b.HasOne("AuthDemo.Models.User_KhachHang", "User_KhachHang")
-                        .WithMany()
-                        .HasForeignKey("ID_User")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User_KhachHang");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.KhachHang", b =>
-                {
-                    b.HasOne("AuthDemo.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("HoTenAdmin")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("AuthDemo.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.KhuyenMai", b =>
-                {
-                    b.HasOne("AuthDemo.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("HoTenAdmin")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.NCC", b =>
-                {
-                    b.HasOne("AuthDemo.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("HoTenAdmin")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.NhanVien", b =>
-                {
-                    b.HasOne("AuthDemo.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("HoTenAdmin")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserName")
+                    b.HasOne("AuthDemo.Models.DanhMuc", "DanhMuc")
+                        .WithMany("ChiTietGiays")
+                        .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPhamChiTiet", b =>
-                {
-                    b.HasOne("AuthDemo.Models.ChatLieu", "ChatLieu")
-                        .WithMany()
-                        .HasForeignKey("ID_ChatLieu")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("AuthDemo.Models.HangSX", "HangSX")
-                        .WithMany()
-                        .HasForeignKey("ID_Hang")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGiay_DanhMuc");
 
                     b.HasOne("AuthDemo.Models.MauSac", "MauSac")
-                        .WithMany()
-                        .HasForeignKey("ID_MauSac")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany("ChiTietGiays")
+                        .HasForeignKey("ColorID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGiay_MauSac");
 
-                    b.HasOne("AuthDemo.Models.Size", "Size")
-                        .WithMany()
-                        .HasForeignKey("ID_Size")
-                        .OnDelete(DeleteBehavior.SetNull);
+                    b.HasOne("AuthDemo.Models.ChatLieu", "ChatLieu")
+                        .WithMany("ChiTietGiays")
+                        .HasForeignKey("MaterialID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGiay_ChatLieu");
 
-                    b.HasOne("AuthDemo.Models.SanPham", "SanPham")
-                        .WithMany()
-                        .HasForeignKey("ID_Sp")
+                    b.HasOne("AuthDemo.Models.Giay", "Giay")
+                        .WithMany("ChiTietGiays")
+                        .HasForeignKey("ShoeID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGiay_Giay");
+
+                    b.HasOne("AuthDemo.Models.KichThuoc", "KichThuoc")
+                        .WithMany("ChiTietGiays")
+                        .HasForeignKey("SizeID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGiay_KichThuoc");
 
                     b.Navigation("ChatLieu");
 
-                    b.Navigation("HangSX");
+                    b.Navigation("DanhMuc");
+
+                    b.Navigation("Giay");
+
+                    b.Navigation("KichThuoc");
 
                     b.Navigation("MauSac");
 
-                    b.Navigation("SanPham");
-
-                    b.Navigation("Size");
+                    b.Navigation("ThuongHieu");
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.SanPhamYeuThich", b =>
+            modelBuilder.Entity("AuthDemo.Models.ChiTietGioHang", b =>
                 {
-                    b.HasOne("AuthDemo.Models.User_KhachHang", "User_KhachHang")
-                        .WithMany()
-                        .HasForeignKey("ID_User")
+                    b.HasOne("AuthDemo.Models.GioHang", "GioHang")
+                        .WithMany("ChiTietGioHangs")
+                        .HasForeignKey("CartID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGioHang_GioHang");
 
-                    b.Navigation("User_KhachHang");
+                    b.HasOne("AuthDemo.Models.ChiTietGiay", "ChiTietGiay")
+                        .WithMany("ChiTietGioHangs")
+                        .HasForeignKey("ShoeDetailID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietGioHang_ChiTietGiay");
+
+                    b.Navigation("ChiTietGiay");
+
+                    b.Navigation("GioHang");
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.SanPhamYeuThichChiTiet", b =>
-                {
-                    b.HasOne("AuthDemo.Models.SanPhamChiTiet", "SanPhamChiTiet")
-                        .WithMany()
-                        .HasForeignKey("ID_Spct")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.SanPhamYeuThich", "SanPhamYeuThich")
-                        .WithMany()
-                        .HasForeignKey("ID_Spyt")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SanPhamChiTiet");
-
-                    b.Navigation("SanPhamYeuThich");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPham_Mua", b =>
-                {
-                    b.HasOne("AuthDemo.Models.SanPhamChiTiet", "SanPhamChiTiet")
-                        .WithMany()
-                        .HasForeignKey("ID_Spct")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.KhuyenMai", "KhuyenMai")
-                        .WithMany()
-                        .HasForeignKey("Ma_Km")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserName")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("KhuyenMai");
-
-                    b.Navigation("SanPhamChiTiet");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.SanPham_ThanhToan", b =>
-                {
-                    b.HasOne("AuthDemo.Models.SanPhamChiTiet", "SanPhamChiTiet")
-                        .WithMany()
-                        .HasForeignKey("ID_Spct")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AuthDemo.Models.ThanhToan", "ThanhToan")
-                        .WithMany()
-                        .HasForeignKey("ID_ThanhToan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SanPhamChiTiet");
-
-                    b.Navigation("ThanhToan");
-                });
-
-            modelBuilder.Entity("AuthDemo.Models.ThanhToan", b =>
+            modelBuilder.Entity("AuthDemo.Models.ChiTietHoaDon", b =>
                 {
                     b.HasOne("AuthDemo.Models.HoaDon", "HoaDon")
-                        .WithMany()
-                        .HasForeignKey("ID_HoaDon")
+                        .WithMany("ChiTietHoaDons")
+                        .HasForeignKey("BillID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietHoaDon_HoaDon");
+
+                    b.HasOne("AuthDemo.Models.ChiTietGiay", "ChiTietGiay")
+                        .WithMany("ChiTietHoaDons")
+                        .HasForeignKey("ShoeDetailID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ChiTietHoaDon_ChiTietGiay");
+
+                    b.Navigation("ChiTietGiay");
 
                     b.Navigation("HoaDon");
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.TonKho", b =>
+            modelBuilder.Entity("AuthDemo.Models.DiaChi", b =>
                 {
-                    b.HasOne("AuthDemo.Models.SanPhamChiTiet", "SanPhamChiTiet")
-                        .WithMany()
-                        .HasForeignKey("ID_Spct")
+                    b.HasOne("AuthDemo.Models.NguoiDung", "NguoiDung")
+                        .WithMany("DiaChis")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_DiaChi_NguoiDung");
 
-                    b.Navigation("SanPhamChiTiet");
+                    b.Navigation("NguoiDung");
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.User", b =>
+            modelBuilder.Entity("AuthDemo.Models.GioHang", b =>
                 {
-                    b.HasOne("AuthDemo.Models.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
+                    b.HasOne("AuthDemo.Models.NguoiDung", "NguoiDung")
+                        .WithMany("GioHangs")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_GioHang_NguoiDung");
 
-                    b.Navigation("Role");
+                    b.Navigation("NguoiDung");
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.User_KhachHang", b =>
+            modelBuilder.Entity("AuthDemo.Models.HoaDon", b =>
                 {
-                    b.HasOne("AuthDemo.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserName")
+                    b.HasOne("AuthDemo.Models.NguoiDung", "NguoiDung")
+                        .WithMany("HoaDons")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_HoaDon_NguoiDung");
+
+                    b.Navigation("NguoiDung");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.LichSuHoaDon", b =>
+                {
+                    b.HasOne("AuthDemo.Models.HoaDon", "HoaDon")
+                        .WithMany("LichSuHoaDons")
+                        .HasForeignKey("BillID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_LichSuHoaDon_HoaDon");
+
+                    b.HasOne("AuthDemo.Models.NguoiDung", "NguoiDung")
+                        .WithMany("LichSuHoaDons")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_LichSuHoaDon_NguoiDung");
 
-                    b.HasOne("AuthDemo.Models.KhachHang", "KhachHang")
-                        .WithMany()
-                        .HasForeignKey("HoTen", "Email")
-                        .HasPrincipalKey("HoTen", "Email")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("HoaDon");
 
-                    b.Navigation("KhachHang");
-
-                    b.Navigation("User");
+                    b.Navigation("NguoiDung");
                 });
 
-            modelBuilder.Entity("AuthDemo.Models.Role", b =>
+            modelBuilder.Entity("AuthDemo.Models.VaiTroNguoiDung", b =>
                 {
-                    b.Navigation("Users");
+                    b.HasOne("AuthDemo.Models.VaiTro", "VaiTro")
+                        .WithMany("VaiTroNguoiDungs")
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_VaiTroNguoiDung_VaiTro");
+
+                    b.HasOne("AuthDemo.Models.NguoiDung", "NguoiDung")
+                        .WithMany("VaiTroNguoiDungs")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_VaiTroNguoiDung_NguoiDung");
+
+                    b.Navigation("NguoiDung");
+
+                    b.Navigation("VaiTro");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.ChatLieu", b =>
+                {
+                    b.Navigation("ChiTietGiays");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.ChiTietGiay", b =>
+                {
+                    b.Navigation("AnhGiays");
+
+                    b.Navigation("ChiTietGioHangs");
+
+                    b.Navigation("ChiTietHoaDons");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.DanhMuc", b =>
+                {
+                    b.Navigation("ChiTietGiays");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.Giay", b =>
+                {
+                    b.Navigation("ChiTietGiays");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.GioHang", b =>
+                {
+                    b.Navigation("ChiTietGioHangs");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.HoaDon", b =>
+                {
+                    b.Navigation("ChiTietHoaDons");
+
+                    b.Navigation("LichSuHoaDons");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.KichThuoc", b =>
+                {
+                    b.Navigation("ChiTietGiays");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.MauSac", b =>
+                {
+                    b.Navigation("ChiTietGiays");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.NguoiDung", b =>
+                {
+                    b.Navigation("DiaChis");
+
+                    b.Navigation("GioHangs");
+
+                    b.Navigation("HoaDons");
+
+                    b.Navigation("LichSuHoaDons");
+
+                    b.Navigation("VaiTroNguoiDungs");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.ThuongHieu", b =>
+                {
+                    b.Navigation("ChiTietGiays");
+                });
+
+            modelBuilder.Entity("AuthDemo.Models.VaiTro", b =>
+                {
+                    b.Navigation("VaiTroNguoiDungs");
                 });
 #pragma warning restore 612, 618
         }

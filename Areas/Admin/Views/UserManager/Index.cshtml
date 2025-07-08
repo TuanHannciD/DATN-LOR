@@ -1,4 +1,4 @@
-@model IEnumerable<AuthDemo.Models.User>
+@model IEnumerable<AuthDemo.Models.ViewModels.UserWithRoleVM>
 @{
     ViewData["Title"] = "Quản lý tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -40,8 +40,8 @@
                             @foreach (var user in Model)
                             {
                                 <tr>
-                                    <td>@user.Username</td>
-                                    <td><span class="badge badge-info">@user.Role?.Name</span></td>
+                                    <td>@user.TenDangNhap</td>
+                                    <td><span class="badge badge-info">@user.TenVaiTro</span></td>
                                     <td>
                                         @if (user.IsActive)
                                         {
@@ -53,10 +53,10 @@
                                         }
                                     </td>
                                     <td class="text-center">
-                                        <a href="@Url.Action("EditUser", "UserManager", new { id = user.Username, area = "Admin" })" class="btn btn-sm btn-warning">
+                                        <a href="@Url.Action("EditUser", "UserManager", new { id = user.UserID, area = "Admin" })" class="btn btn-sm btn-warning">
                                             <i class="mdi mdi-pencil"></i> Sửa
                                         </a>
-                                        <form asp-action="Delete" asp-controller="UserManager" asp-area="Admin" asp-route-id="@user.Username" method="post" style="display:inline" onsubmit="return confirm('Bạn chắc chắn muốn xóa?');">
+                                        <form asp-action="Delete" asp-controller="UserManager" asp-area="Admin" asp-route-id="@user.UserID" method="post" style="display:inline" onsubmit="return confirm('Bạn chắc chắn muốn xóa?');">
                                             <button type="submit" class="btn btn-sm btn-danger">
                                                 <i class="mdi mdi-delete"></i> Xóa
                                             </button>

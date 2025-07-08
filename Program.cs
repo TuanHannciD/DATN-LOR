@@ -13,12 +13,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Đăng ký DI cho SanPhamService
-builder.Services.AddScoped<ISanPhamService, SanPhamService>();
-builder.Services.AddScoped<IHangSXService, HangSXService>();
-builder.Services.AddScoped<IChatLieuService, ChatLieuService>();
+builder.Services.AddScoped<IGiayService, GiayService>();
+builder.Services.AddScoped<IThuongHieuService, ThuongHieuService>();
 builder.Services.AddScoped<IMauSacService, MauSacService>();
-builder.Services.AddScoped<ISizeService, SizeService>();
-builder.Services.AddScoped<ISanPhamChiTietService, SanPhamChiTietService>();
+builder.Services.AddScoped<IKichThuocService, KichThuocService>();
+builder.Services.AddScoped<IChatLieuService, ChatLieuService>();
+builder.Services.AddScoped<IChiTietGiayService, ChiTietGiayService>();
 
 builder.Services.AddSession(options =>
 {

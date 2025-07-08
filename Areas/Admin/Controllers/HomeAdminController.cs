@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using AuthDemo.Data;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {

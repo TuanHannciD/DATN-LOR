@@ -7,7 +7,7 @@ namespace AuthDemo.Areas.Admin.Interface
     public interface IMauSacService
     {
         IEnumerable<MauSac> GetAll();
-        MauSac GetById(Guid id);
+        MauSac? GetById(Guid id);
         void Add(MauSac entity);
         void Update(MauSac entity);
         void Delete(Guid id);

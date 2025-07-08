@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models;
-using System;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {

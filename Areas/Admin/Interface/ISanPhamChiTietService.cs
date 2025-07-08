@@ -4,12 +4,12 @@ using AuthDemo.Models;
 
 namespace AuthDemo.Areas.Admin.Interface
 {
-    public interface ISanPhamChiTietService
+    public interface IChiTietGiayService
     {
-        IEnumerable<SanPhamChiTiet> GetAll();
-        SanPhamChiTiet GetById(Guid id);
-        void Add(SanPhamChiTiet entity);
-        void Update(SanPhamChiTiet entity);
+        IEnumerable<ChiTietGiay> GetAll();
+        ChiTietGiay? GetById(Guid id);
+        void Add(ChiTietGiay entity);
+        void Update(ChiTietGiay entity);
         void Delete(Guid id);
     }
 } 

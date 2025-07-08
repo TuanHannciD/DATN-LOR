@@ -16,11 +16,11 @@ namespace Controllers
         {
             return View();
         }
-        public IActionResult DanhSach()
-        {
-            var lstDH= db.Don_Hang_Thanh_Toans.ToList();
-            return View(lstDH); 
-        }
+        // public IActionResult DanhSach()
+        // {
+        //     var lstDH= db.Don_Hang_Thanh_Toans.ToList();
+        //     return View(lstDH); 
+        // }
         [HttpPost]
         public IActionResult TrangThai()
         {
