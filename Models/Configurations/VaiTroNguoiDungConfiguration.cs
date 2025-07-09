@@ -30,7 +30,7 @@ namespace AuthDemo.Models.Configurations
                 new VaiTroNguoiDung {
                     UserRoleID = new Guid("aaaa1111-1111-1111-1111-111111111111"),
                     UserID = new Guid("11111111-1111-1111-1111-111111111111"), // admin
-                    RoleID = new Guid("22222222-2222-2222-2222-222222222222") // vai trò admin , NguoiTao = "system" , NguoiCapNhat = "system"
+                    RoleID = new Guid("11111111-1111-1111-1111-111111111111") // vai trò admin , NguoiTao = "system" , NguoiCapNhat = "system"
                 }
                 
             );

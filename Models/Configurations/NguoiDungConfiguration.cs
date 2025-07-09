@@ -23,7 +23,7 @@ namespace AuthDemo.Models.Configurations
                 new NguoiDung {
                     UserID = new Guid("11111111-1111-1111-1111-111111111111"),
                     TenDangNhap = "admin",
-                    MatKhau = "OMadiOjAeYhAtMTjppvsDgOzcynJf9uc8ZC8/+0i1L8=",
+                    MatKhau = "jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=",
                     HoTen = "Quản trị viên",
                     Email = "admin@example.com",
                     SoDienThoai = "0123456789",
