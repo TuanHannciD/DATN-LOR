@@ -1,22 +1,39 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models;
+using AuthDemo.Models.ViewModels;
+using System.Linq;
+using AuthDemo.Data;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ChiTietGiayController : Controller
     {
-        private readonly IChiTietGiayService _spctService;
-        public ChiTietGiayController(IChiTietGiayService spctService)
+        private readonly   IChiTietGiayService _chiTietGiayService;
+        private readonly ApplicationDbContext _context;
+
+        public ChiTietGiayController(ApplicationDbContext context ,IChiTietGiayService chiTietGiayService)
         {
-            _spctService = spctService;
+            _context = context;
+            _chiTietGiayService = chiTietGiayService;
         }
 
         public IActionResult Index()
         {
-            var list = _spctService.GetAll();
-            return View(list);
+            // Lấy tất cả sản phẩm (giày)
+            var giayList = _context.Giays.ToList();
+
+            // Tạo danh sách ViewModel
+            var viewModelList = giayList.Select(giay => new GiayFullInfoVM
+            {
+                Giay = giay,
+                ChiTietGiays = _context.ChiTietGiays
+                    .Where(ct => ct.ShoeID == giay.ShoeID)
+                    .ToList()
+            }).ToList();
+
+            return View(viewModelList);
         }
 
         [HttpGet]
@@ -28,7 +45,8 @@ namespace AuthDemo.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _spctService.Add(model);
+                _context.ChiTietGiays.Add(model);
+                _context.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -37,7 +55,7 @@ namespace AuthDemo.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(Guid id)
         {
-            var ct = _spctService.GetById(id);
+            var ct = _context.ChiTietGiays.Find(id);
             if (ct == null) return NotFound();
             return View(ct);
         }
@@ -48,7 +66,8 @@ namespace AuthDemo.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _spctService.Update(model);
+                _context.ChiTietGiays.Update(model);
+                _context.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -56,7 +75,12 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         public IActionResult Delete(Guid id)
         {
-            _spctService.Delete(id);
+            var ct = _context.ChiTietGiays.Find(id);
+            if (ct != null)
+            {
+                _context.ChiTietGiays.Remove(ct);
+                _context.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
     }

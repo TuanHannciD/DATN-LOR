@@ -1,4 +1,4 @@
-@model IEnumerable<AuthDemo.Models.Giay>
+@model IEnumerable<AuthDemo.Models.ViewModels.GiayWithSoLuongVM>
 @{
     ViewData["Title"] = "Danh sách sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -19,6 +19,7 @@
                         <th>Mã sản phẩm</th>
                         <th>Mô tả</th>
                         <th>Trạng thái</th>
+                        <th>Tổng tồn kho</th>
                         <th class="text-center">Thao tác</th>
                     </tr>
                 </thead>
@@ -26,15 +27,21 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.TenGiay</td>
-                        <td>@item.MaGiayCode</td>
-                        <td>@item.MoTa</td>
-                        <td>@item.TrangThai</td>
+                        <td>@item.Giay.TenGiay</td>
+                        <td>@item.Giay.MaGiayCode</td>
+                        <td>@item.Giay.MoTa</td>
+                        <td>@item.Giay.TrangThai</td>
+                        <td>
+                            <span class="badge bg-success">@item.TongSoLuong</span>
+                        </td>
                         <td class="text-center">
-                            <a class="btn btn-warning btn-sm me-1" href="@Url.Action("Edit", "Giay", new { id = item.ShoeID, area = "Admin" })">
+                            <a class="btn btn-info btn-sm me-1" href="@Url.Action("Details", "Giay", new { id = item.Giay.ShoeID, area = "Admin" })">
+                                <i class="mdi mdi-eye"></i> Xem
+                            </a>
+                            <a class="btn btn-warning btn-sm me-1" href="@Url.Action("Edit", "Giay", new { id = item.Giay.ShoeID, area = "Admin" })">
                                 <i class="mdi mdi-pencil"></i> Sửa
                             </a>
-                            <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Giay", new { id = item.ShoeID, area = "Admin" })" onclick="return confirm('Bạn có chắc muốn xóa?');">
+                            <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Giay", new { id = item.Giay.ShoeID, area = "Admin" })" onclick="return confirm('Bạn có chắc muốn xóa?');">
                                 <i class="mdi mdi-delete"></i> Xóa
                             </a>
                         </td>
