@@ -62,6 +62,10 @@ git clone <link-repo>
 #### Bước 3: Khởi tạo database
 - Mở terminal tại thư mục dự án, chạy:
 ```bash
+dotnet ef migrations add TenMigration
+```
+
+```bash
 dotnet ef database update
 ```
 

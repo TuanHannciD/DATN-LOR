@@ -20,6 +20,8 @@ builder.Services.AddScoped<IKichThuocService, KichThuocService>();
 builder.Services.AddScoped<IChatLieuService, ChatLieuService>();
 builder.Services.AddScoped<IChiTietGiayService, ChiTietGiayService>();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
