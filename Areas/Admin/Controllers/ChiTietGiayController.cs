@@ -4,6 +4,8 @@ using AuthDemo.Models;
 using AuthDemo.Models.ViewModels;
 using System.Linq;
 using AuthDemo.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using AuthDemo.Areas.Admin.Services;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -21,23 +23,23 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            // Lấy tất cả sản phẩm (giày)
-            var giayList = _context.Giays.ToList();
-
-            // Tạo danh sách ViewModel
-            var viewModelList = giayList.Select(giay => new GiayFullInfoVM
-            {
-                Giay = giay,
-                ChiTietGiays = _context.ChiTietGiays
-                    .Where(ct => ct.ShoeID == giay.ShoeID)
-                    .ToList()
-            }).ToList();
-
+            var viewModelList = _chiTietGiayService is ChiTietGiayService service
+                ? service.GetAllIndexVM()
+                : new List<ChiTietGiayVM.IndexVM>();
             return View(viewModelList);
         }
 
         [HttpGet]
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            ViewBag.GiayList = new SelectList(_context.Giays, "ShoeID", "TenGiay");
+            ViewBag.SizeList = new SelectList(_context.KichThuocs, "SizeID", "TenKichThuoc");
+            ViewBag.ColorList = new SelectList(_context.MauSacs, "ColorID", "TenMau");
+            ViewBag.MaterialList = new SelectList(_context.ChatLieus, "MaterialID", "TenChatLieu");
+            ViewBag.BrandList = new SelectList(_context.ThuongHieus, "BrandID", "TenThuongHieu");
+            ViewBag.CategoryList = new SelectList(_context.DanhMucs,"CategoryID","TenDanhMuc");
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -1,6 +1,7 @@
 using AuthDemo.Models;
 using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
+using AuthDemo.Models.ViewModels;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -75,6 +76,21 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 throw new Exception("Lỗi khi xóa chi tiết giày: " + ex.Message, ex);
             }
+        }
+        public IEnumerable<ChiTietGiayVM.IndexVM> GetAllIndexVM()
+        {
+            return _db.ChiTietGiays.Select(ct => new ChiTietGiayVM.IndexVM
+            {
+                ShoeDetailID = ct.ShoeDetailID,
+                TenGiay = ct.Giay != null ? ct.Giay.TenGiay : "Chưa có",
+                TenKichThuoc = ct.KichThuoc != null ? ct.KichThuoc.TenKichThuoc : "Chưa có",
+                TenMau = ct.MauSac != null ? ct.MauSac.TenMau : "Chưa có",
+                TenChatLieu = ct.ChatLieu != null ? ct.ChatLieu.TenChatLieu : "Chưa có",
+                TenThuongHieu = ct.ThuongHieu != null ? ct.ThuongHieu.TenThuongHieu : "Chưa có",
+                TenDanhMuc = ct.DanhMuc != null ? ct.DanhMuc.TenDanhMuc : "Chưa có",
+                SoLuong = ct.SoLuong,
+                Gia = ct.Gia
+            }).ToList();
         }
     }
 } 
