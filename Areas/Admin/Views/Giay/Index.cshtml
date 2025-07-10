@@ -20,6 +20,10 @@
                         <th>Mô tả</th>
                         <th>Trạng thái</th>
                         <th>Tổng tồn kho</th>
+                        <th>Người tạo</th>
+                        <th>Ngày tạo</th>
+                        <th>Người cập nhật</th>
+                        <th>Ngày cập nhật</th>
                         <th class="text-center">Thao tác</th>
                     </tr>
                 </thead>
@@ -33,6 +37,24 @@
                         <td>@item.Giay.TrangThai</td>
                         <td>
                             <span class="badge bg-success">@item.TongSoLuong</span>
+                        </td>
+                        <td>@item.NguoiTao</td>
+                        <td>
+                            @if (item.NgayTao.HasValue)
+                            {
+                                <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
+                                    @item.NgayTao.Value.ToString("HH:mm dd/MM/yyyy")
+                                </span>
+                            }
+                        </td>
+                        <td>@item.NguoiCapNhat</td>
+                        <td>
+                            @if (item.NgayCapNhat.HasValue)
+                            {
+                                <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
+                                    @item.NgayCapNhat.Value.ToString("HH:mm dd/MM/yyyy")
+                                </span>
+                            }
                         </td>
                         <td class="text-center">
                             <a class="btn btn-info btn-sm me-1" href="@Url.Action("Details", "Giay", new { id = item.Giay.ShoeID, area = "Admin" })">

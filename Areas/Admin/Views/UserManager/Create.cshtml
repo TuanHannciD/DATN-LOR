@@ -1,4 +1,4 @@
-@model AuthDemo.Models.NguoiDung
+@model AuthDemo.Models.ViewModels.UserManagerVM
 @{
     ViewData["Title"] = "Thêm tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -12,6 +12,7 @@
             </div>
             <div class="card-body">
                 <form asp-action="Create" method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
                     <div class="form-group">
                         <label>Tên đăng nhập</label>
                         <input asp-for="TenDangNhap" class="form-control" />
@@ -21,16 +22,16 @@
                         <label>Mật khẩu</label>
                         <input asp-for="MatKhau" type="password" class="form-control" />
                         <span asp-validation-for="MatKhau" class="text-danger"></span>
-                    </div>
                     <div class="form-group">
                         <label>Quyền</label>
-                        <select name="RoleID" class="form-control">
+                        <select asp-for="RoleID" class="form-control">
                             <option value="">-- Chọn quyền --</option>
                             @foreach (var role in roles)
                             {
                                 <option value="@role.RoleID">@role.TenVaiTro</option>
                             }
                         </select>
+                        <span asp-validation-for="RoleID" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-success px-4">

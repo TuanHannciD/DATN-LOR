@@ -63,7 +63,7 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         // POST: Thêm tài khoản
         [HttpPost]
-        public async Task<IActionResult> Create(NguoiDung model, Guid RoleID)
+        public async Task<IActionResult> Create(UserManagerVM model)
         {
             if (ModelState.IsValid)
             {
@@ -73,14 +73,27 @@ namespace AuthDemo.Areas.Admin.Controllers
                     ViewBag.Roles = _context.VaiTros.ToList();
                     return View(model);
                 }
-                model.MatKhau = HashPassword(model.MatKhau);
-                model.IsActive = true;
-                _context.NguoiDungs.Add(model);
+                // Map từ VM sang entity
+                var entity = new NguoiDung
+                {
+                    UserID = Guid.NewGuid(),
+                    TenDangNhap = model.TenDangNhap,
+                    MatKhau = HashPassword(model.MatKhau),
+                    IsActive = true,
+                    NguoiTao = User.Identity?.Name ?? "admin",
+                    NgayTao = DateTime.Now,
+                    NguoiCapNhat = User.Identity?.Name ?? "admin",
+                    NgayCapNhat = DateTime.Now
+                };
+                _context.NguoiDungs.Add(entity);
                 await _context.SaveChangesAsync();
                 // Gán vai trò
-                var userRole = new VaiTroNguoiDung { UserID = model.UserID, RoleID = RoleID };
-                _context.VaiTroNguoiDungs.Add(userRole);
-                await _context.SaveChangesAsync();
+                if (model.RoleID.HasValue)
+                {
+                    var userRole = new VaiTroNguoiDung { UserID = entity.UserID, RoleID = model.RoleID.Value };
+                    _context.VaiTroNguoiDungs.Add(userRole);
+                    await _context.SaveChangesAsync();
+                }
                 return RedirectToAction("Index");
             }
             ViewBag.Roles = _context.VaiTros.ToList();

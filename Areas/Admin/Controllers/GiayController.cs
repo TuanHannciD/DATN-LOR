@@ -24,10 +24,19 @@ namespace AuthDemo.Areas.Admin.Controllers
             var tongSoLuongDict = _db.ChiTietGiays
                 .GroupBy(ct => ct.ShoeID)
                 .ToDictionary(g => g.Key, g => g.Sum(ct => ct.SoLuong));
-            var viewModel = list.Select(g => new GiayWithSoLuongVM
-            {
-                Giay = g,
-                TongSoLuong = tongSoLuongDict.ContainsKey(g.ShoeID) ? tongSoLuongDict[g.ShoeID] : 0
+            var giayEntities = _db.Giays.AsNoTracking().ToList();
+
+            var viewModel = list.Select(g => {
+                var giayDb = giayEntities.FirstOrDefault(x => x.ShoeID == g.ShoeID);
+                return new GiayWithSoLuongVM
+                {
+                    Giay = g,
+                    TongSoLuong = tongSoLuongDict.ContainsKey(g.ShoeID) ? tongSoLuongDict[g.ShoeID] : 0,
+                    NguoiCapNhat = giayDb?.NguoiCapNhat,
+                    NgayCapNhat = giayDb?.NgayCapNhat,
+                    NguoiTao = giayDb?.NguoiTao,
+                    NgayTao = giayDb?.NgayTao
+                };
             }).ToList();
             return View(viewModel);
         }
@@ -50,21 +59,42 @@ namespace AuthDemo.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(Guid id)
         {
-            var sp = _sanPhamService.GetById(id);
-            if (sp == null) return NotFound();
-            return View(sp);
+            var giay = _sanPhamService.GetById(id);
+            if (giay == null) return NotFound();
+
+            var vm = new GiayVM
+            {
+                ShoeID = giay.ShoeID,
+                TenGiay = giay.TenGiay,
+                MaGiayCode = giay.MaGiayCode,
+                MoTa = giay.MoTa,
+                TrangThai = giay.TrangThai,
+                NguoiCapNhat = giay.NguoiCapNhat,
+                NgayCapNhat = giay.NgayCapNhat
+            };
+            return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Giay model)
+        public IActionResult Edit(GiayVM vm)
         {
+            var giay = _sanPhamService.GetById(vm.ShoeID);
+            if (giay == null) return NotFound();
+
+            giay.TenGiay = vm.TenGiay;
+            giay.MaGiayCode = vm.MaGiayCode;
+            giay.MoTa = vm.MoTa;
+            giay.TrangThai = vm.TrangThai;
+            giay.NguoiCapNhat = User.Identity?.Name ?? "ad";
+            giay.NgayCapNhat = DateTime.Now;
+
             if (ModelState.IsValid)
             {
-                _sanPhamService.Update(model);
+                _sanPhamService.Update(giay);
                 return RedirectToAction("Index");
             }
-            return View(model);
+            return View(vm);
         }
 
         public IActionResult Delete(Guid id)
