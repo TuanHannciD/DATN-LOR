@@ -12,6 +12,6 @@ namespace AuthDemo.Models
         public string TenMau { get; set; }
         [StringLength(50)]
         public string MaMau { get; set; }
-        public ICollection<ChiTietGiay> ChiTietGiays { get; set; }
+        public ICollection<ChiTietGiay>? ChiTietGiays { get; set; }
     }
 } 

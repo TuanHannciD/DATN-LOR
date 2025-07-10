@@ -12,6 +12,6 @@ namespace AuthDemo.Models
         public string TenChatLieu { get; set; }
         [StringLength(50)]
         public string MaChatLieuCode { get; set; }
-        public ICollection<ChiTietGiay> ChiTietGiays { get; set; }
+        public ICollection<ChiTietGiay> ?ChiTietGiays { get; set; }
     }
 } 
