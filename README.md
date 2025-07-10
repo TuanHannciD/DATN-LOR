@@ -76,9 +76,9 @@ dotnet run
 - Mở trình duyệt và truy cập: `http://localhost:5000` (hoặc cổng được chỉ định trong cấu hình)
 
 ### 3. Tài khoản mặc định
-- Tài khoản admin mặc định (nếu có):
+- Tài khoản admin mặc định :
   - Username: `admin`
-  - Password: `admin123`
+  - Password: `123456`
   *(Có thể thay đổi trong database hoặc khi seed dữ liệu)*
 
 ---
