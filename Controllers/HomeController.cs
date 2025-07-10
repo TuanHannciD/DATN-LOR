@@ -16,14 +16,8 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var username = HttpContext.Session.GetString("TenDangNhap");
-        if (string.IsNullOrEmpty(username))
-        {
-            // Chưa đăng nhập, chuyển về trang Login
-            return RedirectToAction("Login", "Account");
-        }
-        // Đã đăng nhập, chuyển về trang HomeAdmin
-        return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
+        // Trả về view Razor Index.cshtml cho user
+        return View();
     }
 
     public IActionResult Privacy()
