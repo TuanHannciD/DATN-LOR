@@ -1,0 +1,102 @@
+/* CSS cho chức năng bán hàng tại quầy */
+.product-card {
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 1rem;
+    text-align: center;
+    transition: box-shadow 0.2s, border 0.2s;
+    cursor: pointer;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+.product-card:hover {
+    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.12);
+    border: 1px solid #1976d2;
+}
+.product-card.small {
+    padding: 0.5rem;
+    font-size: 0.95em;
+}
+.card {
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.btn-lg {
+    font-size: 1.2rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+}
+
+/* Hóa đơn fit chiều cao, tổng tiền luôn dưới cùng */
+.bhq-invoice-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 400px;
+}
+.bhq-invoice-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+.bhq-invoice-table {
+    flex: 1 1 auto;
+    min-height: 120px;
+}
+.bhq-invoice-footer {
+    margin-top: auto;
+}
+@media (max-width: 991.98px) {
+    .col-lg-8, .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .row.flex-lg-nowrap {
+        flex-wrap: wrap !important;
+    }
+    .product-card {
+        min-height: 100px;
+    }
+    .bhq-invoice-card {
+        min-height: 300px;
+    }
+}
+@media (max-width: 767.98px) {
+    .product-card {
+        padding: 0.5rem;
+        font-size: 0.95em;
+        min-height: 80px;
+    }
+    .card {
+        padding: 0.5rem !important;
+    }
+    .d-flex.gap-1 > * {
+        margin-bottom: 0.25rem;
+    }
+    .btn {
+        font-size: 0.95em;
+    }
+    .bhq-invoice-card {
+        min-height: 200px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .product-card {
+        font-size: 0.9em;
+        min-height: 60px;
+    }
+    .table-responsive {
+        font-size: 0.95em;
+    }
+    .btn {
+        font-size: 0.9em;
+    }
+    .fw-bold {
+        font-size: 1em;
+    }
+} 

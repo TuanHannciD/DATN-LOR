@@ -1,6 +1,8 @@
 using AuthDemo.Models;
 using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
+using AuthDemo.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -75,6 +77,47 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 throw new Exception("Lỗi khi xóa sản phẩm: " + ex.Message, ex);
             }
+        }
+        public IEnumerable<GiayFullInfoVM> GetGiayFullInfoList()
+        {
+            var giayList = _db.Giays
+                .Select(g => new GiayFullInfoVM
+                {
+                    Giay = g,
+                    MaGiayCode = g.MaGiayCode,
+                    MoTa = g.MoTa,
+                    ChiTietGiays = _db.ChiTietGiays
+                        .Where(ct => ct.ShoeID == g.ShoeID)
+                        .Select(ct => new ChiTietGiay
+                        {
+                            ShoeDetailID = ct.ShoeDetailID,
+                            ShoeID = ct.ShoeID,
+                            SizeID = ct.SizeID,
+                            ColorID = ct.ColorID,
+                            MaterialID = ct.MaterialID,
+                            BrandID = ct.BrandID,
+                            CategoryID = ct.CategoryID,
+                            SoLuong = ct.SoLuong,
+                            Gia = ct.Gia,
+                            KichThuoc = ct.KichThuoc,
+                            MauSac = ct.MauSac,
+                            ChatLieu = ct.ChatLieu,
+                            ThuongHieu = ct.ThuongHieu
+                        }).ToList(),
+                    TenDanhMuc = _db.ChiTietGiays
+                        .Where(ct => ct.ShoeID == g.ShoeID)
+                        .Select(ct => ct.DanhMuc != null ? ct.DanhMuc.TenDanhMuc : null)
+                        .FirstOrDefault() ?? "Chưa có",
+                    TenThuongHieu = _db.ChiTietGiays
+                        .Where(ct => ct.ShoeID == g.ShoeID)
+                        .Select(ct => ct.ThuongHieu != null ? ct.ThuongHieu.TenThuongHieu : null)
+                        .FirstOrDefault() ?? "Chưa có",
+                    TenChatLieu = _db.ChiTietGiays
+                        .Where(ct => ct.ShoeID == g.ShoeID)
+                        .Select(ct => ct.ChatLieu != null ? ct.ChatLieu.TenChatLieu : null)
+                        .FirstOrDefault() ?? "Chưa có"
+                }).ToList();
+            return giayList;
         }
     }
 } 

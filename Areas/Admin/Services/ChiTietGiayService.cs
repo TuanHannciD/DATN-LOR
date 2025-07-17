@@ -2,6 +2,7 @@ using AuthDemo.Models;
 using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
+using static AuthDemo.Models.ViewModels.ChiTietGiayVM;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -48,14 +49,24 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi thêm chi tiết giày: " + ex.Message, ex);
             }
         }
-        public void Update(ChiTietGiay entity)
+        public void Update(EditVM entity)
         {
             try
             {
                 ArgumentNullException.ThrowIfNull(entity);
                 var obj = _db.ChiTietGiays.Find(entity.ShoeDetailID);
                 ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy chi tiết giày để cập nhật!");
-                _db.Entry(obj).CurrentValues.SetValues(entity);
+
+                // Ánh xạ thủ công các thuộc tính từ EditVM sang ChiTietGiay
+                obj.ShoeID = entity.ShoeID;
+                obj.SizeID = entity.SizeID;
+                obj.ColorID = entity.ColorID;
+                obj.MaterialID = entity.MaterialID;
+                obj.BrandID = entity.BrandID;
+                obj.CategoryID = entity.CategoryID;
+                obj.SoLuong = entity.SoLuong;
+                obj.Gia = entity.Gia;
+
                 _db.SaveChanges();
             }
             catch (Exception ex)
