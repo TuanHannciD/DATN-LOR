@@ -23,31 +23,14 @@ namespace DATN_Lor.Areas.Admin.Controllers
             var tuVanSanPham = _banHangTaiQuayService.SearchSanPham("");
             ViewBag.TuVanSanPham = tuVanSanPham;
 
-            // Lấy UserID từ session
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
-            Guid? userId = null;
-            if (!string.IsNullOrEmpty(tenDangNhap))
+            if (string.IsNullOrEmpty(tenDangNhap))
             {
-                userId = _db.NguoiDungs.FirstOrDefault(u => u.TenDangNhap == tenDangNhap)?.UserID;
+                ViewBag.CartItems = new List<ChiTietGioHang>();
+                ViewBag.Error = "Không tìm thấy thông tin đăng nhập người dùng.";
+                return View();
             }
-            List<ChiTietGioHang> cartItems = new();
-            if (userId != null)
-            {
-                var cart = _db.GioHangs.FirstOrDefault(g => g.UserID == userId);
-                if (cart != null)
-                {
-                    cartItems = _db.ChiTietGioHangs
-                        .Where(c => c.CartID == cart.CartID)
-                        .Include(c => c.ChiTietGiay)
-                        .ThenInclude(g => g.Giay)
-                        .Include(c => c.ChiTietGiay.MauSac)
-                        .Include(c => c.ChiTietGiay.KichThuoc)
-                        .Include(c => c.ChiTietGiay.ChatLieu)
-                        .Include(c => c.ChiTietGiay.ThuongHieu)
-                        .Include(c => c.ChiTietGiay.DanhMuc)
-                        .ToList();
-                }
-            }
+            var cartItems = _banHangTaiQuayService.GetCartItems(tenDangNhap);
             ViewBag.CartItems = cartItems;
             return View();
         }
@@ -63,30 +46,9 @@ namespace DATN_Lor.Areas.Admin.Controllers
         public IActionResult GetCartItems()
         {
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
-            Guid? userId = null;
-            if (!string.IsNullOrEmpty(tenDangNhap))
-            {
-                userId = _db.NguoiDungs.FirstOrDefault(u => u.TenDangNhap == tenDangNhap)?.UserID;
-            }
-            List<ChiTietGioHang> cartItems = new();
-            if (userId != null)
-            {
-                var cart = _db.GioHangs.FirstOrDefault(g => g.UserID == userId);
-                if (cart != null)
-                {
-                    cartItems = _db.ChiTietGioHangs
-                        .Where(c => c.CartID == cart.CartID)
-                        .Include(c => c.ChiTietGiay)
-                        .ThenInclude(g => g.Giay)
-                        .Include(c => c.ChiTietGiay.MauSac)
-                        .Include(c => c.ChiTietGiay.KichThuoc)
-                        .Include(c => c.ChiTietGiay.ChatLieu)
-                        .Include(c => c.ChiTietGiay.ThuongHieu)
-                        .Include(c => c.ChiTietGiay.DanhMuc)
-                        .ToList();
-                }
-            }
-            // Có thể trả về PartialView hoặc Json tuỳ mục đích sử dụng
+            if (string.IsNullOrEmpty(tenDangNhap))
+                return BadRequest("Không tìm thấy thông tin đăng nhập người dùng.");
+            var cartItems = _banHangTaiQuayService.GetCartItems(tenDangNhap);
             return Json(cartItems);
         }
 
@@ -94,61 +56,24 @@ namespace DATN_Lor.Areas.Admin.Controllers
         public IActionResult UpdateCart(Guid shoeDetailId, string actionType)
         {
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
-            var user = _db.NguoiDungs.FirstOrDefault(u => u.TenDangNhap == tenDangNhap);
-            if (user == null) return RedirectToAction("Index");
-
-            var cart = _db.GioHangs.FirstOrDefault(g => g.UserID == user.UserID);
-            if (cart == null)
-            {
-                cart = new GioHang { CartID = Guid.NewGuid(), UserID = user.UserID };
-                _db.GioHangs.Add(cart);
-                _db.SaveChanges();
-            }
-
-            var cartItem = _db.ChiTietGioHangs.FirstOrDefault(c => c.CartID == cart.CartID && c.ShoeDetailID == shoeDetailId);
-
-            if (actionType == "add" || actionType == "increase")
-            {
-                if (cartItem == null)
-                {
-                    // Lấy ChiTietGiay từ database để lấy thông tin KichThuoc
-                    var chiTietGiay = _db.ChiTietGiays
-                        .Include(ctg => ctg.KichThuoc)
-                        .FirstOrDefault(ctg => ctg.ShoeDetailID == shoeDetailId);
-
-                    string tenKichThuoc = chiTietGiay?.KichThuoc?.TenKichThuoc ?? "";
-
-                    cartItem = new ChiTietGioHang
-                    {
-                        CartDetailID = Guid.NewGuid(),
-                        CartID = cart.CartID,
-                        ShoeDetailID = shoeDetailId,
-                        KichThuoc = tenKichThuoc,
-                        SoLuong = 1
-                    };
-                    _db.ChiTietGioHangs.Add(cartItem);
-                }
-                else
-                {
-                    cartItem.SoLuong += 1;
-                    _db.ChiTietGioHangs.Update(cartItem);
-                }
-            }
-            else if (actionType == "decrease" && cartItem != null)
-            {
-                cartItem.SoLuong -= 1;
-                if (cartItem.SoLuong <= 0)
-                    _db.ChiTietGioHangs.Remove(cartItem);
-                else
-                    _db.ChiTietGioHangs.Update(cartItem);
-            }
-            else if (actionType == "remove" && cartItem != null)
-            {
-                _db.ChiTietGioHangs.Remove(cartItem);
-            }
-
-            _db.SaveChanges();
+            if (string.IsNullOrEmpty(tenDangNhap))
+                return BadRequest("Không tìm thấy thông tin đăng nhập người dùng.");
+            _banHangTaiQuayService.UpdateCart(tenDangNhap, shoeDetailId, actionType);
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem)
+        {
+            _banHangTaiQuayService.UpdateDiscountCartItem(cartDetailId, chietKhauPhanTram, chietKhauTienMat, isTangKem);
+            return Ok();
+        }
+
+        [HttpGet]
+        public JsonResult SearchKhachHang(string keyword)
+        {
+            var users = _banHangTaiQuayService.SearchKhachHang(keyword);
+            return Json(users);
         }
     }
 } 
