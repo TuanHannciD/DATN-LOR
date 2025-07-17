@@ -10,6 +10,7 @@
                 <h4 class="mb-0"><i class="mdi mdi-plus"></i> Thêm sản phẩm</h4>
             </div>
             <div class="card-body">
+                  <div asp-validation-summary="All" class="text-danger"></div>
                 <form asp-action="Create" asp-controller="Giay" asp-area="Admin" method="post">
                     <div class="mb-3">
                         <label asp-for="TenGiay" class="form-label">Tên sản phẩm</label>

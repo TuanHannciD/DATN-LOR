@@ -29,6 +29,9 @@ namespace AuthDemo.Models
         public DateTime? NgayGiaoHang { get; set; }
         [StringLength(255)]
         public string LyDo { get; set; }
+        public decimal? GiamGiaPhanTram { get; set; } // % giảm giá toàn hóa đơn (nullable)
+        public decimal? GiamGiaTienMat { get; set; }  // Số tiền giảm trực tiếp (nullable)
+        public string? LyDoGiamGia { get; set; }      // Lý do giảm giá (nullable)
         public NguoiDung NguoiDung { get; set; }
         public ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; }
         public ICollection<LichSuHoaDon> LichSuHoaDons { get; set; }

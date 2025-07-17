@@ -17,5 +17,8 @@ namespace AuthDemo.Models
         public string KichThuoc { get; set; }
         public GioHang GioHang { get; set; }
         public ChiTietGiay ChiTietGiay { get; set; }
+        public decimal? ChietKhauPhanTram { get; set; } // % chiết khấu dòng (nullable)
+        public decimal? ChietKhauTienMat { get; set; }  // Số tiền chiết khấu dòng (nullable)
+        public bool? IsTangKem { get; set; }            // true nếu là sản phẩm tặng (nullable)
     }
 } 
