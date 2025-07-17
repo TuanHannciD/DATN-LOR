@@ -10,25 +10,30 @@
         <div class="col-lg-8 col-12 d-flex flex-column mb-3">
             <!-- Tìm kiếm -->
             <div class="card mb-3 p-3">
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                    <input id="search-input" type="text" placeholder="Tìm sản phẩm..." class="form-control flex-grow-1" autocomplete="off" />
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2 bhq-search-wrapper" style="position: relative;">
+                    <div style="flex-grow:1; position:relative;">
+                        <input id="search-input" type="text" placeholder="Tìm sản phẩm..." class="form-control" autocomplete="off" />
+                        <div id="search-dropdown" class="dropdown-menu" style="max-height: 300px; overflow-y: auto;"></div>
+                    </div>
                     <button class="btn btn-primary"><i class="mdi mdi-magnify"></i> Tìm</button>
                 </div>
-                <div id="search-dropdown" class="dropdown-menu w-100" style="max-height: 300px; overflow-y: auto;"></div>
             </div>
 
             <!-- Giỏ hàng -->
             <div class="card mb-3 p-3">
                 <div class="fw-bold mb-2">Giỏ hàng</div>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
+                <div class="table-responsive bhq-cart-table">
+                    <table class="table table-bordered rounded shadow-sm align-middle">
                         <thead class="table-light">
-                            <tr>
-                                <th>Sản phẩm</th>
-                                <th>Số lượng</th>
-                                <th>Đơn giá</th>
-                                <th>Thành tiền</th>
-                                <th></th>
+                            <tr class="text-center fw-bold">
+                                <th class="bhq-cart-product">Sản phẩm</th>
+                                <th class="bhq-cart-qty">Số lượng</th>
+                                <th class="bhq-cart-price">Đơn giá</th>
+                                <th class="bhq-cart-discount">Chiết khấu (%)</th>
+                                <th class="bhq-cart-discount">Chiết khấu (VNĐ)</th>
+                                <th class="bhq-cart-gift">Tặng</th>
+                                <th class="bhq-cart-total">Thành tiền</th>
+                                <th class="bhq-cart-action"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -36,33 +41,53 @@
                             foreach (var item in cartItems) {
                                 var ctg = item.ChiTietGiay;
                                 <tr>
-                                    <td>@ctg?.Giay?.TenGiay <small><br />@ctg?.MauSac?.TenMau, Size: @ctg?.KichThuoc?.TenKichThuoc</small></td>
-                                    <td>
+                                    <td class="bhq-cart-product">
+                                        @ctg?.Giay?.TenGiay
+                                        <small class="text-muted d-block">@ctg?.MauSac?.TenMau, Size: @ctg?.KichThuoc?.TenKichThuoc</small>
+                                    </td>
+                                    <td class="bhq-cart-qty text-center">
                                         <form asp-action="UpdateCart" asp-controller="BanHangTaiQuay" method="post" class="d-inline">
                                             <input type="hidden" name="shoeDetailId" value="@item.ShoeDetailID" />
                                             <input type="hidden" name="actionType" value="decrease" />
-                                            <button class="btn btn-outline-secondary btn-sm">-</button>
+                                            <button class="btn btn-outline-secondary btn-sm bhq-btn-qty">-</button>
                                         </form>
                                         <span class="mx-2">@item.SoLuong</span>
                                         <form asp-action="UpdateCart" asp-controller="BanHangTaiQuay" method="post" class="d-inline">
                                             <input type="hidden" name="shoeDetailId" value="@item.ShoeDetailID" />
                                             <input type="hidden" name="actionType" value="increase" />
-                                            <button class="btn btn-outline-secondary btn-sm">+</button>
+                                            <button class="btn btn-outline-secondary btn-sm bhq-btn-qty">+</button>
                                         </form>
                                     </td>
-                                    <td>@ctg?.Gia.ToString("N0")</td>
-                                    <td>@(((ctg?.Gia ?? 0) * item.SoLuong).ToString("N0"))</td>
-                                    <td>
+                                    <td class="bhq-cart-price text-end">@ctg?.Gia.ToString("N0")</td>
+                                    <td class="bhq-cart-discount">
+                                        <input type="number" min="0" max="100" step="0.01" class="form-control form-control-sm chietkhau-phantram rounded" data-id="@item.CartDetailID" value="@(item.ChietKhauPhanTram ?? 0)" />
+                                    </td>
+                                    <td class="bhq-cart-discount">
+                                        <input type="number" min="0" step="1000" class="form-control form-control-sm chietkhau-tienmat rounded" data-id="@item.CartDetailID" value="@(item.ChietKhauTienMat ?? 0)" />
+                                    </td>
+                                    <td class="bhq-cart-gift text-center">
+                                        <input type="checkbox" class="form-check-input is-tangkem" data-id="@item.CartDetailID" @(item.IsTangKem == true ? "checked" : "") />
+                                    </td>
+                                    <td class="thanh-tien-dong bhq-cart-total text-end fw-bold" data-id="@item.CartDetailID">
+                                        @{ var goc = (ctg?.Gia ?? 0) * item.SoLuong;
+                                           var ckpt = (item.ChietKhauPhanTram ?? 0);
+                                           var cktm = (item.ChietKhauTienMat ?? 0);
+                                           var isTang = item.IsTangKem == true;
+                                           var thanhTien = isTang ? 0 : Math.Max(0, goc - (goc * ckpt / 100) - cktm);
+                                        }
+                                        @thanhTien.ToString("N0")
+                                    </td>
+                                    <td class="bhq-cart-action">
                                         <form asp-action="UpdateCart" asp-controller="BanHangTaiQuay" method="post">
                                             <input type="hidden" name="shoeDetailId" value="@item.ShoeDetailID" />
                                             <input type="hidden" name="actionType" value="remove" />
-                                            <button class="btn btn-outline-danger btn-sm">Xóa</button>
+                                            <button class="btn btn-outline-danger btn-sm bhq-btn-remove">Xóa</button>
                                         </form>
                                     </td>
                                 </tr>
                             }
                         } else {
-                            <tr><td colspan="5" class="text-center text-muted">Chưa có sản phẩm trong giỏ.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted">Chưa có sản phẩm trong giỏ.</td></tr>
                         }
                         </tbody>
                     </table>
@@ -132,20 +157,49 @@
             <div class="card p-3 h-100 bhq-invoice-card">
                 <div class="fw-bold mb-2">Hóa đơn</div>
                 <div class="bhq-invoice-content">
-                    <input type="text" class="form-control mb-2" placeholder="(F4) SĐT, tên khách hàng...">
+                    <div class="mb-2 position-relative">
+                        <input id="search-khachhang" type="text" class="form-control" placeholder="(F4) SĐT, tên khách hàng..." autocomplete="off" />
+                        <input type="hidden" id="selected-khachhang-id" name="KhachHangID" />
+                        <div id="dropdown-khachhang" class="dropdown-menu" style="width:100%; max-height:250px; overflow-y:auto;"></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <input type="number" min="0" max="100" step="0.01" id="giamgia-phantram" class="form-control mb-1" placeholder="Giảm giá (%)" />
+                        </div>
+                        <div class="col-6">
+                            <input type="number" min="0" step="1000" id="giamgia-tienmat" class="form-control mb-1" placeholder="Giảm giá (VNĐ)" />
+                        </div>
+                    </div>
                     <div class="table-responsive mb-2 bhq-invoice-table">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered rounded shadow-sm align-middle" style="overflow:hidden;">
                             <thead class="table-light">
-                                <tr><th>Sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr>
+                                <tr class="text-center fw-bold" style="font-size:1.05em;">
+                                    <th style="min-width:120px;">Sản phẩm</th>
+                                    <th style="width:60px;">SL</th>
+                                    <th style="width:110px;">Đơn giá</th>
+                                    <th style="width:120px;">Thành tiền</th>
+                                </tr>
                             </thead>
                             <tbody>
                             @foreach (var item in cartItems) {
                                 var ctg = item.ChiTietGiay;
-                                <tr>
-                                    <td>@ctg?.Giay?.TenGiay <br /><small>@ctg?.MauSac?.TenMau, Size: @ctg?.KichThuoc?.TenKichThuoc</small></td>
-                                    <td>@item.SoLuong</td>
-                                    <td>@ctg?.Gia.ToString("N0")</td>
-                                    <td>@(((ctg?.Gia ?? 0) * item.SoLuong).ToString("N0"))</td>
+                                var goc = (ctg?.Gia ?? 0) * item.SoLuong;
+                                var ckpt = (item.ChietKhauPhanTram ?? 0);
+                                var cktm = (item.ChietKhauTienMat ?? 0);
+                                var isTang = item.IsTangKem == true;
+                                var thanhTien = isTang ? 0 : Math.Max(0, goc - (goc * ckpt / 100) - cktm);
+                                <tr class="@(isTang ? "text-success bg-light" : "table-row")" style="transition:background 0.2s;">
+                                    <td style="font-size:1em;">
+                                        @ctg?.Giay?.TenGiay
+                                        <small class="text-muted d-block" style="font-size:0.95em;">@ctg?.MauSac?.TenMau, Size: @ctg?.KichThuoc?.TenKichThuoc</small>
+                                        @if (isTang)
+                                        {
+                                            <span class="badge bg-success ms-2" style="font-size: 0.85em;">🎁 Tặng</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">@item.SoLuong</td>
+                                    <td class="text-end">@ctg?.Gia.ToString("N0")</td>
+                                    <td class="text-end fw-bold">@thanhTien.ToString("N0")</td>
                                 </tr>
                             }
                             </tbody>
@@ -153,14 +207,28 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-2 bhq-invoice-footer">
-                    <div><strong>Tổng tiền: </strong><span class="text-danger fw-bold">@cartItems.Sum(x => (x.ChiTietGiay?.Gia ?? 0) * x.SoLuong).ToString("N0") VNĐ</span></div>
+                    <div>
+                        <strong>Tổng tiền: </strong>
+                        <span class="text-danger fw-bold" id="tong-tien-hd">
+                            @cartItems.Sum(x => (x.ChiTietGiay?.Gia ?? 0) * x.SoLuong).ToString("N0") VNĐ
+                        </span>
+                        <br />
+                        <span id="giam-gia-info" class="text-success small"></span>
+                        <br />
+                        <strong>Thành tiền sau giảm: </strong>
+                        <span class="text-primary fw-bold" id="thanh-tien-sau-giam">
+                            @cartItems.Sum(x => (x.ChiTietGiay?.Gia ?? 0) * x.SoLuong).ToString("N0") VNĐ
+                        </span>
+                    </div>
                     <button class="btn btn-success"><i class="mdi mdi-cash-multiple"></i> Thanh toán</button>
                 </div>
             </div>
         </div>
     </div>
-    <form itemid="add-to-cart-form" action="/Admin/BanHangTaiQuay/UpdateCart" method="post" style="display: none;">
-        <input type="hidden" name="shoeDetailId" id>
+    <!-- Form ẩn để thêm sản phẩm vào giỏ hàng từ dropdown tìm kiếm -->
+    <form id="add-to-cart-form" action="/Admin/BanHangTaiQuay/UpdateCart" method="post" style="display:none;">
+        <input type="hidden" name="shoeDetailId" id="hidden-shoeDetailId" />
+        <input type="hidden" name="actionType" value="add" />
     </form>
 </div>
 
@@ -196,8 +264,8 @@
             // Khi click vào sản phẩm trong dropdown
             $('#search-dropdown').on('click', '.dropdown-item', function () {
                 var shoeDetailID = $(this).data('id');
-                // Submit form hoặc gọi ajax để thêm vào giỏ hàng
-                // ... (tùy logic của bạn, có thể submit form hoặc redirect)
+                $('#hidden-shoeDetailId').val(shoeDetailID);
+                $('#add-to-cart-form').submit();
                 $('#search-dropdown').removeClass('show').empty();
                 $('#search-input').val('');
             });
@@ -208,6 +276,95 @@
                     $('#search-dropdown').removeClass('show').empty();
                 }
             });
+
+            // Tìm kiếm khách hàng
+            $('#search-khachhang').on('input', function () {
+                var keyword = $(this).val().trim();
+                if (keyword.length < 1) {
+                    $('#dropdown-khachhang').removeClass('show').empty();
+                    return;
+                }
+                $.get('/Admin/BanHangTaiQuay/SearchKhachHang', { keyword: keyword }, function (data) {
+                    if (data && data.length > 0) {
+                        let html = '';
+                        data.forEach(function (kh) {
+                            html += `<button type="button" class="dropdown-item" data-id="${kh.userID}">
+                                <div><strong>${kh.hoTen || kh.tenDangNhap}</strong> <span class="text-muted ms-2">${kh.soDienThoai || ''}</span></div>
+                                <div class="text-muted small">${kh.email || ''}</div>
+                            </button>`;
+                        });
+                        $('#dropdown-khachhang').html(html).addClass('show');
+                    } else {
+                        $('#dropdown-khachhang').html('<div class="dropdown-item text-muted">Không tìm thấy khách hàng</div>').addClass('show');
+                    }
+                });
+            });
+
+            // Chọn khách hàng
+            $('#dropdown-khachhang').on('click', '.dropdown-item', function () {
+                var userID = $(this).data('id');
+                var ten = $(this).find('strong').text();
+                $('#search-khachhang').val(ten);
+                $('#selected-khachhang-id').val(userID); // Lưu tạm userID vào hidden input
+                $('#dropdown-khachhang').removeClass('show').empty();
+                // TODO: Xử lý chọn khách hàng (gán vào hóa đơn, lưu tạm, ...)
+            });
+
+            // Ẩn dropdown khi click ra ngoài
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#search-khachhang, #dropdown-khachhang').length) {
+                    $('#dropdown-khachhang').removeClass('show').empty();
+                }
+            });
+
+            function formatNumber(n) {
+                return n.toLocaleString('vi-VN');
+            }
+            function tinhThanhTienSauGiam() {
+                var tongTien = @cartItems.Sum(x => (x.ChiTietGiay?.Gia ?? 0) * x.SoLuong);
+                var giamPhanTram = parseFloat($('#giamgia-phantram').val()) || 0;
+                var giamTienMat = parseFloat($('#giamgia-tienmat').val()) || 0;
+                var giamGia = 0;
+                if (giamPhanTram > 0) giamGia += tongTien * giamPhanTram / 100;
+                if (giamTienMat > 0) giamGia += giamTienMat;
+                if (giamGia > tongTien) giamGia = tongTien;
+                var thanhTien = tongTien - giamGia;
+                $('#giam-gia-info').text(giamGia > 0 ? `Giảm giá: -${formatNumber(Math.round(giamGia))} VNĐ` : '');
+                $('#thanh-tien-sau-giam').text(formatNumber(Math.round(thanhTien)) + ' VNĐ');
+            }
+            $('#giamgia-phantram, #giamgia-tienmat').on('input', tinhThanhTienSauGiam);
+            tinhThanhTienSauGiam();
+
+            function tinhThanhTienDong() {
+                $(".thanh-tien-dong").each(function () {
+                    var id = $(this).data('id');
+                    var row = $(this).closest('tr');
+                    var soLuong = parseFloat(row.find('span.mx-2').text()) || 0;
+                    var donGia = parseFloat(row.find('td').eq(2).text().replace(/[^\d]/g, '')) || 0;
+                    var ckpt = parseFloat(row.find('.chietkhau-phantram').val()) || 0;
+                    var cktm = parseFloat(row.find('.chietkhau-tienmat').val()) || 0;
+                    var isTang = row.find('.is-tangkem').is(':checked');
+                    var goc = donGia * soLuong;
+                    var thanhTien = isTang ? 0 : Math.max(0, goc - (goc * ckpt / 100) - cktm);
+                    $(this).text(formatNumber(Math.round(thanhTien)));
+                });
+            }
+            $(document).on('input change', '.chietkhau-phantram, .chietkhau-tienmat, .is-tangkem', function () {
+                var row = $(this).closest('tr');
+                var cartDetailId = row.find('.chietkhau-phantram').data('id');
+                var ckpt = parseFloat(row.find('.chietkhau-phantram').val()) || 0;
+                var cktm = parseFloat(row.find('.chietkhau-tienmat').val()) || 0;
+                var isTang = row.find('.is-tangkem').is(':checked');
+                $.post('/Admin/BanHangTaiQuay/UpdateDiscountCartItem', {
+                    cartDetailId: cartDetailId,
+                    chietKhauPhanTram: ckpt,
+                    chietKhauTienMat: cktm,
+                    isTangKem: isTang
+                }, function () {
+                    location.reload();
+                });
+            });
+            tinhThanhTienDong();
         });
     </script>
 }
