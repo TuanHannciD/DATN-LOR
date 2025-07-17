@@ -50,6 +50,14 @@
 .bhq-invoice-footer {
     margin-top: auto;
 }
+.bhq-invoice-table table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.bhq-invoice-table tr:hover {
+    background: #f8f9fa !important;
+}
 @media (max-width: 991.98px) {
     .col-lg-8, .col-lg-4 {
         flex: 0 0 100%;
@@ -99,4 +107,104 @@
     .fw-bold {
         font-size: 1em;
     }
+} 
+
+/* Style cho dropdown tìm kiếm sản phẩm */
+.bhq-search-wrapper {
+    position: relative;
+}
+
+#search-dropdown.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    width: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    border: 1px solid #e0e0e0;
+    padding: 0.25rem 0;
+    background: #fff;
+    z-index: 1000;
+    font-size: 1rem;
+}
+
+#search-dropdown .dropdown-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    transition: background 0.15s;
+    cursor: pointer;
+    text-align: left;
+    white-space: normal;
+}
+
+#search-dropdown .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+#search-dropdown .dropdown-item:hover, 
+#search-dropdown .dropdown-item:focus {
+    background: #f5faff;
+    color: #1976d2;
+}
+
+#search-dropdown .text-success.ms-2 {
+    float: right;
+    font-weight: bold;
+}
+
+#search-dropdown .text-muted {
+    font-size: 0.95em;
+    display: block;
+    margin-top: 2px;
+} 
+
+/* Style cho bảng giỏ hàng */
+.bhq-cart-table table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.bhq-cart-table tr:hover {
+    background: #f8f9fa !important;
+}
+.bhq-cart-table .bhq-btn-qty {
+    border-radius: 50%;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    font-weight: bold;
+}
+.bhq-cart-table .bhq-btn-remove {
+    border-radius: 20px;
+    font-weight: 500;
+    padding: 2px 16px;
+}
+.bhq-cart-table .form-control-sm {
+    padding: 2px 6px;
+    font-size: 0.98em;
+    border-radius: 8px;
+}
+.bhq-cart-table .bhq-cart-product {
+    min-width: 120px;
+}
+.bhq-cart-table .bhq-cart-qty {
+    width: 90px;
+}
+.bhq-cart-table .bhq-cart-price {
+    width: 110px;
+}
+.bhq-cart-table .bhq-cart-discount {
+    width: 110px;
+}
+.bhq-cart-table .bhq-cart-gift {
+    width: 60px;
+}
+.bhq-cart-table .bhq-cart-total {
+    width: 120px;
+}
+.bhq-cart-table .bhq-cart-action {
+    width: 60px;
 } 
