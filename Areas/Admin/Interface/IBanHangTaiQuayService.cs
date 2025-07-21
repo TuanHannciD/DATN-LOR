@@ -9,7 +9,7 @@ namespace AuthDemo.Areas.Admin.Interface
     {
         List<BanHangTaiQuayVM> SearchSanPham(string keyword);
         List<KhachHangDropdownVM> SearchKhachHang(string keyword);
-        List<ChiTietGioHang> GetCartItems(string tenDangNhap);
+        List<CartItemDisplayVM> GetCartItems(string tenDangNhap);
         void UpdateCart(string tenDangNhap, Guid shoeDetailId, string actionType);
         void UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem);
     }

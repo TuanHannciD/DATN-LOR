@@ -25632,13 +25632,13 @@ dl li {
   color: #ffffff;
 }
 
-/* Sidebar */
+/* Sidebar  sửa 300px*/
 .sidebar {
   min-height: calc(100vh - 70px);
   background: #ffffff;
   font-family: "ubuntu-regular", sans-serif;
   padding: 0;
-  width: 260px;
+  width: 300px;
   z-index: 11;
   transition: width 0.25s ease, background 0.25s ease;
   -webkit-transition: width 0.25s ease, background 0.25s ease;
@@ -25684,7 +25684,7 @@ dl li {
 .sidebar .nav .nav-item .nav-link i.menu-icon {
   font-size: 1.125rem;
   line-height: 1;
-  margin-left: auto;
+  /* margin-left: auto; */
   color: rgba(187, 168, 191, 0.9607843137);
 }
 .rtl .sidebar .nav .nav-item .nav-link i.menu-icon {
@@ -25812,7 +25812,9 @@ dl li {
   height: auto;
   border-top: 0;
 }
-.sidebar .nav.sub-menu .nav-item .nav-link:before {
+/* Bỏ phần dấu -> trước drop down item */
+
+/* .sidebar .nav.sub-menu .nav-item .nav-link:before {
   content: "\f0054";
   font-family: "Material Design Icons";
   display: block;
@@ -25826,7 +25828,7 @@ dl li {
   transform: translateY(-50%);
   color: #a2a2a2;
   font-size: 0.75rem;
-}
+} */
 .rtl .sidebar .nav.sub-menu .nav-item .nav-link:before {
   content: "\f04d";
   left: auto;

@@ -26,11 +26,11 @@ namespace DATN_Lor.Areas.Admin.Controllers
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(tenDangNhap))
             {
-                ViewBag.CartItems = new List<ChiTietGioHang>();
+                ViewBag.CartItems = new List<CartItemDisplayVM>();
                 ViewBag.Error = "Không tìm thấy thông tin đăng nhập người dùng.";
                 return View();
             }
-            var cartItems = _banHangTaiQuayService.GetCartItems(tenDangNhap);
+            var cartItems = _banHangTaiQuayService.GetCartItems(tenDangNhap); // Đã là List<CartItemDisplayVM>
             ViewBag.CartItems = cartItems;
             return View();
         }
