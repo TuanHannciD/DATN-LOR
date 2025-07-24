@@ -116,7 +116,8 @@ namespace AuthDemo.Areas.Admin.Controllers
         public async Task<IActionResult> EditUser(NguoiDung model, Guid RoleID)
         {
             if (string.IsNullOrEmpty(model.MatKhau))
-                ModelState.Remove("MatKhau");
+            ModelState.Remove("MatKhau");
+            ModelState.Remove("VaiTroNguoiDungs");
             if (ModelState.IsValid)
             {
                 var user = await _context.NguoiDungs.FirstOrDefaultAsync(u => u.UserID == model.UserID);
