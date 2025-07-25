@@ -4,6 +4,7 @@ using AuthDemo.Models;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using AuthDemo.Models.Enums;
 
 namespace DATN_Lor.Areas.Admin.Controllers
 {
@@ -22,6 +23,16 @@ namespace DATN_Lor.Areas.Admin.Controllers
         {
             var tuVanSanPham = _banHangTaiQuayService.SearchSanPham("");
             ViewBag.TuVanSanPham = tuVanSanPham;
+
+            // Truyền enum phương thức thanh toán và vận chuyển sang view với tên tiếng Việt
+            ViewBag.PhuongThucThanhToanList = Enum.GetValues(typeof(PhuongThucThanhToan))
+                .Cast<PhuongThucThanhToan>()
+                .Select(e => new { Value = (int)e, Name = e.GetDisplayName() })
+                .ToList();
+            ViewBag.PhuongThucVanChuyenList = Enum.GetValues(typeof(PhuongThucVanChuyen))
+                .Cast<PhuongThucVanChuyen>()
+                .Select(e => new { Value = (int)e, Name = e.GetDisplayName() })
+                .ToList();
 
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(tenDangNhap))
@@ -63,9 +74,9 @@ namespace DATN_Lor.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem)
+        public IActionResult UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem, string reason)
         {
-            _banHangTaiQuayService.UpdateDiscountCartItem(cartDetailId, chietKhauPhanTram, chietKhauTienMat, isTangKem);
+            _banHangTaiQuayService.UpdateDiscountCartItem(cartDetailId, chietKhauPhanTram, chietKhauTienMat, isTangKem, reason);
             return Ok();
         }
 

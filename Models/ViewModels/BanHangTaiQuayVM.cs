@@ -21,6 +21,7 @@ namespace AuthDemo.Models.ViewModels
         public string? HoTen { get; set; }
         public string? SoDienThoai { get; set; }
         public string? Email { get; set; }
+        public string? DiaChi { get; set; } // Địa chỉ mặc định hoặc đầu tiên
         public string TenVaiTro { get; set; } // Để xác định là "user"
     }
 
@@ -40,5 +41,6 @@ namespace AuthDemo.Models.ViewModels
         public string? ThuongHieu { get; set; }
         public string? ChatLieu { get; set; }
         public string? DanhMuc { get; set; }
+        public string? LyDo { get; set; }
     }
 } 

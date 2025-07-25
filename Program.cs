@@ -20,6 +20,7 @@ builder.Services.AddScoped<IKichThuocService, KichThuocService>();
 builder.Services.AddScoped<IChatLieuService, ChatLieuService>();
 builder.Services.AddScoped<IChiTietGiayService, ChiTietGiayService>();
 builder.Services.AddScoped<IBanHangTaiQuayService, BanHangTaiQuayService>();
+builder.Services.AddScoped<IHoaDonService, HoaDonService>();
 
 
 builder.Services.AddHttpContextAccessor();

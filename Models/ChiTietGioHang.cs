@@ -20,5 +20,6 @@ namespace AuthDemo.Models
         public decimal? ChietKhauPhanTram { get; set; } // % chiết khấu dòng (nullable)
         public decimal? ChietKhauTienMat { get; set; }  // Số tiền chiết khấu dòng (nullable)
         public bool? IsTangKem { get; set; }            // true nếu là sản phẩm tặng (nullable)
+        public string? LyDo { get; set; }
     }
 } 

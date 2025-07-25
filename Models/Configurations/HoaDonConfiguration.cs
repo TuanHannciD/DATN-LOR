@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using AuthDemo.Models;
+using AuthDemo.Models.Enums;
 
 namespace AuthDemo.Models.Configurations
 {
@@ -33,9 +34,9 @@ namespace AuthDemo.Models.Configurations
                     SoDienThoai = "0123456789",
                     DiaChi = "Hà Nội",
                     TongTien = 5000000,
-                    TrangThai = "Đã thanh toán",
+                    TrangThai = TrangThaiHoaDon.DaThanhToan,
                     DaThanhToan = true,
-                    PhuongThucThanhToan = "Tiền mặt",
+                    PhuongThucThanhToan = PhuongThucThanhToan.TienMat,
                     DaHuy = false,
                     GhiChu = "",
                     LyDo = "",

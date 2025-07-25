@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using AuthDemo.Models.Enums;
 
 namespace AuthDemo.Models
 {
@@ -18,11 +19,10 @@ namespace AuthDemo.Models
         [StringLength(255)]
         public string DiaChi { get; set; }
         public decimal TongTien { get; set; }
-        [StringLength(50)]
-        public string TrangThai { get; set; }
+        public TrangThaiHoaDon TrangThai { get; set; }
         public bool DaThanhToan { get; set; }
-        [StringLength(50)]
-        public string PhuongThucThanhToan { get; set; }
+        public PhuongThucThanhToan PhuongThucThanhToan { get; set; }
+        public PhuongThucVanChuyen PhuongThucVanChuyen { get; set; }
         public bool DaHuy { get; set; }
         [StringLength(255)]
         public string GhiChu { get; set; }

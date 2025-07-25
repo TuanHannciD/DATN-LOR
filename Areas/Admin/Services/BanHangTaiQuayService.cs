@@ -69,13 +69,25 @@ namespace AuthDemo.Areas.Admin.Services
                         || (u.HoTen != null && u.HoTen.ToLower().Contains(lowerKeyword))
                     )
                 )
+                .Select(u => new {
+                    u.UserID,
+                    u.TenDangNhap,
+                    u.HoTen,
+                    u.SoDienThoai,
+                    u.Email,
+                    TenVaiTro = u.VaiTroNguoiDungs.Select(r => r.VaiTro.TenVaiTro).FirstOrDefault() ?? "",
+                    DiaChiObj = (u.DiaChis != null && u.DiaChis.Any()) ? u.DiaChis.FirstOrDefault() : null
+                })
+                .AsEnumerable() // chuyển sang LINQ to Objects để dùng null-safe
                 .Select(u => new KhachHangDropdownVM {
                     UserID = u.UserID,
                     TenDangNhap = u.TenDangNhap,
                     HoTen = u.HoTen,
                     SoDienThoai = u.SoDienThoai,
                     Email = u.Email,
-                    TenVaiTro = u.VaiTroNguoiDungs.Select(r => r.VaiTro.TenVaiTro).FirstOrDefault() ?? ""
+                    TenVaiTro = u.TenVaiTro,
+                    // Đảm bảo không dereference null, không dùng ?. trong LINQ to Entities
+                    DiaChi = u.DiaChiObj != null ? u.DiaChiObj.DiaChiDayDu : ""
                 })
                 .Take(10)
                 .ToList();
@@ -121,7 +133,8 @@ namespace AuthDemo.Areas.Admin.Services
                     ChietKhauTienMat = item.ChietKhauTienMat,
                     ThuongHieu = ctg?.ThuongHieu?.TenThuongHieu,
                     ChatLieu = ctg?.ChatLieu?.TenChatLieu,
-                    DanhMuc = ctg?.DanhMuc?.TenDanhMuc
+                    DanhMuc = ctg?.DanhMuc?.TenDanhMuc,
+                    LyDo = item.LyDo
                 };
             }).ToList();
             return result;
@@ -178,13 +191,14 @@ namespace AuthDemo.Areas.Admin.Services
             _db.SaveChanges();
         }
 
-        public void UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem)
+        public void UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem, string reason)
         {
             var cartItem = _db.ChiTietGioHangs.FirstOrDefault(x => x.CartDetailID == cartDetailId);
             if (cartItem == null) return;
             cartItem.ChietKhauPhanTram = chietKhauPhanTram;
             cartItem.ChietKhauTienMat = chietKhauTienMat;
             cartItem.IsTangKem = isTangKem;
+            cartItem.LyDo = reason;
             _db.ChiTietGioHangs.Update(cartItem);
             _db.SaveChanges();
         }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Data;
+using AuthDemo.Areas.Admin.Interface;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -7,13 +8,16 @@ namespace AuthDemo.Areas.Admin.Controllers
     public class HoaDonController : Controller
     {
         private readonly ApplicationDbContext db;
-        public HoaDonController(ApplicationDbContext context)
+        private readonly IHoaDonService _hoaDonService;
+        public HoaDonController(ApplicationDbContext context, IHoaDonService hoaDonService)
         {
             db = context;
+            _hoaDonService = hoaDonService;
         }
         public IActionResult Index()
         {
-            return View();
+            var hoaDons = _hoaDonService.GetAllHoaDon();
+            return View(hoaDons);
         }
     }
 } 
