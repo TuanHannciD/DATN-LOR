@@ -3,7 +3,7 @@ import { tinhThanhTienDong, tinhTongTienGioHang } from './modules/cart.js';
 import { openDiscountModal, setDiscountType, handleDiscountSave, handleTangKemCheckbox, handleQuickValue } from './modules/discount-modal.js';
 import { openOrderDiscountModal, setOrderDiscountType, handleOrderDiscountSave, handleOrderDiscountQuickValue } from './modules/order-discount-modal.js';
 import { searchCustomer, renderCustomerDropdown, selectCustomer } from './modules/customer-search.js';
-import {  tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
+import { tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
 
 let currentDiscountRow = null;
 
@@ -86,11 +86,11 @@ $(document).ready(function () {
     }
 
     // Validate modal giảm giá sản phẩm
-    handleDiscountSave(function(data) {
+    handleDiscountSave(function (data) {
         clearInputError('#discount-reason');
         clearInputError('#discount-value');
         // Validate lý do
-        
+
         // Validate giá trị giảm giá
         const value = parseFloat($('#discount-value').val()) || 0;
         const isPercent = $('.btn-toggle-type[data-type="percent"]').hasClass('btn-primary');
@@ -122,7 +122,7 @@ $(document).ready(function () {
                 chietKhauTienMat: null,
                 isTangKem: false,
                 reason: ''
-            }, function(response) {
+            }, function (response) {
                 let html = '<span class="fw-bold">' + giaGoc.toLocaleString('vi-VN') + '</span> VNĐ';
                 currentDiscountRow.find('.thanh-tien-dong').html(html);
                 currentDiscountRow.find('.bhq-cart-reason').text('');
@@ -161,7 +161,7 @@ $(document).ready(function () {
             chietKhauTienMat: data.chietKhauTienMat,
             isTangKem: data.isTang,
             reason: data.reason
-        }, function(response) {
+        }, function (response) {
             // Thành công: cập nhật lại thành tiền dòng, tổng tiền, phép tính hóa đơn, lý do
             let html = '';
             if (data.isTang) {
@@ -229,4 +229,66 @@ $(document).ready(function () {
     });
     // Tính tổng tiền sau giảm khi load trang
     tinhThanhTienSauGiam(giamGiaHoaDon);
-}); 
+
+    // === Thêm nút Tạo đơn test VNPay vào UI (tạm thời) ===
+    // Chèn nút vào sau nút thanh toán nếu có
+    if ($('#btn-thanh-toan').length > 0 && $('#btn-test-vnpay').length === 0) {
+        $('#btn-thanh-toan').after('<button id="btn-test-vnpay" class="btn btn-warning ms-2" type="button">Tạo đơn test VNPay</button>');
+    }
+    // Xử lý sự kiện click
+    $(document).on('click', '#btn-test-vnpay', async function () {
+        const tongTienText = $('#thanh-tien-sau-giam').text();
+        const tongTien = parseInt(tongTienText.replace(/[^0-9]/g, '')) || 0;
+
+        console.log("[VNPay] Tổng tiền cần thanh toán:", tongTien);
+
+        try {
+            const response = await fetch('/Admin/Payment/CreatePayment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    tongTien,
+                    orderId: 'test-' + Date.now(), // ID đơn hàng test
+                    orderInfo: 'Don hang test VNPay', // Thông tin đơn hàng
+                    bankCode: 'VNBank' ,// Mã ngân hàng mặc định
+                    returnUrl: window.location.origin + '/Admin/Payment/VNPayReturn' // URL trả về sau thanh toán
+                 })
+            });
+
+            if (!response.ok) {
+                const errorHtml = await response.text();
+                console.error("[VNPay] ❌ Lỗi HTTP từ server:", response.status, errorHtml);
+
+                
+
+                return;
+            }
+
+            let data;
+            try {
+                data = await response.json();
+            } catch (parseErr) {
+                console.error("[VNPay] ❌ Lỗi khi parse JSON từ server:", parseErr);
+                alert("Lỗi: Phản hồi không hợp lệ (không phải JSON). Kiểm tra phía server.");
+                return;
+            }
+
+            console.log("[VNPay] ✅ Phản hồi JSON từ server:", data);
+
+            if (data && data.paymentUrl) {
+                console.log("[VNPay] ✅ Mở URL thanh toán:", data.paymentUrl);
+                window.open(data.paymentUrl, '_blank');
+            } else {
+                console.warn("[VNPay] ⚠️ Không có paymentUrl trong phản hồi:", data);
+                alert('Không nhận được URL thanh toán từ server!');
+            }
+
+        } catch (err) {
+            console.error('[VNPay] ❌ Lỗi tạo đơn hàng VNPay:', err);
+            alert('Tạo đơn test thất bại: ' + err.message);
+        }
+    });
+});
+// === Kết thúc phần thêm nút test VNPay ===

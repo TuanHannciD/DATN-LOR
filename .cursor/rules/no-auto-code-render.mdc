@@ -1,0 +1,76 @@
+# No Auto Code Render - Không tự động hiển thị code
+
+## Nguyên tắc tuyệt đối
+**KHÔNG BAO GIỜ TỰ ĐỘNG HIỂN THỊ CODE** - Mọi code snippets, code changes, code proposals đều phải có xác nhận trước khi hiển thị.
+
+## Quy tắc cứng về hiển thị code
+
+### 1. BẮT BUỘC hỏi trước khi hiển thị:
+- ✅ Code snippets
+- ✅ Code changes
+- ✅ Code proposals
+- ✅ Code examples
+- ✅ Code modifications
+- ✅ Code additions
+- ✅ Code deletions
+- ✅ Code replacements
+
+### 2. Workflow bắt buộc khi có code:
+1. **Phân tích vấn đề** (không hiển thị code)
+2. **Đề xuất giải pháp** (không hiển thị code)
+3. **Hỏi**: "Bạn có muốn tôi hiển thị code sẽ được thay đổi không?"
+4. **Chờ xác nhận**
+5. **Chỉ hiển thị code sau khi được xác nhận**
+
+### 3. Template response chuẩn:
+```
+## Phân tích vấn đề
+[Tôi hiểu vấn đề là...]
+
+## Đề xuất giải pháp
+[Tôi sẽ thực hiện...]
+
+## Files sẽ bị ảnh hưởng
+- File 1: [mô tả]
+- File 2: [mô tả]
+
+## Xác nhận hiển thị code
+**Bạn có muốn tôi hiển thị code sẽ được thay đổi không?**
+
+[Chờ phản hồi từ user]
+
+## Code sẽ được thay đổi (chỉ hiển thị sau khi được xác nhận)
+[Code ở đây]
+```
+
+### 4. KHÔNG BAO GIỜ tự động hiển thị:
+- ❌ Code snippets trong quá trình phân tích
+- ❌ Code examples mà không hỏi
+- ❌ Code changes mà không xác nhận
+- ❌ Code proposals mà không permission
+- ❌ Code modifications mà không approval
+
+## Lưu ý quan trọng
+
+### Luôn tuân thủ:
+- ✅ Hỏi trước khi hiển thị bất kỳ code nào
+- ✅ Chờ xác nhận rõ ràng
+- ✅ Giải thích trước khi hiển thị code
+- ✅ Có thể điều chỉnh theo yêu cầu
+
+### Không bao giờ:
+- ❌ Tự động hiển thị code
+- ❌ Render code trong quá trình phân tích
+- ❌ Show code snippets mà không hỏi
+- ❌ Display code changes mà không xác nhận
+
+## Communication style
+- Rõ ràng và chi tiết
+- Luôn hỏi trước khi hiển thị code
+- Chờ phản hồi từ user
+- Sẵn sàng điều chỉnh theo yêu cầu
+
+description:
+globs:
+alwaysApply: false
+---

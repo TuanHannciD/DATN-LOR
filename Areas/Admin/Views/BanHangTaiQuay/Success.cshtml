@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="mdi mdi-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h2 class="text-success mb-3">Thanh toán thành công!</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">Thông tin giao dịch</h5>
+                                    <div class="row">
+                                        <div class="col-6 text-left">
+                                            <strong>Mã đơn hàng:</strong>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            @Model.OrderId
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 text-left">
+                                            <strong>Số tiền:</strong>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            @Model.Amount VNĐ
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 text-left">
+                                            <strong>Mã giao dịch:</strong>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            @Model.TransactionId
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="/Admin/BanHangTaiQuay" class="btn btn-primary">
+                            <i class="mdi mdi-arrow-left"></i> Quay lại bán hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
