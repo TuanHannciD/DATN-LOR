@@ -4,10 +4,50 @@ import { openDiscountModal, setDiscountType, handleDiscountSave, handleTangKemCh
 import { openOrderDiscountModal, setOrderDiscountType, handleOrderDiscountSave, handleOrderDiscountQuickValue } from './modules/order-discount-modal.js';
 import { searchCustomer, renderCustomerDropdown, selectCustomer } from './modules/customer-search.js';
 import { tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
+import { initSearchSanPham } from './modules/search-sanpham.js';
 
 let currentDiscountRow = null;
 
 $(document).ready(function () {
+     $('#search-input').on('input', function () {
+        var keyword = $(this).val().trim();
+        if (keyword.length === 0) {
+            $('#search-dropdown').removeClass('show').empty();
+            return;
+        }
+        $.get('/Admin/BanHangTaiQuay/SearchSanPham', { keyword: keyword }, function (data) {
+            if (data && data.length > 0) {
+                let html = '';
+                data.forEach(function (sp) {
+                    html += `<button type="button" class="dropdown-item" data-id="${sp.shoeDetailID}">
+                        <div><strong>${sp.tenSp}</strong> <span class="text-success ms-2">${sp.gia.toLocaleString()} VNĐ</span></div>
+                        <div class="text-muted">Màu: ${sp.mauSac} | Size: ${sp.kichThuoc}</div>
+                        <div class="text-muted">Thương hiệu: ${sp.thuongHieu} | Chất liệu: ${sp.chatLieu}</div>
+                        <div class="text-muted">Danh mục: ${sp.danhMuc}</div>
+            </button>`;
+        });
+        $('#search-dropdown').html(html).addClass('show');
+            } else {
+                $('#search-dropdown').html('<div class="dropdown-item text-muted">Không tìm thấy sản phẩm</div>').addClass('show');
+            }
+        });
+    });
+
+    // Khi click vào sản phẩm trong dropdown
+    $('#search-dropdown').on('click', '.dropdown-item', function () {
+        var shoeDetailID = $(this).data('id');
+        $('#hidden-shoeDetailId').val(shoeDetailID);
+        $('#add-to-cart-form').submit();
+        $('#search-dropdown').removeClass('show').empty();
+        $('#search-input').val('');
+    });
+
+    // Ẩn dropdown khi click ra ngoài
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#search-input, #search-dropdown').length) {
+            $('#search-dropdown').removeClass('show').empty();
+        }
+    });
     // Tìm kiếm khách hàng
     $('#search-khachhang').on('input', function () {
         var keyword = $(this).val().trim();
