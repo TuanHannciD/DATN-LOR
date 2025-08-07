@@ -4,7 +4,6 @@ import { openDiscountModal, setDiscountType, handleDiscountSave, handleTangKemCh
 import { openOrderDiscountModal, setOrderDiscountType, handleOrderDiscountSave, handleOrderDiscountQuickValue } from './modules/order-discount-modal.js';
 import { searchCustomer, renderCustomerDropdown, selectCustomer } from './modules/customer-search.js';
 import { tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
-import { initSearchSanPham } from './modules/search-sanpham.js';
 
 let currentDiscountRow = null;
 
@@ -270,65 +269,126 @@ $(document).ready(function () {
     // Tính tổng tiền sau giảm khi load trang
     tinhThanhTienSauGiam(giamGiaHoaDon);
 
-    // === Thêm nút Tạo đơn test VNPay vào UI (tạm thời) ===
-    // Chèn nút vào sau nút thanh toán nếu có
-    if ($('#btn-thanh-toan').length > 0 && $('#btn-test-vnpay').length === 0) {
-        $('#btn-thanh-toan').after('<button id="btn-test-vnpay" class="btn btn-warning ms-2" type="button">Tạo đơn test VNPay</button>');
-    }
+    
     // Xử lý sự kiện click
-    $(document).on('click', '#btn-test-vnpay', async function () {
+    $(document).on('click', '#btn-thanhtoan', async function () {
+        const selectedShippingMethod = $('#phuongthuc-van-chuyen').val();
+        const selecttedPaymentMethod = $('#phuongthuc-thanh-toan').val();
         const tongTienText = $('#thanh-tien-sau-giam').text();
+        const khachhangId = $('#selected-khachhang-id').val();
         const tongTien = parseInt(tongTienText.replace(/[^0-9]/g, '')) || 0;
 
-        console.log("[VNPay] Tổng tiền cần thanh toán:", tongTien);
-
+        console.log("[FE] Bắt đầu xử lý thanh toán...");
+        console.log("[FE] Phương thức vận chuyển:", selectedShippingMethod);
+        console.log("[FE] Phương thức thanh toán:", selecttedPaymentMethod);
+        console.log("[FE] Tổng tiền:", tongTien);
+        console.log("[FE] ID khách hàng:", khachhangId);
         try {
-            const response = await fetch('/Admin/Payment/CreatePayment', {
+            // ajax tạo hóa đơn thanh toán trước
+            const createOrderResponse = await fetch('/Admin/HoaDon/CreateHoaDon', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    tongTien,
-                    orderId: 'test-' + Date.now(), // ID đơn hàng test
-                    orderInfo: 'Don hang test VNPay', // Thông tin đơn hàng
-                    bankCode: 'VNBank' ,// Mã ngân hàng mặc định
-                    returnUrl: window.location.origin + '/Admin/Payment/VNPayReturn' // URL trả về sau thanh toán
-                 })
+                body: JSON.stringify({
+                    hinhThucVanChuyen: selectedShippingMethod,
+                    hinhThucThanhToan: selecttedPaymentMethod,
+                    userID: khachhangId,
+                    giamGiaPhanTram: giamGiaHoaDon.phanTram,
+                    giamGiaTienMat: giamGiaHoaDon.tienMat,
+                    lyDo: giamGiaHoaDon.lyDo,
+                    
+                })
+                        
             });
-
-            if (!response.ok) {
-                const errorHtml = await response.text();
-                console.error("[VNPay] ❌ Lỗi HTTP từ server:", response.status, errorHtml);
-
-                
-
+            if (!createOrderResponse.ok) {
+                const errorHtml = await createOrderResponse.text();
+                console.error("[FE] ❌ Lỗi HTTP khi tạo hóa đơn:", createOrderResponse.status, errorHtml);  
+                alert('Lỗi khi tạo hóa đơn: ' + createOrderResponse.statusText);
                 return;
             }
 
-            let data;
+            const createOrderData = await createOrderResponse.json();
+            console.log("[FE] ✅ Hóa đơn đã được tạo:", createOrderData);
+            
+            
+        
+        if (selecttedPaymentMethod == '1') {
             try {
-                data = await response.json();
-            } catch (parseErr) {
-                console.error("[VNPay] ❌ Lỗi khi parse JSON từ server:", parseErr);
-                alert("Lỗi: Phản hồi không hợp lệ (không phải JSON). Kiểm tra phía server.");
-                return;
+                const response = await fetch('/Admin/Payment/CreatePayment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        tongTien,
+                        orderId: 'test-' + Date.now(), // ID đơn hàng test
+                        orderInfo: 'Don hang test VNPay', // Thông tin đơn hàng
+                        bankCode: 'VNBank' ,// Mã ngân hàng mặc định
+                        returnUrl: window.location.origin + '/Admin/Payment/VNPayReturn' // URL trả về sau thanh toán
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorHtml = await response.text();
+                    console.error("[VNPay] ❌ Lỗi HTTP từ server:", response.status, errorHtml);
+
+                    
+
+                    return;
+                }
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (parseErr) {
+                    console.error("[VNPay] ❌ Lỗi khi parse JSON từ server:", parseErr);
+                    alert("Lỗi: Phản hồi không hợp lệ (không phải JSON). Kiểm tra phía server.");
+                    return;
+                }
+
+                console.log("[VNPay] ✅ Phản hồi JSON từ server:", data);
+
+                if (data && data.paymentUrl) {
+                    console.log("[VNPay] ✅ Mở URL thanh toán:", data.paymentUrl);
+                    window.open(data.paymentUrl, '_blank');
+                } else {
+                    console.warn("[VNPay] ⚠️ Không có paymentUrl trong phản hồi:", data);
+                    alert('Không nhận được URL thanh toán từ server!');
+                }
+
+            } catch (err) {
+                console.error('[VNPay] ❌ Lỗi tạo đơn hàng VNPay:', err);
+                alert('Tạo đơn test thất bại: ' + err.message);
             }
-
-            console.log("[VNPay] ✅ Phản hồi JSON từ server:", data);
-
-            if (data && data.paymentUrl) {
-                console.log("[VNPay] ✅ Mở URL thanh toán:", data.paymentUrl);
-                window.open(data.paymentUrl, '_blank');
-            } else {
-                console.warn("[VNPay] ⚠️ Không có paymentUrl trong phản hồi:", data);
-                alert('Không nhận được URL thanh toán từ server!');
+        }
+        else if (selecttedPaymentMethod == '2') {
+            // Xử lý thanh toán bằng tiền mặt
+            const confirmPayment = confirm('Bạn có chắc chắn muốn thanh toán bằng tiền mặt không?');
+            if (confirmPayment) {
+                try {
+                    const response = await fetch('/Admin/Payment/CompleteCashPayment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ tongTien })
+                    });
+                }
+                catch (err) {
+                    console.error('[Cash Payment] ❌ Lỗi thanh toán tiền mặt:', err);
+                    alert('Thanh toán tiền mặt thất bại: ' + err.message);
+                }
             }
-
-        } catch (err) {
-            console.error('[VNPay] ❌ Lỗi tạo đơn hàng VNPay:', err);
-            alert('Tạo đơn test thất bại: ' + err.message);
+            
+        }
+        }
+        catch (error) {
+            console.error("[FE] ❌ Lỗi khi tạo hóa đơn:", error);
+            alert('Lỗi khi tạo hóa đơn: ' + error.message);
         }
     });
 });
-// === Kết thúc phần thêm nút test VNPay ===
+
+
+
