@@ -4,16 +4,16 @@ using System.Text.Json.Serialization;
 namespace AuthDemo.Models.ViewModels
 {
     public class VNPayConfig
-{
-    public string BaseUrl { get; set; }
-    public string TmnCode { get; set; }
-    public string HashSecret { get; set; }
-    public string ReturnUrl { get; set; }
-    public string Version { get; set; } = "2.1.0";
-    public string Command { get; set; } = "pay";
-    public string CurrCode { get; set; } = "VND";
-    public string Locale { get; set; } = "vn";
-}
+    {
+        public string BaseUrl { get; set; }
+        public string TmnCode { get; set; }
+        public string HashSecret { get; set; }
+        public string ReturnUrl { get; set; }
+        public string Version { get; set; } = "2.1.0";
+        public string Command { get; set; } = "pay";
+        public string CurrCode { get; set; } = "VND";
+        public string Locale { get; set; } = "vn";
+    }
 
 
     public class VnpayOrderRequest
@@ -28,4 +28,14 @@ namespace AuthDemo.Models.ViewModels
         [JsonPropertyName("returnUrl")]
         public string ReturnURL { get; set; }
     }
+    public class VNPayReturnResult
+    {
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; }
+        public string OrderId { get; set; }
+        public decimal Amount { get; set; }
+        public string TransactionNo { get; set; }
+        public string ResponseCode { get; set; }
+    }
+
 }

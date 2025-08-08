@@ -6,6 +6,7 @@ namespace AuthDemo.Areas.Admin.Interface
     public interface IVNPayService
     {
         string CreatePaymentUrl(VnpayOrderRequest model, HttpContext httpContext);
+        VNPayReturnResult ProcessPaymentReturn(IDictionary<string, string> queryParams);
     }
 
 }

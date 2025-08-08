@@ -29,7 +29,7 @@ namespace AuthDemo.Areas.Admin.Helpers
             return $"{baseUrl}?{rawData}&vnp_SecureHash={secureHash}";
         }
 
-        private string ComputeHashHmacSHA512(string key, string input)
+        public static string ComputeHashHmacSHA512(string key, string input)
         {
             using var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(key));
             var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));

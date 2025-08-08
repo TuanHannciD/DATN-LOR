@@ -22,13 +22,21 @@ namespace AuthDemo.Models.ViewModels
         public string HinhThucThanhToanDisplay { get; set; }
         public string HinhThucVanChuyenDisplay { get; set; }
     }
-    public class GetHoaDonByIdVM
+    public class HoaDonDTO
     {
-
+        public Guid BillID { get; set; }
+        public string HoTen { get; set; }
+        public string SoDienThoai { get; set; }
+        public string DiaChi { get; set; }
+        public decimal TongTien { get; set; }
+        public DateTime ?NgayTao { get; set; }
+        public string PhuongThucThanhToan { get; set; }
+        public string PhuongThucVanChuyen { get; set; }
     }
+    
     public class CreateHoaDonVM
     {
-        
+
         public Guid UserID { get; set; }
 
         public string HinhThucThanhToan { get; set; }

@@ -41,17 +41,17 @@ namespace AuthDemo.Areas.Admin.Services
             }).ToList();
             return hoaDons;
         }
-        public GetHoaDonByIdVM GetHoaDonById(int id)
+        public HoaDonDTO GetHoaDonById(int id)
         {
             // Chưa có logic cụ thể, chỉ trả về một đối tượng rỗng
-            return new GetHoaDonByIdVM();
+            return new HoaDonDTO();
         }
-        public async Task<Result<HoaDon>> CreateHoaDon(CreateHoaDonVM createHoaDonVM, string tenDangNhap)
+        public async Task<Result<HoaDonDTO>> CreateHoaDon(CreateHoaDonVM createHoaDonVM, string tenDangNhap)
         {   
             // Kiểm tra thông tin đăng nhập
             var userCrete = await _db.NguoiDungs.FirstOrDefaultAsync(u => u.TenDangNhap == tenDangNhap);
             if (userCrete == null)
-                return Result<HoaDon>.Fail("Không tìm thấy người dùng.");
+                return Result<HoaDonDTO>.Fail("Không tìm thấy người dùng.");
 
             var userHoaDon = await _db.NguoiDungs
                 .Include(u => u.DiaChis)
@@ -59,23 +59,23 @@ namespace AuthDemo.Areas.Admin.Services
 
             // Kiểm tra người dùng trong hóa đơn có tồn tại
             if (userHoaDon == null)
-                return Result<HoaDon>.Fail("Không tìm thấy người dùng với ID đã cung cấp.");
+                return Result<HoaDonDTO>.Fail("Không tìm thấy người dùng với ID đã cung cấp.");
 
             var gioHang = await _db.GioHangs.FirstOrDefaultAsync(g => g.UserID == userCrete.UserID);
            if (gioHang == null)
-                return Result<HoaDon>.Fail("Không tìm thấy giỏ hàng cho người dùng.");
+                return Result<HoaDonDTO>.Fail("Không tìm thấy giỏ hàng cho người dùng.");
 
             //  Kiểm tra enum phương thức thanh toán và vận chuyển
             if (!Enum.TryParse(createHoaDonVM.HinhThucThanhToan, out PhuongThucThanhToan phuongThucThanhToan))
-                return Result<HoaDon>.Fail("Phương thức thanh toán không hợp lệ.");
+                return Result<HoaDonDTO>.Fail("Phương thức thanh toán không hợp lệ.");
             
             if (!Enum.TryParse(createHoaDonVM.HinhThucVanChuyen, out PhuongThucVanChuyen phuongThucVanChuyen))
-                return Result<HoaDon>.Fail("Phương thức vận chuyển không hợp lệ.");
+                return Result<HoaDonDTO>.Fail("Phương thức vận chuyển không hợp lệ.");
 
                 //Tính tiền cho vào hóa đơn sau tất cả loại giảm
             var tongTienVM = TinhTienHoaDon(gioHang.CartID, createHoaDonVM.GiamGiaPhanTram, createHoaDonVM.GiamGiaTienMat);
             if (tongTienVM.TongThanhToan <= 0)
-                return Result<HoaDon>.Fail("Tổng tiền thanh toán không hợp lệ.");
+                return Result<HoaDonDTO>.Fail("Tổng tiền thanh toán không hợp lệ.");
 
 
 
@@ -105,14 +105,25 @@ namespace AuthDemo.Areas.Admin.Services
                 _db.HoaDons.Add(hoaDon);
                 await _db.SaveChangesAsync();
 
+                var hoaDonDTO = new HoaDonDTO
+                {
+                    BillID = hoaDon.BillID,
+                    HoTen = hoaDon.HoTen,
+                    SoDienThoai = hoaDon.SoDienThoai,
+                    DiaChi = hoaDon.DiaChi,
+                    TongTien = hoaDon.TongTien,
+                    NgayTao = hoaDon.NgayTao,
+                    PhuongThucThanhToan = hoaDon.PhuongThucThanhToan.GetDisplayName(),
+                    PhuongThucVanChuyen = hoaDon.PhuongThucVanChuyen.GetDisplayName()
+                };
                 // Cập nhật giỏ hàng
 
-                return Result<HoaDon>.Success(hoaDon);
+                return Result<HoaDonDTO>.Success(hoaDonDTO);
             }
             catch (Exception ex)
             {
                 var innerMessage = ex.InnerException?.Message;
-                return Result<HoaDon>.Fail($"Lỗi khi tạo hóa đơn: {ex.Message} | Chi tiết: {innerMessage}");
+                return Result<HoaDonDTO>.Fail($"Lỗi khi tạo hóa đơn: {ex.Message} | Chi tiết: {innerMessage}");
             }
 
             
