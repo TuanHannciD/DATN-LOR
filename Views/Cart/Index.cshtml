@@ -1,0 +1,379 @@
+﻿@using AuthDemo.Models;
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutCart.cshtml";
+}
+
+@model List<ChiTietGioHang>
+<style>
+    /* Ẩn mũi tên tăng giảm trên trình duyệt Chrome, Safari, Edge */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Ẩn mũi tên trên Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+     .text-muted.bg-light {
+        opacity: 0.6;
+        pointer-events: auto;
+     }
+
+</style>
+@if (TempData["CartWarnings"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show mx-auto mt-3" role="alert" style="max-width: 600px;">
+        @Html.Raw(TempData["CartWarnings"])
+    </div>
+}
+
+<form method="post" action="@Url.Action("CheckOut", "HoaDon")" id="checkoutForm">
+    @Html.AntiForgeryToken()
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+
+                    <table>
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    <input type="checkbox" id="chon-tat-ca" />
+                                    
+                                </th>
+                                <th class="shoping__product">Sản Phẩm</th>
+                                <th>Đơn Giá</th>
+                                <th>Số Lượng</th>
+                                <th>Tổng</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                decimal tong = item.SoLuong * item.ChiTietGiay.Gia;
+                                bool hetHang = item.ChiTietGiay.SoLuong == 0;
+                                <tr class="@(hetHang ? "text-muted bg-light" : "")">
+                                    <td>
+                                        <input type="checkbox"
+                                               name="selectedIds"
+                                               value="@item.ShoeDetailID"
+                                               class="chon-sp"
+                                               data-price="@item.ChiTietGiay.Gia"
+                                               data-id="@item.ShoeDetailID"
+                                        @(hetHang ? "disabled" : "") />
+                                    </td>
+
+                                    
+                                    <td class="shoping__cart__item">
+                                         @if (hetHang)
+                                            {
+                                                <div class="text-danger small mt-1">Hết hàng</div>
+                                            }
+                                        <a asp-controller="Home"
+                                           asp-action="SanPhamDetails"
+                                           asp-route-id="@item.ChiTietGiay.Giay.ShoeID">
+                                            <img src="@Url.Content("~/AnhDoiGiay/" + item.ChiTietGiay.Giay.AnhDaiDien)" alt="" width="150" />
+                                        </a>
+                                        <h5>
+                                            @item.ChiTietGiay.Giay.TenGiay
+                                            <br />
+                                            (@item.ChiTietGiay.MauSac.TenMau, @item.ChiTietGiay.KichThuoc.TenKichThuoc)
+                                           
+                                        </h5>
+                                    </td>
+
+                                    <td class="shoping__cart__price">
+                                        @item.ChiTietGiay.Gia.ToString("N0") VNĐ
+                                    </td>
+
+                                    <td class="shoping__cart__quantity">
+                                        <div class="quantity">
+                                            <div class="input-group quantity-control" style="width: 120px;">
+                                                <button type="button"
+                                                        class="btn btn-outline-secondary btn-decrease"
+                                                        data-id="@item.ShoeDetailID"
+                                                        style="padding:6px 12px; border:none; background:#eee; font-weight:bold;"
+                                                @(hetHang ? "disabled" : "")>
+                                                    −
+                                                </button>
+
+                                                <input type="number"
+                                                       value="@item.SoLuong"
+                                                       min="1"
+                                                       max="@item.ChiTietGiay.SoLuong"
+                                                       data-for-id="@item.ShoeDetailID"
+                                                       data-stock="@item.ChiTietGiay.SoLuong"
+                                                       class="quantity-input form-control text-center"
+                                                       style="width: 50px;"
+                                                @(hetHang ? "readonly" : "") />
+
+                                                <button type="button"
+                                                        class="btn btn-outline-secondary btn-increase"
+                                                        data-id="@item.ShoeDetailID"
+                                                        style="padding:6px 12px; border:none; background:#eee; font-weight:bold;"
+                                                @(hetHang ? "disabled" : "")>
+                                                    +
+                                                </button>
+                                            </div>
+                                            
+                                        </div>
+                                    </td>
+
+                                    <td class="shoping__cart__total">
+                                        @tong.ToString("N0") VNĐ
+                                    </td>
+
+                                    <td class="shoping__cart__item__close">
+                                        <a asp-controller="Cart"
+                                           asp-action="RemoveCart"
+                                           asp-route-id="@item.CartDetailID">
+                                            <span class="icon_close"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                
+                <div class="shoping__cart__btns">
+                    <a asp-controller="Shop" asp-action="Index" class="primary-btn">Tiếp Tục Mua Sắm</a>
+                    @*  @if (cartItem != null
+
+                    )
+                    {
+
+                    <button type="submit" class="primary-btn cart-btn cart-btn-right">
+                    <span class="icon_loading"></span>
+                    Cập Nhật
+                    </button>
+
+
+                    } *@
+                </div>
+            </div>
+            <div class="col-lg-6">
+            </div>
+            <div class="col-lg-6">
+                <div class="shoping__checkout">
+                    <h5>Cart Total</h5>
+
+                    <ul>
+
+                        <li> Tổng tiền: <span id="tong-tien">0 VNĐ</span></li>
+                    </ul>
+
+
+                    <button type="submit" class="primary-btn">TIẾN HÀNH THANH TOÁN</button>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+@section Scripts {
+    <script>
+
+
+        // 1. Chọn tất cả
+        document.getElementById("chon-tat-ca").addEventListener("change", function () {
+            const checkAll = this.checked;
+            document.querySelectorAll(".chon-sp:not([disabled])").forEach(cb => {
+                cb.checked = checkAll;
+            });
+            updateTotal();
+        });
+
+        // 2. Cập nhật tổng tiền khi chọn checkbox
+        document.querySelectorAll(".chon-sp").forEach(cb => {
+            cb.addEventListener("change", updateTotal);
+        });
+
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll(".chon-sp:checked").forEach(cb => {
+                const price = parseFloat(cb.getAttribute("data-price"));
+                const id = cb.getAttribute("data-id");
+                let qtyInput = document.querySelector(`input.quantity-input[data-for-id="${id}"]`);
+                if (!qtyInput) {
+                    qtyInput = document.querySelector(`input[name="quantities"][data-for-id="${id}"]`);
+                }
+                const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+                total += price * qty;
+            });
+            document.getElementById("tong-tien").textContent = total.toLocaleString('vi-VN') + " VNĐ";
+        }
+
+        // 3. Ngăn submit nếu không có sản phẩm được chọn
+        document.getElementById("checkoutForm").addEventListener("submit", function (e) {
+            const selected = document.querySelectorAll(".chon-sp:checked");
+            const form = this;
+
+            if (selected.length === 0) {
+                e.preventDefault();
+                alert("Vui lòng chọn ít nhất một sản phẩm để tiến hành thanh toán.");
+                return;
+            }
+
+            // Xoá các input cũ nếu có (phòng tránh double)
+            document.querySelectorAll("input[name='quantities']").forEach(el => el.remove());
+
+            // Với mỗi sản phẩm được chọn
+            selected.forEach(cb => {
+                const id = cb.value;
+                const qtyInput = document.querySelector(`.quantity-input[data-for-id='${id}']`);
+                const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+
+                // Tạo input hidden tương ứng quantity
+                const hiddenQty = document.createElement("input");
+                hiddenQty.type = "hidden";
+                hiddenQty.name = "quantities";
+                hiddenQty.value = qty;
+
+                form.appendChild(hiddenQty);
+            });
+        });
+
+
+        
+
+       
+
+        // Gán sự kiện cho nút tăng
+        document.querySelectorAll(".btn-increase").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+                const input = document.querySelector(`input.quantity-input[data-for-id='${id}']`);
+                if (!input) return;
+
+                const current = parseInt(input.value);
+                const stock = parseInt(input.getAttribute("data-stock"));
+
+                if (current < stock) {
+                    const newQty = current + 1;
+                    input.value = newQty;
+
+                    updateServerQuantity(id, newQty);
+                    
+                   
+                } else {
+                    alert("Đã đạt số lượng tối đa trong kho: " + stock);
+                }
+            });
+        });
+
+        // Gán sự kiện cho nút giảm
+        document.querySelectorAll(".btn-decrease").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+                const input = document.querySelector(`input.quantity-input[data-for-id='${id}']`);
+                if (!input) return;
+
+                const current = parseInt(input.value);
+
+                if (current > 1) {
+                    const newQty = current - 1;
+                    input.value = newQty;
+
+                    updateServerQuantity(id, newQty);
+                   
+                } else {
+                    alert("Số lượng tối thiểu là 1");
+                }
+            });
+        });
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function () {
+                const id = this.getAttribute('data-for-id');
+                const stock = parseInt(this.getAttribute('data-stock'));
+                let value = parseInt(this.value);
+
+                if (isNaN(value) || value < 1) {
+                    value = 1;
+                    alert("Số lượng tối thiểu là 1.");
+                } else if (value > stock) {
+                    value = stock;
+                    alert("Số lượng vượt quá số lượng trong kho " + stock);
+                }
+
+                this.value = value;
+
+                // Gọi cập nhật server và tổng tiền
+                updateServerQuantity(id, value);
+                updateTotal();
+            });
+        });
+        function updateServerQuantity(id, quantity, callback) {
+            const formData = new URLSearchParams();
+            formData.append("shoeDetailId", id);
+            formData.append("newQuantity", quantity);
+
+            
+            fetch('/Cart/UpdateQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: formData.toString()
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const input = document.querySelector(`input.quantity-input[data-for-id='${id}']`);
+                        const totalCell = input?.closest('tr')?.querySelector('.shoping__cart__total');
+
+                        if (totalCell) {
+                            totalCell.textContent = data.newItemTotal.toLocaleString('vi-VN') + " VNĐ";
+                        }
+
+                        updateTotal();
+                    } else {
+                        alert(data.message);
+                    }
+
+                    callback && callback(data.success);
+                })
+                .catch(err => {
+                    console.error("Lỗi khi cập nhật:", err);
+                    alert("Có lỗi xảy ra khi cập nhật số lượng.");
+                });
+        }
+        
+        // 4. Cập nhật tổng tiền ban đầu (nếu cần)
+
+
+       
+            // Ẩn alert sau 5 giây
+            setTimeout(function () {
+                const alert = document.querySelector(".alert");
+                if (alert) {
+                    alert.classList.remove("show");
+                    alert.classList.add("fade");
+                    alert.style.opacity = 0;
+                }
+            }, 5000);
+   
+    </script>
+}
+
+
