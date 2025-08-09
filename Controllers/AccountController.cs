@@ -87,7 +87,7 @@ namespace AuthDemo.Controllers
             // Nếu không có quyền hợp lệ, báo lỗi
             ModelState.AddModelError("", "Bạn không có quyền truy cập.");
             var cart = await _context.GioHangs.FirstOrDefaultAsync(g => g.UserID == user.UserID);
-            if (cart != null)
+            if (cart == null)
             {
                 cart = new GioHang
                 {
@@ -96,6 +96,10 @@ namespace AuthDemo.Controllers
                 };
                 _context.GioHangs.Add(cart);
                 await _context.SaveChangesAsync();
+                HttpContext.Session.SetString("CartID", cart.CartID.ToString());
+            }
+            else
+            {
                 HttpContext.Session.SetString("CartID", cart.CartID.ToString());
             }
             return View(model);
