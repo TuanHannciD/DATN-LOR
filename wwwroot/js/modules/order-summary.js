@@ -21,6 +21,7 @@ export function tinhThanhTienSauGiam(giamGiaHoaDon) {
     if (giamGiaHoaDon && giamGiaHoaDon.tienMat > 0) giamGia += giamGiaHoaDon.tienMat;
     if (giamGia > tongTien) giamGia = tongTien;
     var thanhTienSauGiam = tongTien - giamGia;
+    console.log(`Tổng tiền: ${tongTien}, Giảm giá: ${giamGia}, Thành tiền sau giảm: ${thanhTienSauGiam}`);
     $("#tong-tien-hd").text(formatNumber(tongTien) + ' VNĐ');
     $("#giam-gia-info").text(giamGia > 0 ? `Giảm giá: -${formatNumber(Math.round(giamGia))} VNĐ` : '');
     $("#thanh-tien-sau-giam").text(formatNumber(Math.round(thanhTienSauGiam)) + ' VNĐ');

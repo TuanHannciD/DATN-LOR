@@ -1,0 +1,17 @@
+﻿@model List<AuthDemo.Models.ViewModels.ProductViewModel>
+
+@foreach (var product in Model)
+{
+    <div class="col-lg-4 col-md-6 col-sm-6">
+        <div class="product__item">
+            <div class="product__item__pic set-bg"
+                 data-setbg="@Url.Content("~/AnhDoiGiay/" + product.AnhDaiDien)"
+                 style="width: 250px; height: 200px;">
+            </div>
+            <div class="product__item__text">
+                <h6><a asp-controller="Home" asp-action="SanPhamdetails" asp-route-id="@product.ShoeID">@product.TenGiay</a></h6>
+                <h5>@product.GiaThapNhat.ToString("N0") VNĐ</h5>
+            </div>
+        </div>
+    </div>
+}

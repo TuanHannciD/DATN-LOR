@@ -1,0 +1,45 @@
+﻿@model List<AuthDemo.Models.ViewModels.HoaDonKHVM>
+
+@foreach (var hoaDon in Model)
+{
+    <div class="order-card">
+        <div class="order-header d-flex justify-content-between">
+            <span>Mã đơn: @hoaDon.BillID</span>
+            <span class="badge bg-info text-dark">@hoaDon.TrangThai</span>
+        </div>
+        <div class="px-3 pt-2">
+            <div><strong>Khách:</strong> @hoaDon.HoTen (@hoaDon.SoDienThoai)</div>
+            <div><strong>Địa chỉ:</strong> @hoaDon.DiaChi</div>
+            <div><strong>Ngày đặt:</strong> @(hoaDon.NgayTao.HasValue
+                            ? hoaDon.NgayTao.Value.ToString("dd/MM/yyyy HH:mm")
+                        : "")
+            </div>
+        </div>
+        <hr />
+        @foreach (var item in hoaDon.ChiTiet)
+        {
+            <div class="product-item">
+                <div style="width: 70%;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+                        <img src="@Url.Content("~/AnhDoiGiay/" + item.HinhAnh)" alt="" width="100"
+                            style="border-radius: 8px;" />
+                        <div style="line-height: 1.5;">
+                            <div><strong>@item.TenSanPham</strong></div>
+                            <div>Size: @item.Size - Màu: @item.MauSac</div>
+                            <div>x @item.SoLuong</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 30%; text-align: right;">
+                    <div>@item.DonGia.ToString("N0") đ</div>
+                </div>
+            </div>
+        }
+        <div class="text-end px-3 py-2"><strong>Tổng tiền:</strong> @hoaDon.TongTien.ToString("N0") VNĐ</div>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Không có đơn hàng.</p>
+}

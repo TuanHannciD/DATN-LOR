@@ -3,11 +3,50 @@ import { tinhThanhTienDong, tinhTongTienGioHang } from './modules/cart.js';
 import { openDiscountModal, setDiscountType, handleDiscountSave, handleTangKemCheckbox, handleQuickValue } from './modules/discount-modal.js';
 import { openOrderDiscountModal, setOrderDiscountType, handleOrderDiscountSave, handleOrderDiscountQuickValue } from './modules/order-discount-modal.js';
 import { searchCustomer, renderCustomerDropdown, selectCustomer } from './modules/customer-search.js';
-import {  tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
+import { tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
 
 let currentDiscountRow = null;
 
 $(document).ready(function () {
+     $('#search-input').on('input', function () {
+        var keyword = $(this).val().trim();
+        if (keyword.length === 0) {
+            $('#search-dropdown').removeClass('show').empty();
+            return;
+        }
+        $.get('/Admin/BanHangTaiQuay/SearchSanPham', { keyword: keyword }, function (data) {
+            if (data && data.length > 0) {
+                let html = '';
+                data.forEach(function (sp) {
+                    html += `<button type="button" class="dropdown-item" data-id="${sp.shoeDetailID}">
+                        <div><strong>${sp.tenSp}</strong> <span class="text-success ms-2">${sp.gia.toLocaleString()} VNĐ</span></div>
+                        <div class="text-muted">Màu: ${sp.mauSac} | Size: ${sp.kichThuoc}</div>
+                        <div class="text-muted">Thương hiệu: ${sp.thuongHieu} | Chất liệu: ${sp.chatLieu}</div>
+                        <div class="text-muted">Danh mục: ${sp.danhMuc}</div>
+            </button>`;
+        });
+        $('#search-dropdown').html(html).addClass('show');
+            } else {
+                $('#search-dropdown').html('<div class="dropdown-item text-muted">Không tìm thấy sản phẩm</div>').addClass('show');
+            }
+        });
+    });
+
+    // Khi click vào sản phẩm trong dropdown
+    $('#search-dropdown').on('click', '.dropdown-item', function () {
+        var shoeDetailID = $(this).data('id');
+        $('#hidden-shoeDetailId').val(shoeDetailID);
+        $('#add-to-cart-form').submit();
+        $('#search-dropdown').removeClass('show').empty();
+        $('#search-input').val('');
+    });
+
+    // Ẩn dropdown khi click ra ngoài
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#search-input, #search-dropdown').length) {
+            $('#search-dropdown').removeClass('show').empty();
+        }
+    });
     // Tìm kiếm khách hàng
     $('#search-khachhang').on('input', function () {
         var keyword = $(this).val().trim();
@@ -86,11 +125,11 @@ $(document).ready(function () {
     }
 
     // Validate modal giảm giá sản phẩm
-    handleDiscountSave(function(data) {
+    handleDiscountSave(function (data) {
         clearInputError('#discount-reason');
         clearInputError('#discount-value');
         // Validate lý do
-        
+
         // Validate giá trị giảm giá
         const value = parseFloat($('#discount-value').val()) || 0;
         const isPercent = $('.btn-toggle-type[data-type="percent"]').hasClass('btn-primary');
@@ -122,7 +161,7 @@ $(document).ready(function () {
                 chietKhauTienMat: null,
                 isTangKem: false,
                 reason: ''
-            }, function(response) {
+            }, function (response) {
                 let html = '<span class="fw-bold">' + giaGoc.toLocaleString('vi-VN') + '</span> VNĐ';
                 currentDiscountRow.find('.thanh-tien-dong').html(html);
                 currentDiscountRow.find('.bhq-cart-reason').text('');
@@ -161,7 +200,7 @@ $(document).ready(function () {
             chietKhauTienMat: data.chietKhauTienMat,
             isTangKem: data.isTang,
             reason: data.reason
-        }, function(response) {
+        }, function (response) {
             // Thành công: cập nhật lại thành tiền dòng, tổng tiền, phép tính hóa đơn, lý do
             let html = '';
             if (data.isTang) {
@@ -229,4 +268,127 @@ $(document).ready(function () {
     });
     // Tính tổng tiền sau giảm khi load trang
     tinhThanhTienSauGiam(giamGiaHoaDon);
-}); 
+
+    
+    // Xử lý sự kiện click
+    $(document).on('click', '#btn-thanhtoan', async function () {
+        const selectedShippingMethod = $('#phuongthuc-van-chuyen').val();
+        const selecttedPaymentMethod = $('#phuongthuc-thanh-toan').val();
+        const tongTienText = $('#thanh-tien-sau-giam').text();
+        const khachhangId = $('#selected-khachhang-id').val();
+        const tongTien = parseInt(tongTienText.replace(/[^0-9]/g, '')) || 0;
+
+        console.log("[FE] Bắt đầu xử lý thanh toán...");
+        console.log("[FE] Phương thức vận chuyển:", selectedShippingMethod);
+        console.log("[FE] Phương thức thanh toán:", selecttedPaymentMethod);
+        console.log("[FE] Tổng tiền:", tongTien);
+        console.log("[FE] ID khách hàng:", khachhangId);
+        try {
+            // ajax tạo hóa đơn thanh toán trước
+            const createOrderResponse = await fetch('/Admin/HoaDon/CreateHoaDon', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    hinhThucVanChuyen: selectedShippingMethod,
+                    hinhThucThanhToan: selecttedPaymentMethod,
+                    userID: khachhangId,
+                    giamGiaPhanTram: giamGiaHoaDon.phanTram,
+                    giamGiaTienMat: giamGiaHoaDon.tienMat,
+                    lyDo: giamGiaHoaDon.lyDo,
+                    
+                })
+                        
+            });
+            if (!createOrderResponse.ok) {
+                const errorHtml = await createOrderResponse.text();
+                console.error("[FE] ❌ Lỗi HTTP khi tạo hóa đơn:", createOrderResponse.status, errorHtml);  
+                alert('Lỗi khi tạo hóa đơn: ' + createOrderResponse.statusText);
+                return;
+            }
+
+            const createOrderData = await createOrderResponse.json();
+            console.log("[FE] ✅ Hóa đơn đã được tạo:", createOrderData);
+            
+            
+        
+        if (selecttedPaymentMethod == '1') {
+            try {
+                const response = await fetch('/Admin/Payment/CreatePayment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        tongTien,
+                        orderId: 'test-' + Date.now(), // ID đơn hàng test
+                        orderInfo: 'Don hang test VNPay', // Thông tin đơn hàng
+                        bankCode: 'VNBank' ,// Mã ngân hàng mặc định
+                        returnUrl: window.location.origin + '/Admin/Payment/VNPayReturn' // URL trả về sau thanh toán
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorHtml = await response.text();
+                    console.error("[VNPay] ❌ Lỗi HTTP từ server:", response.status, errorHtml);
+
+                    
+
+                    return;
+                }
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (parseErr) {
+                    console.error("[VNPay] ❌ Lỗi khi parse JSON từ server:", parseErr);
+                    alert("Lỗi: Phản hồi không hợp lệ (không phải JSON). Kiểm tra phía server.");
+                    return;
+                }
+
+                console.log("[VNPay] ✅ Phản hồi JSON từ server:", data);
+
+                if (data && data.paymentUrl) {
+                    console.log("[VNPay] ✅ Mở URL thanh toán:", data.paymentUrl);
+                    window.open(data.paymentUrl, '_blank');
+                } else {
+                    console.warn("[VNPay] ⚠️ Không có paymentUrl trong phản hồi:", data);
+                    alert('Không nhận được URL thanh toán từ server!');
+                }
+
+            } catch (err) {
+                console.error('[VNPay] ❌ Lỗi tạo đơn hàng VNPay:', err);
+                alert('Tạo đơn test thất bại: ' + err.message);
+            }
+        }
+        else if (selecttedPaymentMethod == '2') {
+            // Xử lý thanh toán bằng tiền mặt
+            const confirmPayment = confirm('Bạn có chắc chắn muốn thanh toán bằng tiền mặt không?');
+            if (confirmPayment) {
+                try {
+                    const response = await fetch('/Admin/Payment/CompleteCashPayment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ tongTien })
+                    });
+                }
+                catch (err) {
+                    console.error('[Cash Payment] ❌ Lỗi thanh toán tiền mặt:', err);
+                    alert('Thanh toán tiền mặt thất bại: ' + err.message);
+                }
+            }
+            
+        }
+        }
+        catch (error) {
+            console.error("[FE] ❌ Lỗi khi tạo hóa đơn:", error);
+            alert('Lỗi khi tạo hóa đơn: ' + error.message);
+        }
+    });
+});
+
+
+
