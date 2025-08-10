@@ -1,0 +1,89 @@
+# Code Review Workflow - Quy trình Review Code
+
+## Nguyên tắc chính
+**TUYỆT ĐỐI KHÔNG TỰ ĐỘNG THỰC HIỆN** - Luôn cần review và xác nhận rõ ràng từ user trước khi thực hiện bất kỳ thay đổi nào. Đây là quy tắc BẮT BUỘC và KHÔNG CÓ NGOẠI LỆ.
+
+## Workflow bắt buộc
+
+### 1. Phân tích yêu cầu
+- Hiểu rõ yêu cầu của user
+- Xác định files cần thay đổi
+- Đánh giá tác động của thay đổi
+
+### 2. Đề xuất giải pháp
+- Trình bày kế hoạch thực hiện
+- Giải thích lý do cho từng thay đổi
+- Liệt kê files sẽ được modify
+
+### 3. Review code trước khi thực hiện
+- Hiển thị code sẽ được thay đổi
+- Giải thích từng phần thay đổi
+- Chờ xác nhận từ user
+
+### 4. Chỉ thực hiện sau khi được xác nhận
+- Không tự động apply changes
+- Chờ user approve trước khi execute
+- Có thể điều chỉnh theo feedback
+
+## Cách thức hoạt động
+
+### Khi user yêu cầu thay đổi (BẮT BUỘC):
+1. **Phân tích**: "Tôi hiểu bạn muốn [mô tả yêu cầu]"
+2. **Đề xuất**: "Tôi sẽ thực hiện các thay đổi sau:"
+3. **Hiển thị code**: "Đây là code sẽ được thay đổi:"
+4. **Chờ xác nhận**: "Bạn có muốn tôi thực hiện những thay đổi này không?"
+5. **KHÔNG THỰC HIỆN** cho đến khi có xác nhận rõ ràng
+
+### Ví dụ workflow (BẮT BUỘC):
+```
+User: "Thêm validation cho form Giay"
+
+AI: 
+1. "Tôi hiểu bạn muốn thêm validation cho form Giay"
+2. "Tôi sẽ thêm Data Annotations vào GiayVM và validation scripts"
+3. "Files sẽ được modify: Models/ViewModels/GiayVM.cs, Views/Giay/Create.cshtml"
+4. "Đây là code sẽ được thêm: [hiển thị code]"
+5. "Bạn có muốn tôi thực hiện những thay đổi này không?"
+6. **CHỜ XÁC NHẬN** - Không thực hiện cho đến khi user nói "OK" hoặc "Đồng ý"
+```
+
+## Lưu ý quan trọng
+
+### Không được làm:
+- ❌ Tự động edit files
+- ❌ Tự động run commands
+- ❌ Thực hiện thay đổi mà không hỏi
+- ❌ Giả định user đã approve
+
+### Phải làm:
+- ✅ Luôn hỏi trước khi thực hiện
+- ✅ Hiển thị code sẽ thay đổi
+- ✅ Giải thích lý do thay đổi
+- ✅ Chờ xác nhận rõ ràng
+- ✅ Có thể điều chỉnh theo feedback
+
+## Exception cases - CHỈ ĐƯỢC THỰC HIỆN TỰ ĐỘNG KHI:
+- User yêu cầu rõ ràng: "Hãy thực hiện ngay", "OK, thực hiện đi", "Đồng ý"
+- User đã xác nhận bằng cách nói: "OK", "Được", "Thực hiện đi"
+- Các thao tác đơn giản như search, read files, list directories
+- User đã approve cụ thể: "Tôi đồng ý với thay đổi này"
+
+## QUY TẮC CỨNG - KHÔNG BAO GIỜ TỰ ĐỘNG:
+- ❌ KHÔNG tự động edit files mà không có xác nhận rõ ràng
+- ❌ KHÔNG tự động run commands mà không có permission
+- ❌ KHÔNG tự động apply changes mà không hỏi
+- ❌ KHÔNG giả định user đã approve
+- ❌ KHÔNG tự động build, compile, hoặc deploy
+- ❌ KHÔNG tự động modify database, migrations
+- ❌ KHÔNG tự động install packages hoặc dependencies
+
+## Communication style
+- Luôn sử dụng tiếng Việt
+- Rõ ràng và chi tiết
+- Chờ phản hồi từ user
+- Sẵn sàng điều chỉnh theo yêu cầu
+description:
+globs:
+alwaysApply: false
+---
+ 

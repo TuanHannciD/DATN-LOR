@@ -1,0 +1,196 @@
+{
+	"info": {
+		"_postman_id": "vnpay-test-collection",
+		"name": "VNPay Sandbox Test",
+		"description": "Test VNPay sandbox với thông tin từ email",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test VNPay Payment URL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=10000000&vnp_Command=pay&vnp_CreateDate=20250727024944&vnp_CurrCode=VND&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=Test+thanh+to%c3%a1n+VNPay&vnp_OrderType=other&vnp_ReturnUrl=https%3a%2f%2flocalhost%3a5000%2fAdmin%2fBanHangTaiQuay%2fVNPayCallback&vnp_TmnCode=Y2974UTR&vnp_TxnRef=TEST_20250727024944&vnp_Version=2.1.0&vnp_SecureHash=9B75726D1D3A97F5FA7DA12EC90A05B359B56951E208FCBE60CC8824508BEA55",
+					"protocol": "https",
+					"host": [
+						"sandbox",
+						"vnpayment",
+						"vn"
+					],
+					"path": [
+						"paymentv2",
+						"vpcpay.html"
+					],
+					"query": [
+						{
+							"key": "vnp_Amount",
+							"value": "10000000"
+						},
+						{
+							"key": "vnp_Command",
+							"value": "pay"
+						},
+						{
+							"key": "vnp_CreateDate",
+							"value": "20250727024944"
+						},
+						{
+							"key": "vnp_CurrCode",
+							"value": "VND"
+						},
+						{
+							"key": "vnp_IpAddr",
+							"value": "127.0.0.1"
+						},
+						{
+							"key": "vnp_Locale",
+							"value": "vn"
+						},
+						{
+							"key": "vnp_OrderInfo",
+							"value": "Test+thanh+to%c3%a1n+VNPay"
+						},
+						{
+							"key": "vnp_OrderType",
+							"value": "other"
+						},
+						{
+							"key": "vnp_ReturnUrl",
+							"value": "https%3a%2f%2flocalhost%3a5000%2fAdmin%2fBanHangTaiQuay%2fVNPayCallback"
+						},
+						{
+							"key": "vnp_TmnCode",
+							"value": "Y2974UTR"
+						},
+						{
+							"key": "vnp_TxnRef",
+							"value": "TEST_20250727024944"
+						},
+						{
+							"key": "vnp_Version",
+							"value": "2.1.0"
+						},
+						{
+							"key": "vnp_SecureHash",
+							"value": "9B75726D1D3A97F5FA7DA12EC90A05B359B56951E208FCBE60CC8824508BEA55"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Test VNPay Callback",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5000/Admin/BanHangTaiQuay/VNPayCallback?vnp_Amount=10000000&vnp_BankCode=NCB&vnp_BankTranNo=VNP14211450&vnp_CardType=ATM&vnp_OrderInfo=Test+thanh+to%c3%a1n+VNPay&vnp_PayDate=20250727024944&vnp_ResponseCode=00&vnp_TmnCode=Y2974UTR&vnp_TransactionNo=14211450&vnp_TransactionStatus=00&vnp_TxnRef=TEST_20250727024944&vnp_SecureHash=9B75726D1D3A97F5FA7DA12EC90A05B359B56951E208FCBE60CC8824508BEA55",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"Admin",
+						"BanHangTaiQuay",
+						"VNPayCallback"
+					],
+					"query": [
+						{
+							"key": "vnp_Amount",
+							"value": "10000000"
+						},
+						{
+							"key": "vnp_BankCode",
+							"value": "NCB"
+						},
+						{
+							"key": "vnp_BankTranNo",
+							"value": "VNP14211450"
+						},
+						{
+							"key": "vnp_CardType",
+							"value": "ATM"
+						},
+						{
+							"key": "vnp_OrderInfo",
+							"value": "Test+thanh+to%c3%a1n+VNPay"
+						},
+						{
+							"key": "vnp_PayDate",
+							"value": "20250727024944"
+						},
+						{
+							"key": "vnp_ResponseCode",
+							"value": "00"
+						},
+						{
+							"key": "vnp_TmnCode",
+							"value": "Y2974UTR"
+						},
+						{
+							"key": "vnp_TransactionNo",
+							"value": "14211450"
+						},
+						{
+							"key": "vnp_TransactionStatus",
+							"value": "00"
+						},
+						{
+							"key": "vnp_TxnRef",
+							"value": "TEST_20250727024944"
+						},
+						{
+							"key": "vnp_SecureHash",
+							"value": "9B75726D1D3A97F5FA7DA12EC90A05B359B56951E208FCBE60CC8824508BEA55"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Test VNPay Config",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://sandbox.vnpayment.vn/merchantv2/",
+					"protocol": "https",
+					"host": [
+						"sandbox",
+						"vnpayment",
+						"vn"
+					],
+					"path": [
+						"merchantv2",
+						""
+					]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "vnpay_tmn_code",
+			"value": "Y2974UTR",
+			"type": "string"
+		},
+		{
+			"key": "vnpay_secret_key",
+			"value": "AU52LS5Y0BPB9V7GDTL52MAWI55QGCRJ",
+			"type": "string"
+		},
+		{
+			"key": "vnpay_payment_url",
+			"value": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+			"type": "string"
+		},
+		{
+			"key": "vnpay_merchant_url",
+			"value": "https://sandbox.vnpayment.vn/merchantv2/",
+			"type": "string"
+		}
+	]
+} 

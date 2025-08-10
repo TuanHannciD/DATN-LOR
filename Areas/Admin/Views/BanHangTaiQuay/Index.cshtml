@@ -213,7 +213,8 @@
                         <strong>Thành tiền sau giảm: </strong>
                         <span class="text-primary fw-bold" id="thanh-tien-sau-giam"></span>
                     </div>
-                    <button class="btn btn-success"><i class="mdi mdi-cash-multiple"></i> Thanh toán</button>
+                    <button class="btn btn-success" id="btn-thanhtoan"><i class="mdi mdi-cash-multiple"></i> Thanh toán</button>
+                    <button id="btn-test-vnpay" class="btn btn-warning" type="button" style="margin-left: 8px;">Tạo đơn test VNPay</button>
                 </div>
             </div>
         </div>
@@ -394,6 +395,4 @@ $(document).ready(function() {
 
 <link rel="stylesheet" href="~/css/banhangtaiquay.css" />
 <link rel="stylesheet" href="~/css/banhangtaiquay-modal.css" />
-<script>
-    window.tongTienGoc = @cartItems.Sum(x => x.GiaSauGiam * x.SoLuong);
-</script>
+

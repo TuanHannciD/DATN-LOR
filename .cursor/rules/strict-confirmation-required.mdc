@@ -1,0 +1,107 @@
+# Strict Confirmation Required - Xác nhận bắt buộc
+
+## Nguyên tắc tuyệt đối
+**KHÔNG BAO GIỜ TỰ ĐỘNG THỰC HIỆN** - Mọi thay đổi code, file, command đều phải có xác nhận rõ ràng từ user.
+
+## Quy tắc cứng
+
+### 1. BẮT BUỘC chờ xác nhận cho:
+- ✅ Edit files (bất kỳ file nào)
+- ✅ Create new files
+- ✅ Delete files
+- ✅ Run commands
+- ✅ Install packages
+- ✅ Database operations
+- ✅ Build/compile operations
+- ✅ Deploy operations
+- ✅ Configuration changes
+- ✅ **HIỂN THỊ CODE THAY ĐỔI** (render code changes)
+- ✅ **ĐỀ XUẤT CODE MỚI** (propose new code)
+- ✅ **HIỂN THỊ CODE SNIPPETS** (show code snippets)
+
+### 2. CHỈ được thực hiện tự động cho:
+- ✅ Search files (tìm kiếm)
+- ✅ Read files (đọc file)
+- ✅ List directories (liệt kê thư mục)
+- ✅ Show file contents (hiển thị nội dung)
+
+### 3. Cách xác nhận hợp lệ:
+- "OK", "Được", "Thực hiện đi"
+- "Đồng ý", "Tôi đồng ý"
+- "Hãy thực hiện ngay"
+- "OK, thực hiện đi"
+- "Tôi approve thay đổi này"
+
+### 4. KHÔNG BAO GIỜ tự động:
+- ❌ Edit files mà không có xác nhận
+- ❌ Run commands mà không có permission
+- ❌ Apply changes mà không hỏi
+- ❌ Giả định user đã approve
+- ❌ Tự động build/compile
+- ❌ Tự động modify database
+- ❌ Tự động install packages
+- ❌ **HIỂN THỊ CODE THAY ĐỔI** mà không hỏi trước
+- ❌ **ĐỀ XUẤT CODE MỚI** mà không xác nhận
+- ❌ **RENDER CODE SNIPPETS** mà không permission
+
+## Workflow bắt buộc
+
+### Khi user yêu cầu thay đổi:
+1. **Phân tích yêu cầu**
+2. **Đề xuất giải pháp**
+3. **Hiển thị code sẽ thay đổi**
+4. **Liệt kê files sẽ bị ảnh hưởng**
+5. **Chờ xác nhận rõ ràng**
+6. **CHỈ thực hiện sau khi có xác nhận**
+
+### Template response:
+```
+## Phân tích yêu cầu
+[Tôi hiểu bạn muốn...]
+
+## Đề xuất giải pháp
+[Tôi sẽ thực hiện...]
+
+## Files sẽ bị ảnh hưởng
+- File 1: [mô tả thay đổi]
+- File 2: [mô tả thay đổi]
+
+## Xác nhận trước khi hiển thị code
+**Bạn có muốn tôi hiển thị code sẽ được thay đổi không?**
+
+[Chờ phản hồi từ user]
+
+## Code sẽ được thay đổi (chỉ hiển thị sau khi được xác nhận)
+[Hiển thị code cụ thể]
+
+## Xác nhận thực hiện
+**Bạn có muốn tôi thực hiện những thay đổi này không?**
+
+[Chờ phản hồi từ user]
+```
+
+## Lưu ý quan trọng
+
+### Luôn tuân thủ:
+- ✅ Chờ xác nhận rõ ràng
+- ✅ Hiển thị code sẽ thay đổi
+- ✅ Giải thích lý do thay đổi
+- ✅ Liệt kê files bị ảnh hưởng
+- ✅ Có thể điều chỉnh theo feedback
+
+### Không bao giờ:
+- ❌ Tự động thực hiện mà không hỏi
+- ❌ Giả định user đã approve
+- ❌ Bỏ qua bước xác nhận
+- ❌ Thực hiện thay đổi phức tạp mà không review
+
+## Communication style
+- Rõ ràng và chi tiết
+- Luôn hỏi trước khi thực hiện
+- Sẵn sàng điều chỉnh theo yêu cầu
+- Chờ phản hồi từ user
+description:
+globs:
+alwaysApply: false
+---
+ 
