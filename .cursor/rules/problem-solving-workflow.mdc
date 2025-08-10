@@ -1,0 +1,145 @@
+# Problem Solving Workflow - Quy trình giải quyết vấn đề
+
+## Nguyên tắc chính
+**KHÔNG VỘI VÀNG SỬA CODE** - Luôn tuân theo quy trình 5 bước để đảm bảo giải pháp chính xác và an toàn.
+
+## Quy trình 5 bước bắt buộc
+
+### Bước 1: Nghiên cứu tài liệu liên quan
+**Mục đích**: Hiểu rõ vấn đề và tìm tài liệu tham khảo chính thức
+**Hành động**:
+- Tìm kiếm documentation chính thức về vấn đề
+- Đọc Microsoft docs, Stack Overflow, GitHub issues
+- Tìm hiểu best practices và common solutions
+- Ghi chép các thông tin quan trọng
+
+**Ví dụ**:
+```
+Vấn đề: "Lỗi async/await trong Entity Framework"
+Tài liệu cần đọc:
+- Microsoft EF Core Async Programming
+- Stack Overflow: "EF Core async best practices"
+- GitHub: Entity Framework issues
+```
+
+### Bước 2: Tìm kiếm giải pháp từ cộng đồng
+**Mục đích**: Học hỏi từ kinh nghiệm của người khác
+**Hành động**:
+- Tìm kiếm trên Stack Overflow với keywords phù hợp
+- Kiểm tra GitHub issues và discussions
+- Đọc blog posts và tutorials liên quan
+- Đánh giá mức độ phổ biến của vấn đề
+
+**Ví dụ**:
+```
+Tìm kiếm: "ASP.NET Core async service pattern"
+Kết quả: 50+ Stack Overflow questions
+Đánh giá: Vấn đề phổ biến, có nhiều giải pháp
+```
+
+### Bước 3: Phân tích tổng quát code hiện tại
+**Mục đích**: Xác định chính xác nguyên nhân và phạm vi ảnh hưởng
+**Hành động**:
+- Kiểm tra code liên quan đến vấn đề
+- Xác định files sẽ bị ảnh hưởng
+- Đánh giá mức độ phức tạp của thay đổi
+- Kiểm tra dependencies và side effects
+
+**Ví dụ**:
+```
+Vấn đề: "Services không sử dụng async/await"
+Files ảnh hưởng:
+- Areas/Admin/Services/*.cs (8 files)
+- Areas/Admin/Controllers/*.cs (8 files)
+- Areas/Admin/Interface/*.cs (8 files)
+Mức độ: Trung bình, cần thay đổi 24 files
+```
+
+### Bước 4: Đề xuất giải pháp theo mức độ rủi ro
+**Mục đích**: Đưa ra giải pháp phù hợp với mức độ rủi ro
+**Phân loại rủi ro**:
+
+**Rủi ro thấp** (Thay đổi < 5 files, không ảnh hưởng core logic):
+- Tự động sửa với review
+- Giải pháp đơn giản, ít side effects
+
+**Rủi ro trung bình** (Thay đổi 5-15 files, ảnh hưởng một số features):
+- Đề xuất giải pháp chi tiết
+- Hiển thị code sẽ thay đổi
+- Chờ xác nhận trước khi thực hiện
+
+**Rủi ro cao** (Thay đổi > 15 files, ảnh hưởng core architecture):
+- Chỉ đề xuất, không tự động sửa
+- Cần review kỹ lưỡng
+- Có thể cần refactoring lớn
+
+### Bước 5: Quyết định phương pháp sửa
+**Mục đích**: Chọn phương pháp phù hợp với mức độ rủi ro
+
+**Tự động sửa** (Rủi ro thấp):
+- Vấn đề đơn giản, có giải pháp rõ ràng
+- Ít files bị ảnh hưởng
+- Có thể rollback dễ dàng
+
+**Gợi ý sửa** (Rủi ro trung bình/cao):
+- Vấn đề phức tạp, cần review
+- Nhiều files bị ảnh hưởng
+- Cần thảo luận với user
+
+## Template báo cáo vấn đề
+
+### Khi user báo cáo vấn đề:
+```
+## Phân tích vấn đề: [Tên vấn đề]
+
+### Bước 1: Tài liệu nghiên cứu
+- [ ] Microsoft Documentation: [Link]
+- [ ] Stack Overflow: [Số lượng kết quả]
+- [ ] GitHub Issues: [Link]
+- [ ] Best Practices: [Tóm tắt]
+
+### Bước 2: Giải pháp cộng đồng
+- [ ] Phổ biến: [Có/Không]
+- [ ] Giải pháp chính: [Mô tả]
+- [ ] Alternative solutions: [Danh sách]
+
+### Bước 3: Phân tích code
+- [ ] Files ảnh hưởng: [Danh sách]
+- [ ] Mức độ phức tạp: [Thấp/Trung bình/Cao]
+- [ ] Dependencies: [Danh sách]
+
+### Bước 4: Đề xuất giải pháp
+- [ ] Mức độ rủi ro: [Thấp/Trung bình/Cao]
+- [ ] Phương pháp: [Tự động/Gợi ý]
+- [ ] Lý do: [Giải thích]
+
+### Bước 5: Quyết định
+- [ ] Hành động: [Tự động sửa/Gợi ý sửa]
+- [ ] Timeline: [Ước tính thời gian]
+- [ ] Rollback plan: [Kế hoạch rollback]
+```
+
+## Lưu ý quan trọng
+
+### Luôn tuân thủ:
+- ✅ Không bỏ qua bước nào
+- ✅ Đánh giá rủi ro trước khi hành động
+- ✅ Chờ xác nhận cho thay đổi phức tạp
+- ✅ Có kế hoạch rollback
+
+### Không được làm:
+- ❌ Vội vàng sửa code mà không phân tích
+- ❌ Bỏ qua việc tìm hiểu tài liệu
+- ❌ Không đánh giá rủi ro
+- ❌ Tự động sửa khi rủi ro cao
+
+## Communication style
+- Rõ ràng và có cấu trúc
+- Sử dụng template báo cáo
+- Giải thích lý do cho mỗi quyết định
+- Chờ phản hồi từ user trước khi hành động
+description:
+globs:
+alwaysApply: false
+---
+ 

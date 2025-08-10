@@ -1,0 +1,178 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model AuthDemo.Models.NguoiDung
+@{
+    ViewData["Title"] = "UserProfile";
+    Layout = "_LayoutEmpty";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Header Card -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-gradient-primary text-white text-center py-4">
+                    <h2 class="mb-0">
+                        Thông tin người dùng
+                    </h2>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="card-body p-4">
+                    <!-- Avatar Section -->
+                    <div class="text-center mb-4">
+                        <div class="avatar-container">
+                            @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                            {
+                                <img src="~/avatar/@Model.AnhDaiDien" alt="Avatar" class="avatar-img" />
+                            }
+                            else
+                            {
+                                <img src="~/images/default-avatar.png" alt="Default Avatar" class="avatar-img" />
+                            }
+                        </div>
+                    </div>
+
+                    <!-- User Information -->
+                    <div class="user-details">
+                        <div class="row mb-3 py-3 border-bottom">
+                            <div class="col-md-4">
+                                <strong class="text-secondary">Tên đăng nhập:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="text-dark fs-6">@Html.DisplayFor(model => model.TenDangNhap)</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 py-3 border-bottom">
+                            <div class="col-md-4">
+                                <strong class="text-secondary">Mật khẩu:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="text-dark">@Html.DisplayFor(model => model.MatKhau)</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 py-3 border-bottom">
+                            <div class="col-md-4">
+                                <strong class="text-secondary">Họ tên:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="text-dark fs-6">@Html.DisplayFor(model => model.HoTen)</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 py-3 border-bottom">
+                            <div class="col-md-4">
+                                <strong class="text-secondary">Email:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="text-dark fs-6">@Html.DisplayFor(model => model.Email)</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 py-3 border-bottom">
+                            <div class="col-md-4">
+                                <strong class="text-secondary">Ảnh đại diện:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="text-dark fs-6">@Html.DisplayFor(model => model.AnhDaiDien)</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 py-3 border-bottom">
+                            <div class="col-md-4">
+                                <strong class="text-secondary">Số điện thoại:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="text-dark fs-6">@Html.DisplayFor(model => model.SoDienThoai)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-4 pt-3">
+                        <a asp-action="EditProfile" class="btn btn-primary btn-lg px-4 py-2 shadow-sm">
+                            Chỉnh sửa thông tin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        border-bottom: none;
+    }
+
+    .user-details .row:hover {
+        background-color: #f8f9fa;
+        transition: background-color 0.3s ease;
+        border-radius: 8px;
+        margin-left: -15px;
+        margin-right: -15px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    }
+
+    .avatar-container {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%; /* Tạo hình tròn */
+        border: 2px solid #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    media (max-width: 768px) {
+        .col-md-4
+
+    {
+        margin-bottom: 10px;
+    }
+
+    .user-details .row {
+        text-align: center;
+    }
+
+    .avatar-container {
+        width: 120px;
+        height: 120px;
+    }
+
+    }
+</style>

@@ -1,0 +1,84 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model AuthDemo.Models.NguoiDung
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin";
+    Layout = "_LayoutEmpty";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Header Card -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-gradient-primary text-white text-center py-4">
+                    <h2 class="mb-0">Chỉnh sửa thông tin người dùng</h2>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="card-body p-4">
+                    @if (Model != null)
+                    {
+                        @if (ViewBag.Errors != null)
+                        {
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach (var error in ViewBag.Errors)
+                                    {
+                                        <li>@error</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <form asp-action="EditProfile" asp-controller="Account" method="post" enctype="multipart/form-data">
+                            <input type="hidden" asp-for="UserID" />
+                            <input type="hidden" asp-for="TenDangNhap" />
+                            <input type="hidden" asp-for="MatKhau" />
+
+                            <div class="mb-3">
+                                <label asp-for="HoTen" class="form-label text-secondary">Họ tên</label>
+                                <input asp-for="HoTen" class="form-control" />
+                                <span asp-validation-for="HoTen" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label text-secondary">Email</label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="SoDienThoai" class="form-label text-secondary">Số điện thoại</label>
+                                <input asp-for="SoDienThoai" class="form-control" />
+                                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="AnhDaiDien" class="form-label text-secondary">Ảnh đại diện</label>
+                                <input type="file" name="avatarFile" class="form-control" accept="image/*" />
+                                <span asp-validation-for="AnhDaiDien" class="text-danger"></span>
+                                @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                                {
+                                    <p class="mt-2">Ảnh hiện tại: <a href="~/avatar/@Model.AnhDaiDien" target="_blank">@Model.AnhDaiDien</a></p>
+                                }
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-4 py-2 shadow-sm">Lưu thông tin</button>
+                                <a asp-action="UserProfile" class="btn btn-secondary btn-lg px-4 py-2 ms-2">Quay lại</a>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <p class="text-danger">Không tìm thấy thông tin người dùng.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
