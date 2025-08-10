@@ -4,11 +4,13 @@ import { openDiscountModal, setDiscountType, handleDiscountSave, handleTangKemCh
 import { openOrderDiscountModal, setOrderDiscountType, handleOrderDiscountSave, handleOrderDiscountQuickValue } from './modules/order-discount-modal.js';
 import { searchCustomer, renderCustomerDropdown, selectCustomer } from './modules/customer-search.js';
 import { tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
+import { updateCart } from './modules/update-cart.js';
+
 
 let currentDiscountRow = null;
 
 $(document).ready(function () {
-     $('#search-input').on('input', function () {
+    $('#search-input').on('input', function () {
         var keyword = $(this).val().trim();
         if (keyword.length === 0) {
             $('#search-dropdown').removeClass('show').empty();
@@ -30,6 +32,12 @@ $(document).ready(function () {
                 $('#search-dropdown').html('<div class="dropdown-item text-muted">Không tìm thấy sản phẩm</div>').addClass('show');
             }
         });
+    });
+     $(document).on('click', '.btn-update-cart', function (e) {
+        e.preventDefault();
+        const shoeDetailId = $(this).data('id');
+        const actionType = $(this).data('action');
+        updateCart(shoeDetailId, actionType);
     });
 
     // Khi click vào sản phẩm trong dropdown
