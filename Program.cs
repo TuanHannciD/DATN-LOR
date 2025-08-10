@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Areas.Admin.Services;
+using AuthDemo.Models.ViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddControllersWithViews();
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Vnpay configuration
+builder.Services.Configure<VNPayConfig>(builder.Configuration.GetSection("VnPay"));
 
 // Đăng ký DI cho SanPhamService
 builder.Services.AddScoped<IGiayService, GiayService>();
@@ -21,6 +24,8 @@ builder.Services.AddScoped<IChatLieuService, ChatLieuService>();
 builder.Services.AddScoped<IChiTietGiayService, ChiTietGiayService>();
 builder.Services.AddScoped<IBanHangTaiQuayService, BanHangTaiQuayService>();
 builder.Services.AddScoped<IHoaDonService, HoaDonService>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
+
 
 
 builder.Services.AddHttpContextAccessor();

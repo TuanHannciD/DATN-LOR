@@ -114,7 +114,7 @@ namespace AuthDemo.Areas.Admin.Services
                 .ToList();
             var result = cartItems.Select(item => {
                 var ctg = item.ChiTietGiay;
-                var giaGoc = (ctg?.Gia ?? 0) * item.SoLuong;
+                var giaGoc = ctg?.Gia ?? 0;
                 var ckpt = item.ChietKhauPhanTram ?? 0;
                 var cktm = item.ChietKhauTienMat ?? 0;
                 var isTang = item.IsTangKem == true;

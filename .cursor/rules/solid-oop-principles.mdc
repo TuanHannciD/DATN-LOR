@@ -1,0 +1,391 @@
+# SOLID Principles & OOP Best Practices
+
+## Nguyên tắc chính
+**LUÔN TUÂN THỦ SOLID PRINCIPLES** - Mọi code phải tuân theo các nguyên tắc SOLID và OOP best practices để đảm bảo code dễ bảo trì, mở rộng và clean.
+
+## SOLID Principles
+
+### 1. Single Responsibility Principle (SRP)
+**Mỗi class chỉ có một trách nhiệm duy nhất**
+
+**Ví dụ đúng**:
+```csharp
+// Tách riêng service cho từng entity
+public class GiayService : IGiayService
+{
+    public async Task<IEnumerable<Giay>> GetAllAsync() { }
+    public async Task<Giay> GetByIdAsync(int id) { }
+}
+
+public class HoaDonService : IHoaDonService  
+{
+    public async Task<IEnumerable<HoaDon>> GetAllAsync() { }
+    public async Task<HoaDon> GetByIdAsync(int id) { }
+}
+```
+
+**Ví dụ sai**:
+```csharp
+// Một service làm quá nhiều việc
+public class DataService
+{
+    public async Task<IEnumerable<Giay>> GetGiayAsync() { }
+    public async Task<IEnumerable<HoaDon>> GetHoaDonAsync() { }
+    public async Task<IEnumerable<User>> GetUserAsync() { }
+    public async Task SendEmailAsync() { }
+    public async Task ProcessPaymentAsync() { }
+}
+```
+
+### 2. Open/Closed Principle (OCP)
+**Mở để mở rộng, đóng để sửa đổi**
+
+**Ví dụ đúng**:
+```csharp
+public interface IPaymentProcessor
+{
+    Task<bool> ProcessPaymentAsync(decimal amount);
+}
+
+public class CreditCardProcessor : IPaymentProcessor
+{
+    public async Task<bool> ProcessPaymentAsync(decimal amount) { }
+}
+
+public class PayPalProcessor : IPaymentProcessor
+{
+    public async Task<bool> ProcessPaymentAsync(decimal amount) { }
+}
+```
+
+### 3. Liskov Substitution Principle (LSP)
+**Subclass phải có thể thay thế base class**
+
+**Ví dụ đúng**:
+```csharp
+public abstract class BaseService<T>
+{
+    public abstract Task<IEnumerable<T>> GetAllAsync();
+}
+
+public class GiayService : BaseService<Giay>
+{
+    public override async Task<IEnumerable<Giay>> GetAllAsync() { }
+}
+```
+
+### 4. Interface Segregation Principle (ISP)
+**Interface nhỏ, chuyên biệt thay vì interface lớn, tổng quát**
+
+**Ví dụ đúng**:
+```csharp
+public interface IReadService<T>
+{
+    Task<IEnumerable<T>> GetAllAsync();
+    Task<T> GetByIdAsync(int id);
+}
+
+public interface IWriteService<T>
+{
+    Task<T> CreateAsync(T entity);
+    Task<T> UpdateAsync(T entity);
+    Task DeleteAsync(int id);
+}
+
+public interface IGiayService : IReadService<Giay>, IWriteService<Giay>
+{
+    Task<IEnumerable<Giay>> GetByBrandAsync(string brand);
+}
+```
+
+### 5. Dependency Inversion Principle (DIP)
+**Phụ thuộc vào abstraction, không phụ thuộc vào concrete**
+
+**Ví dụ đúng**:
+```csharp
+public class GiayController : Controller
+{
+    private readonly IGiayService _giayService;
+    
+    public GiayController(IGiayService giayService)
+    {
+        _giayService = giayService;
+    }
+}
+```
+
+## OOP Best Practices
+
+### 1. Encapsulation (Tính đóng gói)
+**Che giấu implementation details**
+
+**Ví dụ đúng**:
+```csharp
+public class Giay
+{
+    private decimal _gia;
+    
+    public decimal Gia
+    {
+        get => _gia;
+        set => _gia = value > 0 ? value : throw new ArgumentException("Giá phải > 0");
+    }
+}
+```
+
+### 2. Inheritance (Tính kế thừa)
+**Sử dụng inheritance hợp lý**
+
+**Ví dụ đúng**:
+```csharp
+public abstract class BaseEntity
+{
+    public int Id { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+}
+
+public class Giay : BaseEntity
+{
+    public string TenGiay { get; set; }
+    public decimal Gia { get; set; }
+}
+```
+
+### 3. Polymorphism (Tính đa hình)
+**Sử dụng interface và abstract class**
+
+**Ví dụ đúng**:
+```csharp
+public interface IValidator<T>
+{
+    ValidationResult Validate(T entity);
+}
+
+public class GiayValidator : IValidator<Giay>
+{
+    public ValidationResult Validate(Giay giay)
+    {
+        // Validation logic
+    }
+}
+```
+
+## Modularization Principles
+
+### 1. Separation of Concerns (SoC)
+**Tách biệt các concerns khác nhau**
+
+**Cấu trúc thư mục**:
+```
+Areas/
+  Admin/
+    Controllers/     # Chỉ xử lý HTTP requests
+    Services/        # Chỉ xử lý business logic
+    Interface/       # Chỉ định nghĩa contracts
+    Views/           # Chỉ hiển thị UI
+```
+
+### 2. High Cohesion, Low Coupling
+**Module có tính liên kết cao, ít phụ thuộc**
+
+**Ví dụ đúng**:
+```csharp
+// High Cohesion - Tất cả methods liên quan đến Giay
+public class GiayService : IGiayService
+{
+    public async Task<IEnumerable<Giay>> GetAllAsync() { }
+    public async Task<Giay> GetByIdAsync(int id) { }
+    public async Task<Giay> CreateAsync(Giay giay) { }
+    public async Task<Giay> UpdateAsync(Giay giay) { }
+    public async Task DeleteAsync(int id) { }
+}
+
+// Low Coupling - Chỉ phụ thuộc vào interface
+public class GiayController : Controller
+{
+    private readonly IGiayService _giayService; // Dependency injection
+}
+```
+
+### 3. Interface-Based Design
+**Sử dụng interface thay vì concrete class**
+
+**Ví dụ đúng**:
+```csharp
+public interface IGiayRepository
+{
+    Task<IEnumerable<Giay>> GetAllAsync();
+    Task<Giay> GetByIdAsync(int id);
+}
+
+public interface IGiayService
+{
+    Task<IEnumerable<Giay>> GetAllAsync();
+    Task<Giay> GetByIdAsync(int id);
+}
+
+public class GiayService : IGiayService
+{
+    private readonly IGiayRepository _repository;
+    
+    public GiayService(IGiayRepository repository)
+    {
+        _repository = repository;
+    }
+}
+```
+
+## Code Organization Rules
+
+### 1. Naming Conventions
+- **Classes**: PascalCase (GiayService, HoaDonController)
+- **Methods**: PascalCase (GetAllAsync, CreateAsync)
+- **Properties**: PascalCase (TenGiay, Gia)
+- **Private fields**: camelCase với underscore (_giayService)
+- **Constants**: UPPER_CASE (MAX_PRICE, DEFAULT_SIZE)
+
+### 2. File Organization
+```
+Models/
+  Giay.cs
+  HoaDon.cs
+  ViewModels/
+    GiayVM.cs
+    HoaDonVM.cs
+  Configurations/
+    GiayConfiguration.cs
+```
+
+### 3. Method Organization
+```csharp
+public class GiayService : IGiayService
+{
+    // 1. Private fields
+    private readonly IGiayRepository _repository;
+    
+    // 2. Constructor
+    public GiayService(IGiayRepository repository)
+    {
+        _repository = repository;
+    }
+    
+    // 3. Public methods
+    public async Task<IEnumerable<Giay>> GetAllAsync() { }
+    
+    // 4. Private methods
+    private async Task ValidateGiayAsync(Giay giay) { }
+}
+```
+
+## Validation & Error Handling
+
+### 1. Data Annotations
+```csharp
+public class GiayVM
+{
+    [Required(ErrorMessage = "Tên giày không được để trống")]
+    [StringLength(100, ErrorMessage = "Tên giày không quá 100 ký tự")]
+    public string TenGiay { get; set; }
+    
+    [Required(ErrorMessage = "Giá không được để trống")]
+    [Range(0, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
+    public decimal Gia { get; set; }
+}
+```
+
+### 2. Exception Handling
+```csharp
+public async Task<Giay> GetByIdAsync(int id)
+{
+    try
+    {
+        var giay = await _repository.GetByIdAsync(id);
+        if (giay == null)
+            throw new NotFoundException($"Giày với ID {id} không tồn tại");
+        return giay;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Lỗi khi lấy giày với ID {Id}", id);
+        throw;
+    }
+}
+```
+
+## Performance Considerations
+
+### 1. Async/Await Pattern
+```csharp
+// Đúng
+public async Task<IEnumerable<Giay>> GetAllAsync()
+{
+    return await _repository.GetAllAsync();
+}
+
+// Sai
+public IEnumerable<Giay> GetAll()
+{
+    return _repository.GetAll(); // Blocking call
+}
+```
+
+### 2. Lazy Loading
+```csharp
+public class Giay
+{
+    private ICollection<ChiTietGiay> _chiTietGiay;
+    
+    public virtual ICollection<ChiTietGiay> ChiTietGiay
+    {
+        get => _chiTietGiay ??= new List<ChiTietGiay>();
+        set => _chiTietGiay = value;
+    }
+}
+```
+
+## Testing Considerations
+
+### 1. Unit Testing
+```csharp
+[Test]
+public async Task GetAllAsync_ShouldReturnAllGiay()
+{
+    // Arrange
+    var mockRepository = new Mock<IGiayRepository>();
+    var service = new GiayService(mockRepository.Object);
+    
+    // Act
+    var result = await service.GetAllAsync();
+    
+    // Assert
+    Assert.IsNotNull(result);
+}
+```
+
+### 2. Dependency Injection
+```csharp
+// Program.cs
+builder.Services.AddScoped<IGiayService, GiayService>();
+builder.Services.AddScoped<IGiayRepository, GiayRepository>();
+```
+
+## Lưu ý quan trọng
+
+### Luôn tuân thủ:
+- ✅ Mỗi class chỉ có một trách nhiệm
+- ✅ Sử dụng interface thay vì concrete class
+- ✅ Dependency injection cho tất cả dependencies
+- ✅ Async/await cho tất cả I/O operations
+- ✅ Proper error handling và logging
+- ✅ Data annotations cho validation
+- ✅ Clean code và meaningful naming
+
+### Không được làm:
+- ❌ Một class làm quá nhiều việc
+- ❌ Hard-code dependencies
+- ❌ Blocking calls trong async methods
+- ❌ Ignore exceptions
+- ❌ Poor naming conventions
+- ❌ Tight coupling giữa các modules
+ 

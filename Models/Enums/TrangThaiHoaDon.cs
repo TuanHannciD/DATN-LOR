@@ -23,6 +23,8 @@ namespace AuthDemo.Models.Enums
 
         [Display(Name = "Đã thanh toán")]
         DaThanhToan = 5
+
+        
     }
 
     

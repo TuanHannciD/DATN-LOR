@@ -12,12 +12,11 @@ namespace AuthDemo.Models.Configurations
             builder.HasKey(x => x.BillID);
             builder.Property(x => x.HoTen).HasMaxLength(100);
             builder.Property(x => x.Email).HasMaxLength(100);
-            builder.Property(x => x.SoDienThoai).HasMaxLength(20);
+            builder.Property(x => x.SoDienThoai).HasMaxLength(100);
             builder.Property(x => x.DiaChi).HasMaxLength(255);
             builder.Property(x => x.TrangThai).HasMaxLength(50);
             builder.Property(x => x.PhuongThucThanhToan).HasMaxLength(50);
             builder.Property(x => x.GhiChu).HasMaxLength(255);
-            builder.Property(x => x.LyDo).HasMaxLength(255);
             builder.Property(x => x.NguoiTao).HasMaxLength(50);
             builder.Property(x => x.NguoiCapNhat).HasMaxLength(50);
             builder.HasOne(x => x.NguoiDung)
@@ -39,7 +38,6 @@ namespace AuthDemo.Models.Configurations
                     PhuongThucThanhToan = PhuongThucThanhToan.TienMat,
                     DaHuy = false,
                     GhiChu = "",
-                    LyDo = "",
                     NgayGiaoHang = null,
                     NguoiTao = "system",
                     NguoiCapNhat = "system"

@@ -1,0 +1,105 @@
+# Frontend Views & Static Files Guidelines
+
+## Razor Views
+- Sử dụng `@model` directive cho strongly-typed views
+- Sử dụng `asp-for`, `asp-action`, `asp-controller` cho form fields và routing
+- Sử dụng partial views cho reusable components
+- Sử dụng layout: `Views/Shared/_Layout.cshtml` hoặc `Areas/Admin/Views/Shared/_LayoutAdmin.cshtml`
+- Sử dụng `@RenderBody()` cho content injection
+- Sử dụng `@RenderSection()` cho scripts/styles động
+- Sử dụng validation với `asp-validation-for` và Data Annotations
+
+## CSS Guidelines
+- Sử dụng Bootstrap framework
+- Custom CSS trong `wwwroot/css/`
+- Responsive design cho mobile compatibility
+- Sử dụng CSS classes thay vì inline styles
+- Tổ chức CSS theo module hoặc feature
+
+## JavaScript Guidelines
+- Sử dụng jQuery cho DOM manipulation
+- AJAX calls cho dynamic interactions
+- Sử dụng modules pattern cho complex JS
+- Validate form data trước khi submit
+- Đặt scripts ở cuối layout hoặc trong section Scripts
+
+## Icon Libraries Available
+
+### Font Awesome (CDN)
+- Được include trong main layout: `https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css`
+- Sử dụng: `<i class="fas fa-icon-name"></i>` hoặc `<i class="far fa-icon-name"></i>`
+- Ví dụ: `<i class="fas fa-user"></i>`, `<i class="fas fa-home"></i>`
+
+### Material Design Icons (MDI)
+- Local file: `~/assets/vendors/mdi/css/materialdesignicons.min.css`
+- Sử dụng trong Admin Area
+- Sử dụng: `<i class="mdi mdi-icon-name"></i>`
+- Ví dụ: `<i class="mdi mdi-heart text-danger"></i>`, `<i class="mdi mdi-account"></i>`
+
+### Themify Icons
+- Local file: `~/assets/vendors/ti-icons/css/themify-icons.css`
+- Sử dụng trong Admin Area
+- Sử dụng: `<i class="ti ti-icon-name"></i>`
+- Ví dụ: `<i class="ti ti-home"></i>`, `<i class="ti ti-settings"></i>`
+
+### Font Awesome (Local)
+- Local file: `~/assets/vendors/font-awesome/css/font-awesome.min.css`
+- Sử dụng trong Admin Area
+- Sử dụng: `<i class="fa fa-icon-name"></i>`
+- Ví dụ: `<i class="fa fa-user"></i>`, `<i class="fa fa-cog"></i>`
+
+## Static File Organization
+```
+wwwroot/
+├── css/
+│   ├── bootstrap.min.css
+│   └── custom styles
+├── js/
+│   ├── jquery-3.3.1.min.js
+│   ├── bootstrap.min.js
+│   └── custom scripts
+├── img/
+│   ├── product images
+│   └── UI elements
+└── assets/
+    ├── vendors/
+    │   ├── font-awesome/     # Font Awesome icons
+    │   ├── mdi/             # Material Design Icons
+    │   ├── ti-icons/        # Themify Icons
+    │   └── bootstrap/       # Bootstrap framework
+    ├── css/
+    ├── js/
+    └── images/
+```
+
+## View Patterns
+```html
+@model ViewModelType
+@{
+    ViewData["Title"] = "Page Title";
+}
+
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    <form asp-action="Action" asp-controller="Controller" method="post">
+        <div class="form-group">
+            <label asp-for="PropertyName"></label>
+            <input asp-for="PropertyName" class="form-control" />
+            <span asp-validation-for="PropertyName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+```
+
+## Best Practices
+- Sử dụng Data Annotations cho validation
+- Sử dụng section Scripts để inject JS riêng cho từng view
+- Tối ưu hóa hình ảnh và assets cho performance
+- Sử dụng partial views cho các thành phần lặp lại
+- Đảm bảo accessibility (WCAG) cho UI
+- Sử dụng icon libraries nhất quán
+description:
+globs:
+alwaysApply: false
+---
