@@ -15,11 +15,9 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Mã hóa đơn</th>
                         <th>Khách hàng</th>
                         <th>SĐT</th>
                         <th>Email</th>
-                        <th>Địa chỉ</th>
                         <th>Trạng thái</th>
                         <th>Hình thức thanh toán</th>
                         <th>Hình thức vận chuyển</th>
@@ -35,11 +33,9 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.HoaDonID</td>
                         <td>@item.TenKhachHang</td>
                         <td>@item.SoDienThoai</td>
                         <td>@item.Email</td>
-                        <td>@item.DiaChi</td>
                         <td><span class="badge bg-info">@item.TrangThaiDisplay</span></td>
                         <td>@item.HinhThucThanhToanDisplay</td>
                         <td>@item.HinhThucVanChuyenDisplay</td>

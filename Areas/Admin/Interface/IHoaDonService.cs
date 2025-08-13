@@ -10,7 +10,8 @@ namespace AuthDemo.Areas.Admin.Interface
         HoaDonDTO GetHoaDonById(int id);
         Task<Result<HoaDonDTO>> CreateHoaDon(CreateHoaDonVM createHoaDonVM, string tenDangNhap);
         // Tính tổng tiền của hóa đơn
-        HoaDonTongTienVM TinhTienHoaDon(Guid cartID, decimal? giamGiaPhanTram, decimal? giamGiaTienMat);
-        
+        HoaDonTongTienVM TinhTienHoaDon(Guid cartID, decimal? giamGiaPhanTram, decimal? giamGiaTienMat); 
+        // Cập nhật trạng thái thanh toán của hóa đơn
+        Task<Result<string>> UpdateTranhThaiThanhToan(bool confirmdone, Guid orderId);
     }
 }

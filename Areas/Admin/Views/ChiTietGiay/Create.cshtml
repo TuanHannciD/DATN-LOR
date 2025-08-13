@@ -44,12 +44,13 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="SoLuong" class="form-label fw-bold">Số lượng</label>
-                        <input asp-for="SoLuong" class="form-control rounded-3" />
+                        <input asp-for="SoLuong" class="form-control rounded-3" type="number" min="0" />
                         <span asp-validation-for="SoLuong" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Gia" class="form-label fw-bold">Giá</label>
-                        <input asp-for="Gia" class="form-control rounded-3" />
+                        <input asp-for="Gia" class="form-control rounded-3" type="number" min="0" 
+                        oninput="if(this.value<0) this.value =0;"/>
                         <span asp-validation-for="Gia" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -66,3 +67,4 @@
         </div>
     </div>
 </div>
+

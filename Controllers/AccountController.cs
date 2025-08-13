@@ -65,27 +65,6 @@ namespace AuthDemo.Controllers
             // Lưu thông tin đăng nhập vào session
             HttpContext.Session.SetString("TenDangNhap", user.TenDangNhap);
             HttpContext.Session.SetString("VaiTro", string.Join(",", tenVaiTroList));
-            // Khởi tạo giỏ hàng nếu chưa có
-            var cart = await _context.GioHangs.FirstOrDefaultAsync(a => a.UserID == user.UserID);
-            if (cart == null)
-            {
-                cart = new GioHang
-                {
-                    CartID = Guid.NewGuid(),
-                    UserID = user.UserID,
-                    NguoiTao = "system",
-                    NguoiCapNhat = "system",
-                    NgayTao = DateTime.Now,
-                    NgayCapNhat = DateTime.Now
-                };
-                _context.GioHangs.Add(cart);
-                await _context.SaveChangesAsync();
-                HttpContext.Session.SetString("CartID", cart.CartID.ToString());
-            }
-            else
-            {
-                HttpContext.Session.SetString("CartID", cart.CartID.ToString());
-            }
 
             // Loại bỏ các phần tử null khỏi danh sách vai trò để kiểm tra
             var vaiTroListNonNull = tenVaiTroList.Where(x => x != null).Cast<string>();
@@ -108,6 +87,22 @@ namespace AuthDemo.Controllers
             }
             // Nếu không có quyền hợp lệ, báo lỗi
             ModelState.AddModelError("", "Bạn không có quyền truy cập.");
+            var cart = await _context.GioHangs.FirstOrDefaultAsync(g => g.UserID == user.UserID);
+            if (cart == null)
+            {
+                cart = new GioHang
+                {
+                    UserID = user.UserID,
+                    CartID = Guid.NewGuid(),
+                };
+                _context.GioHangs.Add(cart);
+                await _context.SaveChangesAsync();
+                HttpContext.Session.SetString("CartID", cart.CartID.ToString());
+            }
+            else
+            {
+                HttpContext.Session.SetString("CartID", cart.CartID.ToString());
+            }
             return View(model);
         }
 
@@ -356,9 +351,5 @@ namespace AuthDemo.Controllers
 
             return RedirectToAction("UserProfile");
         }
-
-
-      
-        
     }
 } 

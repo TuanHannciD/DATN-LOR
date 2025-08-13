@@ -16,13 +16,13 @@ namespace AuthDemo.Controllers
         public IActionResult Index()
         {
             var check = HttpContext.Session.GetString("TenDangNhap");
-            
             if (string.IsNullOrEmpty(check))
             {
                 return RedirectToAction("Login", "Account");
             }
-            var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
 
+
+            var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
             var cartId = _context.GioHangs.FirstOrDefault(a => a.UserID == userId).CartID;
 
             var cartItems = _context.ChiTietGioHangs
@@ -71,11 +71,8 @@ namespace AuthDemo.Controllers
             .ThenInclude(ct => ct.Giay)
             .Where(c => c.CartID == cartId)
             .FirstOrDefault(c => c.ShoeDetailID == shoeDetailId);
-            
-            
 
-          
-                  if (cartItem == null)
+            if (cartItem == null)
                 return Json(new { success = false, message = "Không tìm thấy sản phẩm trong giỏ hàng." });
 
             var stockQuantity = cartItem.ChiTietGiay.SoLuong;

@@ -12,9 +12,10 @@ namespace AuthDemo.Models
         public string MaGiayCode { get; set; }
         [StringLength(255)]
         public string MoTa { get; set; }
-        public string ?AnhDaiDien { get; set; } // ImageURL
+        public string ? AnhDaiDien { get; set; } // ImageURL
         [StringLength(50)]
         public string ?TrangThai { get; set; }
-        public ICollection<ChiTietGiay> ?ChiTietGiays { get; set; }
+        public ICollection<ChiTietGiay> ? ChiTietGiays { get; set; }
+
     }
 }

@@ -13,13 +13,35 @@ namespace AuthDemo.Areas.Admin.Controllers
     [Area("Admin")]
     public class ChiTietGiayController : Controller
     {
-        private readonly   IChiTietGiayService _chiTietGiayService;
+        private readonly IChiTietGiayService _chiTietGiayService;
         private readonly ApplicationDbContext _context;
 
-        public ChiTietGiayController(ApplicationDbContext context ,IChiTietGiayService chiTietGiayService)
+        public ChiTietGiayController(ApplicationDbContext context, IChiTietGiayService chiTietGiayService)
+
         {
             _context = context;
             _chiTietGiayService = chiTietGiayService;
+        }
+        [HttpGet]
+        [Route("Admin/ChiTietGiay/GetSelectLists")]
+        public IActionResult GetSelectLists()
+        {
+            var shoeList = _context.Giays.Select(g => new { id = g.ShoeID, name = g.TenGiay }).ToList();
+            var sizeList = _context.KichThuocs.Select(s => new { id = s.SizeID, name = s.TenKichThuoc }).ToList();
+            var colorList = _context.MauSacs.Select(c => new { id = c.ColorID, name = c.TenMau }).ToList();
+            var materialList = _context.ChatLieus.Select(m => new { id = m.MaterialID, name = m.TenChatLieu }).ToList();
+            var brandList = _context.ThuongHieus.Select(b => new { id = b.BrandID, name = b.TenThuongHieu }).ToList();
+            var categoryList = _context.DanhMucs.Select(d => new { id = d.CategoryID, name = d.TenDanhMuc }).ToList();
+
+            return Ok(new
+            {
+                shoeList,
+                sizeList,
+                colorList,
+                materialList,
+                brandList,
+                categoryList
+            });
         }
 
         public IActionResult Index()
@@ -38,7 +60,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             ViewBag.ColorList = new SelectList(_context.MauSacs, "ColorID", "TenMau");
             ViewBag.MaterialList = new SelectList(_context.ChatLieus, "MaterialID", "TenChatLieu");
             ViewBag.BrandList = new SelectList(_context.ThuongHieus, "BrandID", "TenThuongHieu");
-            ViewBag.CategoryList = new SelectList(_context.DanhMucs,"CategoryID","TenDanhMuc");
+            ViewBag.CategoryList = new SelectList(_context.DanhMucs, "CategoryID", "TenDanhMuc");
             return View();
         }
 
@@ -84,24 +106,56 @@ namespace AuthDemo.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(Guid id)
+        public IActionResult GetById(Guid id)
         {
             var ct = _context.ChiTietGiays.Find(id);
             if (ct == null) return NotFound();
-            return View(ct);
+
+            var giay = _context.Giays.Find(ct.ShoeID);
+            var tenGiay = giay?.TenGiay;
+
+            var vm = new ChiTietGiayVM.EditVM
+            {
+                ShoeDetailID = ct.ShoeDetailID,
+                TenGiay = tenGiay,
+                Gia = ct.Gia,
+                SoLuong = ct.SoLuong,
+                ShoeID = ct.ShoeID,
+                SizeID = ct.SizeID,
+                ColorID = ct.ColorID,
+                MaterialID = ct.MaterialID,
+                BrandID = ct.BrandID,
+                CategoryID = ct.CategoryID
+                // map thêm các trường khác nếu cần
+            };
+            
+
+            return Ok(vm);
         }
 
+
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(ChiTietGiay model)
+        public IActionResult Update([FromBody]EditVM model)
         {
-            if (ModelState.IsValid)
+            var response = _chiTietGiayService.Update(model);
+            if (response.Success)
             {
-                _context.ChiTietGiays.Update(model);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                return Json(new
+                {
+                    success = true,
+                    message = response.Message
+                });
             }
-            return View(model);
+            else
+            {
+                ModelState.AddModelError("", response.Message);
+            }
+            return Json(new
+            {
+                success = false,
+                message = response.Message
+            });
         }
 
         public IActionResult Delete(Guid id)
@@ -115,4 +169,5 @@ namespace AuthDemo.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
     }
-} 
+
+}

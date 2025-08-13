@@ -39,8 +39,11 @@
                             <td>@item.SoLuong</td>
                             <td>@item.Gia.ToString("N0")</td>
                             <td>
-                                <a class="btn btn-warning btn-sm" href="@Url.Action("Edit", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })">Sửa</a>
-                                <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })" onclick="return confirm('Bạn có chắc muốn xóa?');">Xóa</a>
+                    <a class="btn btn-warning btn-sm"
+                                    href="@Url.Action("Edit", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })">Sửa</a>
+                                <a class="btn btn-danger btn-sm"
+                                    href="@Url.Action("Delete", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })"
+                                    onclick="return confirm('Bạn có chắc muốn xóa?');">Xóa</a>
                             </td>
                         </tr>
                     }
@@ -48,4 +51,82 @@
             </table>
         </div>
     </div>
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form id="editForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Sửa sản phẩm chi tiết</h5>
+                        <input type="hidden" name="ShoeDetailID" id="ShoeDetailID" />
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="ShoeID" class="form-label">Sản phẩm</label>
+                                <select id="ShoeID" name="ShoeID" class="form-select" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="SizeID" class="form-label">Kích thước</label>
+                                <select id="SizeID" name="SizeID" class="form-select" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="ColorID" class="form-label">Màu sắc</label>
+                                <select id="ColorID" name="ColorID" class="form-select" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="MaterialID" class="form-label">Chất liệu</label>
+                                <select id="MaterialID" name="MaterialID" class="form-select" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="BrandID" class="form-label">Thương hiệu</label>
+                                <select id="BrandID" name="BrandID" class="form-select" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="CategoryID" class="form-label">Danh mục</label>
+                                <select id="CategoryID" name="CategoryID" class="form-select" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="SoLuong" class="form-label">Số lượng</label>
+                                <input type="number" id="SoLuong" name="SoLuong" class="form-control" min="0"
+                                    required />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="Gia" class="form-label">Giá</label>
+                                <input type="number" id="Gia" name="Gia" class="form-control" min="0" step="1000"
+                                    required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">
+                            <i class="mdi mdi-content-save"></i> Lưu
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="mdi mdi-arrow-left"></i> Quay lại
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
+<script>
+    const shoeList = @Html.Raw(Json.Serialize(ViewBag.GiayList));
+    const sizeList = @Html.Raw(Json.Serialize(ViewBag.SizeList));
+    const colorList = @Html.Raw(Json.Serialize(ViewBag.ColorList));
+    const materialList = @Html.Raw(Json.Serialize(ViewBag.MaterialList));
+    const brandList = @Html.Raw(Json.Serialize(ViewBag.BrandList));
+    const categoryList = @Html.Raw(Json.Serialize(ViewBag.CategoryList));
+</script>
+
