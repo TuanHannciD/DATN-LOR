@@ -98,7 +98,7 @@ namespace AuthDemo.Controllers
             // Nếu chỉ có admin, chuyển thẳng vào trang admin
             if (RoleHelper.IsAdmin(vaiTroListNonNull))
             {
-                return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
+            return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
             }
             // Nếu chỉ có user, chuyển vào trang người dùng
             if (RoleHelper.IsUser(vaiTroListNonNull))
@@ -150,7 +150,7 @@ namespace AuthDemo.Controllers
             {
                 return Content("Vui lòng nhập mật khẩu: /Account/DebugHash?password=yourpassword");
             }
-
+            
             var hash = HashPassword(password);
             return Content($"Password: {password}\nHash: {hash}");
         }
@@ -163,7 +163,7 @@ namespace AuthDemo.Controllers
                     .ThenInclude(vtnd => vtnd.VaiTro)
                 .ToListAsync();
             var result = "Danh sách users:\n";
-
+            
             foreach (var user in users)
             {
                 var vaiTros = user.VaiTroNguoiDungs?
@@ -171,7 +171,7 @@ namespace AuthDemo.Controllers
                     .ToList() ?? new List<string?>();
                 result += $"TenDangNhap: {user.TenDangNhap}, VaiTro: {string.Join(",", vaiTros)}, MatKhau: {user.MatKhau}\n";
             }
-
+            
             return Content(result);
         }
 
@@ -239,10 +239,9 @@ namespace AuthDemo.Controllers
 
         public IActionResult UserProfile()
         {
-
             var check = HttpContext.Session.GetString("TenDangNhap");
             var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
-
+           
 
             //if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var id))
             //{
@@ -250,7 +249,6 @@ namespace AuthDemo.Controllers
             //}
 
             var user = _context.NguoiDungs.FirstOrDefault(a => a.UserID == userId);
-
             if (user == null)
             {
                 return NotFound();
@@ -260,10 +258,9 @@ namespace AuthDemo.Controllers
 
         public IActionResult EditProfile()
         {
-
             var check = HttpContext.Session.GetString("TenDangNhap");
             var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
-
+            
             //if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var id))
             //{
             //    return NotFound();
@@ -272,7 +269,6 @@ namespace AuthDemo.Controllers
             var user = _context.NguoiDungs
                 .Include(u => u.VaiTroNguoiDungs)
                 .FirstOrDefault(a => a.UserID == userId);
-
             if (user == null)
             {
                 return NotFound();
@@ -363,6 +359,6 @@ namespace AuthDemo.Controllers
             }
 
             return RedirectToAction("UserProfile");
-        }
+        } 
     }
-}
+} 
