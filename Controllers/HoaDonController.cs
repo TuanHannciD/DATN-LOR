@@ -127,7 +127,7 @@ namespace Controllers
                 {
                     warnings.Add($"Sản phẩm '{product.ChiTietGiay.Giay.TenGiay}' chỉ còn {product.ChiTietGiay.SoLuong} sản phẩm. Đã cập nhật lại số lượng.");
                     product.SoLuong = product.ChiTietGiay.SoLuong;
-                    _context.SaveChanges(); // cập nhật lại số lượng trong giỏ
+                    _context.SaveChanges(); 
                     hasInvalid = true;
                 }
                 if (requestedQty <= product.ChiTietGiay.SoLuong)

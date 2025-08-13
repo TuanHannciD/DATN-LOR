@@ -5,6 +5,7 @@ using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using AuthDemo.Models.Enums;
+using AuthDemo.Common;
 
 namespace DATN_Lor.Areas.Admin.Controllers
 {
@@ -64,13 +65,26 @@ namespace DATN_Lor.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateCart(Guid shoeDetailId, string actionType)
+        public IActionResult UpdateCart([FromBody] UpdateCartRequestVM request)
         {
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(tenDangNhap))
-                return BadRequest("Không tìm thấy thông tin đăng nhập người dùng.");
-            _banHangTaiQuayService.UpdateCart(tenDangNhap, shoeDetailId, actionType);
-            return RedirectToAction("Index");
+                return BadRequest(ApiResponse<string>.FailResponse("User_Not_Logger_In","Không tìm thấy thông tin đăng nhập người dùng."));
+            var result = _banHangTaiQuayService.UpdateCart(tenDangNhap, request.ShoeDetailID, request.ActionType);
+            if (!result.Success)
+            {
+                return BadRequest(result); // Trả về lỗi nếu không thành công
+            }
+            var cartItems = _banHangTaiQuayService.GetCartItems(tenDangNhap);
+            int totalQuantity = cartItems.Sum(item => item.SoLuong);
+            TempData["SuccessMessage"] = result.Data; // Lưu thông báo thành công vào TempData
+            return Json(new
+            {
+                success = true,
+                code = (string?)null,
+                totalItems = "Số lượng:"  +totalQuantity,
+                message = result.Message
+            });
         }
 
         [HttpPost]

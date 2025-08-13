@@ -6,6 +6,7 @@ using AuthDemo.Models.ViewModels;
 using AuthDemo.Areas.Admin.Interface;
 using Microsoft.EntityFrameworkCore;
 using AuthDemo.Models;
+using AuthDemo.Common;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -140,10 +141,11 @@ namespace AuthDemo.Areas.Admin.Services
             return result;
         }
 
-        public void UpdateCart(string tenDangNhap, Guid shoeDetailId, string actionType)
+        public ApiResponse<string> UpdateCart(string tenDangNhap, Guid shoeDetailId, string actionType)
         {
             var user = _db.NguoiDungs.FirstOrDefault(u => u.TenDangNhap == tenDangNhap);
-            if (user == null) return;
+            if (user == null)
+                return ApiResponse<string>.FailResponse("User_Not_Found", "Không tìm thấy người dùng với tên đăng nhập: " + tenDangNhap);
             var cart = _db.GioHangs.FirstOrDefault(g => g.UserID == user.UserID);
             if (cart == null)
             {
@@ -154,11 +156,24 @@ namespace AuthDemo.Areas.Admin.Services
             var cartItem = _db.ChiTietGioHangs.FirstOrDefault(c => c.CartID == cart.CartID && c.ShoeDetailID == shoeDetailId);
             if (actionType == "add" || actionType == "increase")
             {
-                if (cartItem == null)
-                {
-                    var chiTietGiay = _db.ChiTietGiays
+                var chiTietGiay = _db.ChiTietGiays
                         .Include(ctg => ctg.KichThuoc)
                         .FirstOrDefault(ctg => ctg.ShoeDetailID == shoeDetailId);
+                if (chiTietGiay == null)
+                    return ApiResponse<string>.FailResponse("ShoeDetail_Not_Found", "Không tìm thấy chi tiết giày với ID: " + shoeDetailId);
+
+                if (chiTietGiay.SoLuong <= 0)
+                    return ApiResponse<string>.FailResponse("Out_Of_Stock", "Sản phẩm đã hết hàng.");
+                if (cartItem != null && cartItem.SoLuong >= chiTietGiay.SoLuong)
+                {
+                    return ApiResponse<string>.FailResponse("Quantity_Exceeded", "Số lượng yêu cầu vượt quá số lượng có sẵn trong kho.");
+                }
+                {
+
+                }
+                if (cartItem == null)
+                {
+
                     string tenKichThuoc = chiTietGiay?.KichThuoc?.TenKichThuoc ?? "";
                     cartItem = new ChiTietGioHang
                     {
@@ -169,6 +184,7 @@ namespace AuthDemo.Areas.Admin.Services
                         SoLuong = 1
                     };
                     _db.ChiTietGioHangs.Add(cartItem);
+
                 }
                 else
                 {
@@ -189,6 +205,7 @@ namespace AuthDemo.Areas.Admin.Services
                 _db.ChiTietGioHangs.Remove(cartItem);
             }
             _db.SaveChanges();
+            return ApiResponse<string>.SuccessResponse("Cập nhật giỏ hàng thành công.");
         }
 
         public void UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem, string reason)
