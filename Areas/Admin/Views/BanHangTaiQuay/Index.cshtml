@@ -49,17 +49,14 @@
                                         <small class="text-muted d-block">@item.MauSac, Size: @item.KichThuoc</small>
                                     </td>
                                     <td class="bhq-cart-qty text-center">
-                                        <form asp-action="UpdateCart" asp-controller="BanHangTaiQuay" method="post" class="d-inline">
-                                            <input type="hidden" name="shoeDetailId" value="@item.ShoeDetailID" />
-                                            <input type="hidden" name="actionType" value="decrease" />
-                                            <button class="btn btn-outline-secondary btn-sm bhq-btn-qty">-</button>
-                                        </form>
-                                        <span class="mx-2">@item.SoLuong</span>
-                                        <form asp-action="UpdateCart" asp-controller="BanHangTaiQuay" method="post" class="d-inline">
-                                            <input type="hidden" name="shoeDetailId" value="@item.ShoeDetailID" />
-                                            <input type="hidden" name="actionType" value="increase" />
-                                            <button class="btn btn-outline-secondary btn-sm bhq-btn-qty">+</button>
-                                        </form>
+                                        <div class="input-group input-group-sm d-flex flex-wrap gap-2 justify-content-center">
+                                            <button type="button" class="btn btn-outline-secondary btn-update-cart btn-decrease-qty"
+                                                data-id="@item.ShoeDetailID" data-action="decrease">-</button>
+                                            <input type="number" class="form-control text-center bhq-cart-qty-input"
+                                                value="@item.SoLuong" min="1" data-cartid="@item.ShoeDetailID" />
+                                            <button type="button" class="btn btn-outline-secondary btn-update-cart btn-increase-qty"
+                                                data-id="@item.ShoeDetailID" data-action="increase">+</button>
+                                        </div>
                                     </td>
                                     <td class="bhq-cart-price text-end">
                                         <span class="fw-bold">@item.GiaGoc.ToString("N0")</span> VNĐ
@@ -370,60 +367,6 @@
     <!-- Thư viện Select2 cho select đẹp + icon -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#phuongthuc-thanh-toan').select2({
-                width: '100%',
-                templateResult: function (state) {
-                    if (!state.id) return state.text;
-                    let icon = '';
-                    switch (parseInt(state.id)) {
-                        case 0: icon = '<i class="mdi mdi-cash me-1"></i>'; break; // Tiền mặt
-                        case 1: icon = '<i class="mdi mdi-bank-transfer me-1"></i>'; break; // Chuyển khoản
-                        case 2: icon = '<i class="mdi mdi-credit-card me-1"></i>'; break; // Thẻ tín dụng
-                        case 3: icon = '<i class="mdi mdi-cellphone me-1"></i>'; break; // Ví điện tử
-                    }
-                    return $('<span>' + icon + state.text + '</span>');
-                },
-                templateSelection: function (state) {
-                    if (!state.id) return state.text;
-                    let icon = '';
-                    switch (parseInt(state.id)) {
-                        case 0: icon = '<i class="mdi mdi-cash me-1"></i>'; break;
-                        case 1: icon = '<i class="mdi mdi-bank-transfer me-1"></i>'; break;
-                        case 2: icon = '<i class="mdi mdi-credit-card me-1"></i>'; break;
-                        case 3: icon = '<i class="mdi mdi-cellphone me-1"></i>'; break;
-                    }
-                    return $('<span>' + icon + state.text + '</span>');
-                },
-                escapeMarkup: function (m) { return m; }
-            });
-            $('#phuongthuc-van-chuyen').select2({
-                width: '100%',
-                templateResult: function (state) {
-                    if (!state.id) return state.text;
-                    let icon = '';
-                    switch (parseInt(state.id)) {
-                        case 0: icon = '<i class="mdi mdi-truck-fast me-1"></i>'; break; // Giao hàng nhanh
-                        case 1: icon = '<i class="mdi mdi-package-variant me-1"></i>'; break; // Giao hàng tiết kiệm
-                        case 2: icon = '<i class="mdi mdi-store me-1"></i>'; break; // Tự đến lấy
-                    }
-                    return $('<span>' + icon + state.text + '</span>');
-                },
-                templateSelection: function (state) {
-                    if (!state.id) return state.text;
-                    let icon = '';
-                    switch (parseInt(state.id)) {
-                        case 0: icon = '<i class="mdi mdi-truck-fast me-1"></i>'; break;
-                        case 1: icon = '<i class="mdi mdi-package-variant me-1"></i>'; break;
-                        case 2: icon = '<i class="mdi mdi-store me-1"></i>'; break;
-                    }
-                    return $('<span>' + icon + state.text + '</span>');
-                },
-                escapeMarkup: function (m) { return m; }
-            });
-        });
-    </script>
 }
 
 <link rel="stylesheet" href="~/css/banhangtaiquay.css" />
