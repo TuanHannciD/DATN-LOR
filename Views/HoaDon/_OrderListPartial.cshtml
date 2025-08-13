@@ -7,7 +7,9 @@
             <span>Mã đơn: @hoaDon.BillID</span>
             <span class="badge bg-info text-dark">@hoaDon.TrangThai</span>
         </div>
+
         @* <div class="px-3 pt-2">
+
             <div><strong>Khách:</strong> @hoaDon.HoTen (@hoaDon.SoDienThoai)</div>
             <div><strong>Địa chỉ:</strong> @hoaDon.DiaChi</div>
             <div><strong>Ngày đặt:</strong> @(hoaDon.NgayTao.HasValue
@@ -15,6 +17,7 @@
                         : "")
             </div>
         </div>
+
         <hr /> *@
         @foreach (var item in hoaDon.ChiTiet)
         {
@@ -31,16 +34,17 @@
                         <div style="line-height: 1.5;">
                             <div><strong>@item.TenSanPham</strong></div>
                            
+
                             <div>Size: @item.Size - Màu: @item.MauSac</div>
                             <div>x @item.SoLuong</div>
                         </div>
                     </div>
                 </div>
                 <div style="width: 30%; text-align: right;">
+
                     <div>@item.DonGia.ToString("N0") VNĐ</div>
                 </div>
             </div>
-           
         }
         <div class="text-end px-3 py-2"><strong>Tổng tiền:</strong> @hoaDon.TongTien.ToString("N0") VNĐ</div>
     </div>

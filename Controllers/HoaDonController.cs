@@ -216,6 +216,7 @@ namespace Controllers
 
 
 
+
             var hoaDonsRaw = _context.HoaDons
     .Where(h => h.UserID == users)
     .OrderByDescending(h => h.NgayTao)
@@ -248,6 +249,7 @@ namespace Controllers
 
             // Map sang ViewModel và xử lý Enum
             var hoaDons = hoaDonsRaw.Select(h => new HoaDonKHVM
+
             {
                 BillID = h.BillID,
                 HoTen = h.HoTen,
@@ -256,6 +258,7 @@ namespace Controllers
                 TrangThai = Enum.GetName(typeof(TrangThaiHoaDon), h.TrangThai) ?? "Chưa xác định",
                 NgayTao = h.NgayTao,
                 TongTien = h.TongTien,
+
                 PhuongThuc = Enum.GetName(typeof(PhuongThucThanhToan), h.PhuongThucThanhToan) ?? "Chưa xác định",
                 ChiTiet = h.ChiTiet.Select(c => new ChiTietHoaDonKHVM
                 {
@@ -339,6 +342,7 @@ namespace Controllers
                     SoLuong = c.SoLuong,
                     DonGia = c.DonGia
                 }).ToList()
+
             }).ToList();
 
 
@@ -358,6 +362,7 @@ namespace Controllers
             var query = _context.HoaDons
                 .Where(h => h.UserID == userId);
 
+
             if (!string.IsNullOrEmpty(trangThai))
             {
                 // Nếu trangThai là số
@@ -370,7 +375,9 @@ namespace Controllers
                     query = query.Where(h => h.TrangThai.ToString() == trangThai);
                 }
             }
+
             var enumType = typeof(TrangThaiHoaDon);
+
 
             var result = query
                 .Select(h => new HoaDonKHVM
@@ -380,6 +387,7 @@ namespace Controllers
                     SoDienThoai = h.SoDienThoai,
                     DiaChi = h.DiaChi,
                     TrangThai = Enum.GetName(enumType, h.TrangThai) ?? "Chưa xác định",
+
                     NgayTao = h.NgayTao ,
                     TongTien = h.TongTien,
                     ChiTiet = _context.ChiTietHoaDons
