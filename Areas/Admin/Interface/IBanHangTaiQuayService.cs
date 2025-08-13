@@ -14,4 +14,4 @@ namespace AuthDemo.Areas.Admin.Interface
         ApiResponse<string> UpdateCart(string tenDangNhap, Guid shoeDetailId, string actionType);
         void UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem, string reason);
     }
-} 
+}
