@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-
 namespace AuthDemo.Models.ViewModels
 {
     public class BanHangTaiQuayVM
@@ -53,5 +52,4 @@ namespace AuthDemo.Models.ViewModels
         [JsonPropertyName("actionType")]
         public string ActionType { get; set; } // "add", "remove", "increase", "decrease"
     }
-    
 } 

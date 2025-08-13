@@ -16,5 +16,6 @@ namespace AuthDemo.Models
         [StringLength(50)]
         public string ?TrangThai { get; set; }
         public ICollection<ChiTietGiay> ? ChiTietGiays { get; set; }
+
     }
 }

@@ -6,7 +6,9 @@ using AuthDemo.Models.ViewModels;
 using AuthDemo.Areas.Admin.Interface;
 using Microsoft.EntityFrameworkCore;
 using AuthDemo.Models;
+
 using AuthDemo.Common;
+
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -140,7 +142,6 @@ namespace AuthDemo.Areas.Admin.Services
             }).ToList();
             return result;
         }
-
         public ApiResponse<string> UpdateCart(string tenDangNhap, Guid shoeDetailId, string actionType)
         {
             var user = _db.NguoiDungs.FirstOrDefault(u => u.TenDangNhap == tenDangNhap);
@@ -173,7 +174,6 @@ namespace AuthDemo.Areas.Admin.Services
                 }
                 if (cartItem == null)
                 {
-
                     string tenKichThuoc = chiTietGiay?.KichThuoc?.TenKichThuoc ?? "";
                     cartItem = new ChiTietGioHang
                     {
@@ -184,7 +184,6 @@ namespace AuthDemo.Areas.Admin.Services
                         SoLuong = 1
                     };
                     _db.ChiTietGioHangs.Add(cartItem);
-
                 }
                 else
                 {
