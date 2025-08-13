@@ -1,0 +1,625 @@
+# Database Models & Entity Framework Guidelines
+
+## Tổng quan
+Hướng dẫn cho Entity Framework Core, database models, configurations và best practices cho ASP.NET Core MVC.
+
+## Entity Models
+
+### Model Conventions
+- **Naming**: PascalCase cho properties
+- **Navigation Properties**: Virtual cho lazy loading
+- **Data Annotations**: Sử dụng cho validation và display
+- **Timestamps**: NgayTao, NgayCapNhat tự động
+
+```csharp
+public class Giay
+{
+    public int Id { get; set; }
+    
+    [Required(ErrorMessage = "Tên giày không được để trống")]
+    [StringLength(100, ErrorMessage = "Tên giày không quá 100 ký tự")]
+    [Display(Name = "Tên giày")]
+    public string TenGiay { get; set; }
+    
+    [Required(ErrorMessage = "Giá không được để trống")]
+    [Range(0, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
+    [Display(Name = "Giá")]
+    [DataType(DataType.Currency)]
+    public decimal Gia { get; set; }
+    
+    [Display(Name = "Mô tả")]
+    [StringLength(500, ErrorMessage = "Mô tả không quá 500 ký tự")]
+    public string MoTa { get; set; }
+    
+    [Display(Name = "Ngày tạo")]
+    public DateTime NgayTao { get; set; }
+    
+    [Display(Name = "Ngày cập nhật")]
+    public DateTime? NgayCapNhat { get; set; }
+    
+    // Navigation Properties
+    public int ThuongHieuId { get; set; }
+    public virtual ThuongHieu ThuongHieu { get; set; }
+    
+    public virtual ICollection<ChiTietGiay> ChiTietGiay { get; set; }
+    public virtual ICollection<ChiTietHoaDon> ChiTietHoaDon { get; set; }
+}
+```
+
+### Base Entity Pattern
+```csharp
+public abstract class BaseEntity
+{
+    public int Id { get; set; }
+    public DateTime NgayTao { get; set; }
+    public DateTime? NgayCapNhat { get; set; }
+    public bool IsDeleted { get; set; } = false;
+}
+
+public class Giay : BaseEntity
+{
+    public string TenGiay { get; set; }
+    public decimal Gia { get; set; }
+    public string MoTa { get; set; }
+    
+    // Navigation properties
+    public int ThuongHieuId { get; set; }
+    public virtual ThuongHieu ThuongHieu { get; set; }
+}
+```
+
+## Entity Framework Configuration
+
+### Fluent API Configuration
+```csharp
+// Models/Configurations/GiayConfiguration.cs
+public class GiayConfiguration : IEntityTypeConfiguration<Giay>
+{
+    public void Configure(EntityTypeBuilder<Giay> builder)
+    {
+        // Table name
+        builder.ToTable("Giay");
+        
+        // Primary key
+        builder.HasKey(g => g.Id);
+        
+        // Properties
+        builder.Property(g => g.TenGiay)
+            .IsRequired()
+            .HasMaxLength(100)
+            .HasComment("Tên giày");
+            
+        builder.Property(g => g.Gia)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)")
+            .HasComment("Giá giày");
+            
+        builder.Property(g => g.MoTa)
+            .HasMaxLength(500)
+            .HasComment("Mô tả giày");
+            
+        builder.Property(g => g.NgayTao)
+            .IsRequired()
+            .HasDefaultValueSql("GETDATE()")
+            .HasComment("Ngày tạo");
+            
+        builder.Property(g => g.NgayCapNhat)
+            .HasComment("Ngày cập nhật");
+            
+        // Indexes
+        builder.HasIndex(g => g.TenGiay)
+            .HasDatabaseName("IX_Giay_TenGiay");
+            
+        builder.HasIndex(g => g.ThuongHieuId)
+            .HasDatabaseName("IX_Giay_ThuongHieuId");
+            
+        // Relationships
+        builder.HasOne(g => g.ThuongHieu)
+            .WithMany(t => t.Giay)
+            .HasForeignKey(g => g.ThuongHieuId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        builder.HasMany(g => g.ChiTietGiay)
+            .WithOne(ct => ct.Giay)
+            .HasForeignKey(ct => ct.GiayId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+```
+
+### DbContext Configuration
+```csharp
+// Data/ApplicationDbContext.cs
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+    }
+    
+    // DbSets
+    public DbSet<Giay> Giay { get; set; }
+    public DbSet<ThuongHieu> ThuongHieu { get; set; }
+    public DbSet<ChiTietGiay> ChiTietGiay { get; set; }
+    public DbSet<HoaDon> HoaDon { get; set; }
+    public DbSet<ChiTietHoaDon> ChiTietHoaDon { get; set; }
+    public DbSet<User> User { get; set; }
+    public DbSet<ChatLieu> ChatLieu { get; set; }
+    public DbSet<MauSac> MauSac { get; set; }
+    public DbSet<KichThuoc> KichThuoc { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        // Apply configurations
+        modelBuilder.ApplyConfiguration(new GiayConfiguration());
+        modelBuilder.ApplyConfiguration(new ThuongHieuConfiguration());
+        modelBuilder.ApplyConfiguration(new ChiTietGiayConfiguration());
+        modelBuilder.ApplyConfiguration(new HoaDonConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        
+        // Global query filters
+        modelBuilder.Entity<Giay>().HasQueryFilter(g => !g.IsDeleted);
+        modelBuilder.Entity<ThuongHieu>().HasQueryFilter(t => !t.IsDeleted);
+        
+        // Seed data
+        SeedData(modelBuilder);
+    }
+    
+    private void SeedData(ModelBuilder modelBuilder)
+    {
+        // Seed ThuongHieu
+        modelBuilder.Entity<ThuongHieu>().HasData(
+            new ThuongHieu { Id = 1, TenThuongHieu = "Nike", NgayTao = DateTime.Now },
+            new ThuongHieu { Id = 2, TenThuongHieu = "Adidas", NgayTao = DateTime.Now },
+            new ThuongHieu { Id = 3, TenThuongHieu = "Puma", NgayTao = DateTime.Now }
+        );
+        
+        // Seed MauSac
+        modelBuilder.Entity<MauSac>().HasData(
+            new MauSac { Id = 1, TenMauSac = "Đen", NgayTao = DateTime.Now },
+            new MauSac { Id = 2, TenMauSac = "Trắng", NgayTao = DateTime.Now },
+            new MauSac { Id = 3, TenMauSac = "Đỏ", NgayTao = DateTime.Now }
+        );
+        
+        // Seed KichThuoc
+        modelBuilder.Entity<KichThuoc>().HasData(
+            new KichThuoc { Id = 1, TenKichThuoc = "39", NgayTao = DateTime.Now },
+            new KichThuoc { Id = 2, TenKichThuoc = "40", NgayTao = DateTime.Now },
+            new KichThuoc { Id = 3, TenKichThuoc = "41", NgayTao = DateTime.Now },
+            new KichThuoc { Id = 4, TenKichThuoc = "42", NgayTao = DateTime.Now }
+        );
+    }
+    
+    public override int SaveChanges()
+    {
+        UpdateTimestamps();
+        return base.SaveChanges();
+    }
+    
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateTimestamps();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+    
+    private void UpdateTimestamps()
+    {
+        var entries = ChangeTracker.Entries()
+            .Where(e => e.Entity is BaseEntity && e.State is EntityState.Added or EntityState.Modified);
+            
+        foreach (var entry in entries)
+        {
+            var entity = (BaseEntity)entry.Entity;
+            
+            if (entry.State == EntityState.Added)
+            {
+                entity.NgayTao = DateTime.Now;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entity.NgayCapNhat = DateTime.Now;
+            }
+        }
+    }
+}
+```
+
+## ViewModel Pattern
+
+### ViewModel Structure
+```csharp
+// Models/ViewModels/GiayVM.cs
+public class GiayVM
+{
+    public int Id { get; set; }
+    
+    [Required(ErrorMessage = "Tên giày không được để trống")]
+    [StringLength(100, ErrorMessage = "Tên giày không quá 100 ký tự")]
+    [Display(Name = "Tên giày")]
+    public string TenGiay { get; set; }
+    
+    [Required(ErrorMessage = "Giá không được để trống")]
+    [Range(0, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
+    [Display(Name = "Giá")]
+    [DataType(DataType.Currency)]
+    public decimal Gia { get; set; }
+    
+    [Display(Name = "Mô tả")]
+    [StringLength(500, ErrorMessage = "Mô tả không quá 500 ký tự")]
+    public string MoTa { get; set; }
+    
+    [Required(ErrorMessage = "Thương hiệu không được để trống")]
+    [Display(Name = "Thương hiệu")]
+    public int ThuongHieuId { get; set; }
+    
+    // Navigation properties for display
+    public string ThuongHieuTen { get; set; }
+    public List<SelectListItem> ThuongHieuList { get; set; }
+    
+    // Additional properties for UI
+    public bool IsNew { get; set; }
+    public string Action { get; set; }
+}
+```
+
+### Complex ViewModels
+```csharp
+// Models/ViewModels/GiayFullInfoVM.cs
+public class GiayFullInfoVM
+{
+    public int Id { get; set; }
+    public string TenGiay { get; set; }
+    public decimal Gia { get; set; }
+    public string MoTa { get; set; }
+    public string ThuongHieuTen { get; set; }
+    public DateTime NgayTao { get; set; }
+    
+    // Related data
+    public List<ChiTietGiayVM> ChiTietGiay { get; set; }
+    public List<AnhGiayVM> AnhGiay { get; set; }
+    
+    // Statistics
+    public int TongSoLuong { get; set; }
+    public int SoLuongDaBan { get; set; }
+    public decimal DoanhThu { get; set; }
+}
+
+// Models/ViewModels/ChiTietGiayVM.cs
+public class ChiTietGiayVM
+{
+    public int Id { get; set; }
+    public int GiayId { get; set; }
+    public int MauSacId { get; set; }
+    public int KichThuocId { get; set; }
+    public int SoLuong { get; set; }
+    
+    // Display properties
+    public string MauSacTen { get; set; }
+    public string KichThuocTen { get; set; }
+}
+```
+
+## Migration Guidelines
+
+### Creating Migrations
+```bash
+# Create migration
+Add-Migration InitialCreate
+
+# Create migration with specific name
+Add-Migration AddGiayTable
+
+# Update database
+Update-Database
+
+# Remove last migration
+Remove-Migration
+```
+
+### Migration Best Practices
+```csharp
+// Migration example
+public partial class AddGiayTable : Migration
+{
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.CreateTable(
+            name: "Giay",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "int", nullable: false)
+                    .Annotation("SqlServer:Identity", "1, 1"),
+                TenGiay = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                Gia = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                MoTa = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                ThuongHieuId = table.Column<int>(type: "int", nullable: false),
+                NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                NgayCapNhat = table.Column<DateTime>(type: "datetime2", nullable: true),
+                IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Giay", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Giay_ThuongHieu_ThuongHieuId",
+                    column: x => x.ThuongHieuId,
+                    principalTable: "ThuongHieu",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Giay_TenGiay",
+            table: "Giay",
+            column: "TenGiay");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Giay_ThuongHieuId",
+            table: "Giay",
+            column: "ThuongHieuId");
+    }
+
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            name: "Giay");
+    }
+}
+```
+
+## Database Best Practices
+
+### 1. Indexing Strategy
+```csharp
+// Composite indexes for common queries
+builder.HasIndex(g => new { g.ThuongHieuId, g.Gia })
+    .HasDatabaseName("IX_Giay_ThuongHieuId_Gia");
+
+// Full-text search index
+builder.HasIndex(g => g.TenGiay)
+    .HasDatabaseName("IX_Giay_TenGiay_FullText")
+    .IsClustered(false);
+```
+
+### 2. Soft Delete Pattern
+```csharp
+public abstract class BaseEntity
+{
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? NgayXoa { get; set; }
+}
+
+// Global query filter
+modelBuilder.Entity<Giay>().HasQueryFilter(g => !g.IsDeleted);
+```
+
+### 3. Audit Trail
+```csharp
+public abstract class BaseEntity
+{
+    public string CreatedBy { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string UpdatedBy { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; }
+    public string DeletedBy { get; set; }
+    public DateTime? DeletedAt { get; set; }
+}
+```
+
+### 4. Concurrency Control
+```csharp
+public class Giay
+{
+    [Timestamp]
+    public byte[] RowVersion { get; set; }
+}
+
+// In configuration
+builder.Property(g => g.RowVersion)
+    .IsRowVersion()
+    .IsConcurrencyToken();
+```
+
+## Performance Optimization
+
+### 1. Eager Loading
+```csharp
+// Include related data
+var giayList = await _context.Giay
+    .Include(g => g.ThuongHieu)
+    .Include(g => g.ChiTietGiay)
+        .ThenInclude(ct => ct.MauSac)
+    .Include(g => g.ChiTietGiay)
+        .ThenInclude(ct => ct.KichThuoc)
+    .ToListAsync();
+```
+
+### 2. Projection
+```csharp
+// Select only needed fields
+var giayList = await _context.Giay
+    .Select(g => new GiayVM
+    {
+        Id = g.Id,
+        TenGiay = g.TenGiay,
+        Gia = g.Gia,
+        ThuongHieuTen = g.ThuongHieu.TenThuongHieu
+    })
+    .ToListAsync();
+```
+
+### 3. Pagination
+```csharp
+public async Task<PagedResult<Giay>> GetPagedAsync(int page, int pageSize)
+{
+    var totalCount = await _context.Giay.CountAsync();
+    var items = await _context.Giay
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .Include(g => g.ThuongHieu)
+        .ToListAsync();
+        
+    return new PagedResult<Giay>
+    {
+        Items = items,
+        TotalCount = totalCount,
+        Page = page,
+        PageSize = pageSize
+    };
+}
+```
+
+## Validation Patterns
+
+### 1. Data Annotations
+```csharp
+public class GiayVM
+{
+    [Required(ErrorMessage = "Tên giày không được để trống")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "Tên giày phải từ 2-100 ký tự")]
+    public string TenGiay { get; set; }
+    
+    [Required(ErrorMessage = "Giá không được để trống")]
+    [Range(1000, 10000000, ErrorMessage = "Giá phải từ 1,000 đến 10,000,000")]
+    public decimal Gia { get; set; }
+    
+    [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+    public string Email { get; set; }
+    
+    [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+    public string Phone { get; set; }
+}
+```
+
+### 2. Custom Validation
+```csharp
+public class GiayValidator : AbstractValidator<Giay>
+{
+    public GiayValidator()
+    {
+        RuleFor(x => x.TenGiay)
+            .NotEmpty().WithMessage("Tên giày không được để trống")
+            .MaximumLength(100).WithMessage("Tên giày không quá 100 ký tự")
+            .MustAsync(BeUniqueName).WithMessage("Tên giày đã tồn tại");
+
+        RuleFor(x => x.Gia)
+            .GreaterThan(0).WithMessage("Giá phải lớn hơn 0")
+            .LessThanOrEqualTo(10000000).WithMessage("Giá không quá 10,000,000");
+
+        RuleFor(x => x.ThuongHieuId)
+            .GreaterThan(0).WithMessage("Phải chọn thương hiệu");
+    }
+    
+    private async Task<bool> BeUniqueName(Giay giay, string tenGiay, CancellationToken cancellationToken)
+    {
+        // Check if name is unique
+        return !await _context.Giay
+            .AnyAsync(g => g.TenGiay == tenGiay && g.Id != giay.Id, cancellationToken);
+    }
+}
+```
+
+## Error Handling
+
+### 1. Custom Exceptions
+```csharp
+public class NotFoundException : Exception
+{
+    public NotFoundException(string message) : base(message) { }
+}
+
+public class ValidationException : Exception
+{
+    public ValidationException(string message) : base(message) { }
+}
+
+public class DuplicateException : Exception
+{
+    public DuplicateException(string message) : base(message) { }
+}
+```
+
+### 2. Service Error Handling
+```csharp
+public async Task<Giay> GetByIdAsync(int id)
+{
+    try
+    {
+        var giay = await _context.Giay
+            .Include(g => g.ThuongHieu)
+            .FirstOrDefaultAsync(g => g.Id == id);
+
+        if (giay == null)
+            throw new NotFoundException($"Giày với ID {id} không tồn tại");
+
+        return giay;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Lỗi khi lấy giày với ID {Id}", id);
+        throw;
+    }
+}
+```
+
+## Testing Database
+
+### 1. Unit Testing
+```csharp
+[Test]
+public async Task CreateAsync_WithValidData_ShouldCreateGiay()
+{
+    // Arrange
+    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+        .Options;
+        
+    using var context = new ApplicationDbContext(options);
+    var service = new GiayService(context, _logger, _mapper);
+    var giay = new Giay { TenGiay = "Test Giay", Gia = 100000 };
+    
+    // Act
+    var result = await service.CreateAsync(giay);
+    
+    // Assert
+    Assert.IsNotNull(result);
+    Assert.AreEqual("Test Giay", result.TenGiay);
+    Assert.AreEqual(100000, result.Gia);
+}
+```
+
+### 2. Integration Testing
+```csharp
+[Test]
+public async Task GetAllAsync_ShouldReturnAllGiay()
+{
+    // Arrange
+    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+        .UseSqlServer(TestConnectionString)
+        .Options;
+        
+    using var context = new ApplicationDbContext(options);
+    await context.Database.EnsureCreatedAsync();
+    
+    // Seed test data
+    context.Giay.AddRange(GetTestGiayData());
+    await context.SaveChangesAsync();
+    
+    var service = new GiayService(context, _logger, _mapper);
+    
+    // Act
+    var result = await service.GetAllAsync();
+    
+    // Assert
+    Assert.IsNotNull(result);
+    Assert.AreEqual(3, result.Count());
+}
+```
+description:
+globs:
+alwaysApply: false
+---
+ 

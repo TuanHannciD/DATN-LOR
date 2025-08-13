@@ -1,0 +1,40 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@using X.PagedList.Mvc.Core;
+
+@model X.PagedList.IPagedList<AuthDemo.Models.ViewModels.ProductViewModel>
+@using AuthDemo.Models;
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutHomeKhach.cshtml";
+}
+
+<div class="row featured__filter">
+    @foreach (var product in Model)
+    {
+
+
+       
+        <div class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
+            <div class="featured__item">
+                <a asp-controller="Home" asp-action="SanPhamdetails" asp-route-id="@product.ShoeID">
+                <div  class="featured__item__pic set-bg" data-setbg="@Url.Content("../AnhDoiGiay/" + product.AnhDaiDien)"
+                     style="background-image: url(&quot;img/featured/feature-1.jpg&quot;); width: 250px; height: 200px;">
+
+                   
+                </div>
+                <div class="featured__item__text">
+                    <h6><a asp-controller="Home" asp-action="SanPhamdetails" asp-route-id="@product.ShoeID">@product.TenGiay</a></h6>
+
+                    @* <h6><a asp-controller="Home" asp-action="SanPhamDetails" asp-route-Masp="@item.IdSp">@item.TenSp</a></h6> *@
+                        <h5> @product.GiaThapNhat.ToString("N0") VNĐ </h5>
+                </div>
+                </a>
+            </div>
+        </div>
+    }
+
+</div>

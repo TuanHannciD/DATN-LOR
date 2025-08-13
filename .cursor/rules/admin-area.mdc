@@ -1,0 +1,610 @@
+# Admin Area Guidelines - Hướng dẫn Admin Area
+
+## Tổng quan Admin Area
+Admin Area chứa tất cả chức năng quản trị hệ thống, bao gồm quản lý sản phẩm, đơn hàng, người dùng và bán hàng tại quầy.
+
+## Cấu trúc thư mục
+
+### Areas/Admin/
+```
+Areas/Admin/
+├── Controllers/          # Admin controllers
+├── Services/            # Business logic services
+├── Interface/           # Service interfaces
+├── Views/               # Admin UI templates
+│   ├── Admin/          # Dashboard & Index
+│   ├── Giay/           # Product management
+│   ├── HoaDon/         # Order management
+│   ├── UserManager/     # User management
+│   ├── BanHangTaiQuay/ # POS system
+│   └── Shared/         # Admin layouts
+└── _ViewImports.cshtml  # View imports
+```
+
+## Controllers Guidelines
+
+### Controller Naming & Location
+- **Location**: `Areas/Admin/Controllers/`
+- **Naming**: `[Entity]Controller.cs`
+- **Inheritance**: Inherit from `Controller`
+- **Area Attribute**: `[Area("Admin")]`
+
+```csharp
+[Area("Admin")]
+public class GiayController : Controller
+{
+    private readonly IGiayService _giayService;
+    private readonly ILogger<GiayController> _logger;
+
+    public GiayController(IGiayService giayService, ILogger<GiayController> logger)
+    {
+        _giayService = giayService;
+        _logger = logger;
+    }
+}
+```
+
+### Controller Methods Pattern
+```csharp
+public class GiayController : Controller
+{
+    // GET: Admin/Giay
+    public async Task<IActionResult> Index()
+    {
+        var giayList = await _giayService.GetAllAsync();
+        return View(giayList);
+    }
+
+    // GET: Admin/Giay/Details/5
+    public async Task<IActionResult> Details(int id)
+    {
+        var giay = await _giayService.GetByIdAsync(id);
+        if (giay == null)
+            return NotFound();
+        
+        return View(giay);
+    }
+
+    // GET: Admin/Giay/Create
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    // POST: Admin/Giay/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(GiayVM giayVM)
+    {
+        if (ModelState.IsValid)
+        {
+            var giay = _mapper.Map<Giay>(giayVM);
+            await _giayService.CreateAsync(giay);
+            return RedirectToAction(nameof(Index));
+        }
+        return View(giayVM);
+    }
+
+    // GET: Admin/Giay/Edit/5
+    public async Task<IActionResult> Edit(int id)
+    {
+        var giay = await _giayService.GetByIdAsync(id);
+        if (giay == null)
+            return NotFound();
+        
+        var giayVM = _mapper.Map<GiayVM>(giay);
+        return View(giayVM);
+    }
+
+    // POST: Admin/Giay/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, GiayVM giayVM)
+    {
+        if (id != giayVM.Id)
+            return NotFound();
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                var giay = _mapper.Map<Giay>(giayVM);
+                await _giayService.UpdateAsync(giay);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await GiayExists(giayVM.Id))
+                    return NotFound();
+                else
+                    throw;
+            }
+        }
+        return View(giayVM);
+    }
+
+    // GET: Admin/Giay/Delete/5
+    public async Task<IActionResult> Delete(int id)
+    {
+        var giay = await _giayService.GetByIdAsync(id);
+        if (giay == null)
+            return NotFound();
+        
+        return View(giay);
+    }
+
+    // POST: Admin/Giay/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        await _giayService.DeleteAsync(id);
+        return RedirectToAction(nameof(Index));
+    }
+}
+```
+
+## Services Guidelines
+
+### Service Interface Pattern
+```csharp
+// Areas/Admin/Interface/IGiayService.cs
+public interface IGiayService
+{
+    Task<IEnumerable<Giay>> GetAllAsync();
+    Task<Giay> GetByIdAsync(int id);
+    Task<Giay> CreateAsync(Giay giay);
+    Task<Giay> UpdateAsync(Giay giay);
+    Task DeleteAsync(int id);
+    Task<IEnumerable<Giay>> GetByBrandAsync(string brand);
+    Task<IEnumerable<Giay>> SearchAsync(string keyword);
+}
+```
+
+### Service Implementation Pattern
+```csharp
+// Areas/Admin/Services/GiayService.cs
+public class GiayService : IGiayService
+{
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<GiayService> _logger;
+    private readonly IMapper _mapper;
+
+    public GiayService(ApplicationDbContext context, ILogger<GiayService> logger, IMapper mapper)
+    {
+        _context = context;
+        _logger = logger;
+        _mapper = mapper;
+    }
+
+    public async Task<IEnumerable<Giay>> GetAllAsync()
+    {
+        try
+        {
+            return await _context.Giay
+                .Include(g => g.ThuongHieu)
+                .Include(g => g.ChiTietGiay)
+                .OrderBy(g => g.TenGiay)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi lấy danh sách giày");
+            throw;
+        }
+    }
+
+    public async Task<Giay> GetByIdAsync(int id)
+    {
+        try
+        {
+            var giay = await _context.Giay
+                .Include(g => g.ThuongHieu)
+                .Include(g => g.ChiTietGiay)
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (giay == null)
+                throw new NotFoundException($"Giày với ID {id} không tồn tại");
+
+            return giay;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi lấy giày với ID {Id}", id);
+            throw;
+        }
+    }
+
+    public async Task<Giay> CreateAsync(Giay giay)
+    {
+        try
+        {
+            if (giay == null)
+                throw new ArgumentNullException(nameof(giay));
+
+            giay.NgayTao = DateTime.Now;
+            _context.Giay.Add(giay);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Đã tạo giày mới với ID {Id}", giay.Id);
+            return giay;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi tạo giày mới");
+            throw;
+        }
+    }
+
+    public async Task<Giay> UpdateAsync(Giay giay)
+    {
+        try
+        {
+            if (giay == null)
+                throw new ArgumentNullException(nameof(giay));
+
+            var existingGiay = await _context.Giay.FindAsync(giay.Id);
+            if (existingGiay == null)
+                throw new NotFoundException($"Giày với ID {giay.Id} không tồn tại");
+
+            existingGiay.TenGiay = giay.TenGiay;
+            existingGiay.Gia = giay.Gia;
+            existingGiay.MoTa = giay.MoTa;
+            existingGiay.ThuongHieuId = giay.ThuongHieuId;
+            existingGiay.NgayCapNhat = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Đã cập nhật giày với ID {Id}", giay.Id);
+            return existingGiay;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi cập nhật giày với ID {Id}", giay.Id);
+            throw;
+        }
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        try
+        {
+            var giay = await _context.Giay.FindAsync(id);
+            if (giay == null)
+                throw new NotFoundException($"Giày với ID {id} không tồn tại");
+
+            _context.Giay.Remove(giay);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Đã xóa giày với ID {Id}", id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi xóa giày với ID {Id}", id);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Giay>> GetByBrandAsync(string brand)
+    {
+        try
+        {
+            return await _context.Giay
+                .Include(g => g.ThuongHieu)
+                .Where(g => g.ThuongHieu.TenThuongHieu.Contains(brand))
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi tìm giày theo thương hiệu {Brand}", brand);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Giay>> SearchAsync(string keyword)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return await GetAllAsync();
+
+            return await _context.Giay
+                .Include(g => g.ThuongHieu)
+                .Where(g => g.TenGiay.Contains(keyword) || 
+                           g.ThuongHieu.TenThuongHieu.Contains(keyword))
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi tìm kiếm giày với từ khóa {Keyword}", keyword);
+            throw;
+        }
+    }
+}
+```
+
+## Views Guidelines
+
+### View Location & Naming
+- **Location**: `Areas/Admin/Views/[Controller]/`
+- **Naming**: `Index.cshtml`, `Create.cshtml`, `Edit.cshtml`, `Details.cshtml`, `Delete.cshtml`
+
+### View Structure Pattern
+```html
+@model IEnumerable<Giay>
+
+@{
+    ViewData["Title"] = "Quản lý giày";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewData["Title"]</h3>
+                    <div class="card-tools">
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Thêm mới
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.TenGiay)</th>
+                                <th>@Html.DisplayNameFor(model => model.Gia)</th>
+                                <th>@Html.DisplayNameFor(model => model.ThuongHieu)</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.TenGiay)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Gia)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ThuongHieu.TenThuongHieu)</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+### Form View Pattern
+```html
+@model GiayVM
+
+@{
+    ViewData["Title"] = "Thêm giày mới";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="form-group">
+                            <label asp-for="TenGiay" class="control-label"></label>
+                            <input asp-for="TenGiay" class="form-control" />
+                            <span asp-validation-for="TenGiay" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label asp-for="Gia" class="control-label"></label>
+                            <input asp-for="Gia" class="form-control" />
+                            <span asp-validation-for="Gia" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label asp-for="ThuongHieuId" class="control-label"></label>
+                            <select asp-for="ThuongHieuId" class="form-control" asp-items="ViewBag.ThuongHieuId">
+                                <option value="">-- Chọn thương hiệu --</option>
+                            </select>
+                            <span asp-validation-for="ThuongHieuId" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label asp-for="MoTa" class="control-label"></label>
+                            <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="submit" value="Lưu" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+```
+
+## Common Patterns
+
+### 1. Dependency Injection
+```csharp
+// Program.cs
+builder.Services.AddScoped<IGiayService, GiayService>();
+builder.Services.AddScoped<IHoaDonService, HoaDonService>();
+builder.Services.AddScoped<IUserService, UserService>();
+```
+
+### 2. AutoMapper Configuration
+```csharp
+// Program.cs
+builder.Services.AddAutoMapper(typeof(Program));
+
+// MappingProfile.cs
+public class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+        CreateMap<Giay, GiayVM>().ReverseMap();
+        CreateMap<HoaDon, HoaDonVM>().ReverseMap();
+    }
+}
+```
+
+### 3. Authorization
+```csharp
+[Area("Admin")]
+[Authorize(Roles = "Admin")]
+public class GiayController : Controller
+{
+    // Controller methods
+}
+```
+
+### 4. Error Handling
+```csharp
+public async Task<IActionResult> Details(int id)
+{
+    try
+    {
+        var giay = await _giayService.GetByIdAsync(id);
+        if (giay == null)
+        {
+            TempData["Error"] = "Không tìm thấy giày với ID này";
+            return RedirectToAction(nameof(Index));
+        }
+        
+        return View(giay);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Lỗi khi lấy chi tiết giày với ID {Id}", id);
+        TempData["Error"] = "Có lỗi xảy ra khi lấy thông tin giày";
+        return RedirectToAction(nameof(Index));
+    }
+}
+```
+
+## Admin-Specific Features
+
+### 1. Dashboard
+```csharp
+[Area("Admin")]
+[Authorize(Roles = "Admin")]
+public class AdminController : Controller
+{
+    private readonly IGiayService _giayService;
+    private readonly IHoaDonService _hoaDonService;
+
+    public AdminController(IGiayService giayService, IHoaDonService hoaDonService)
+    {
+        _giayService = giayService;
+        _hoaDonService = hoaDonService;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var dashboardVM = new DashboardVM
+        {
+            TotalProducts = await _giayService.GetCountAsync(),
+            TotalOrders = await _hoaDonService.GetCountAsync(),
+            RecentOrders = await _hoaDonService.GetRecentAsync(5),
+            TopProducts = await _giayService.GetTopSellingAsync(5)
+        };
+        
+        return View(dashboardVM);
+    }
+}
+```
+
+### 2. BanHangTaiQuay (POS)
+```csharp
+[Area("Admin")]
+[Authorize(Roles = "Admin")]
+public class BanHangTaiQuayController : Controller
+{
+    private readonly IGiayService _giayService;
+    private readonly IHoaDonService _hoaDonService;
+
+    public BanHangTaiQuayController(IGiayService giayService, IHoaDonService hoaDonService)
+    {
+        _giayService = giayService;
+        _hoaDonService = hoaDonService;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var products = await _giayService.GetAllAsync();
+        return View(products);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateOrder(BanHangTaiQuayVM model)
+    {
+        if (ModelState.IsValid)
+        {
+            var hoaDon = await _hoaDonService.CreateFromPOSAsync(model);
+            return Json(new { success = true, hoaDonId = hoaDon.Id });
+        }
+        
+        return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors) });
+    }
+}
+```
+
+## Best Practices
+
+### 1. Consistent Error Handling
+- Use try-catch blocks in services
+- Log errors appropriately
+- Return user-friendly error messages
+- Use TempData for flash messages
+
+### 2. Validation
+- Use Data Annotations in ViewModels
+- Implement server-side validation
+- Use client-side validation with jQuery
+
+### 3. Performance
+- Use async/await for all I/O operations
+- Implement proper database queries with Include()
+- Use caching for frequently accessed data
+
+### 4. Security
+- Validate all inputs
+- Use anti-forgery tokens
+- Implement proper authorization
+- Sanitize user inputs
+
+### 5. UI/UX
+- Use consistent styling with Bootstrap
+- Implement responsive design
+- Use icons for better UX
+- Provide clear navigation
+ 

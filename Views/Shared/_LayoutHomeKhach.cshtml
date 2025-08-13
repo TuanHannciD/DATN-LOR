@@ -1,0 +1,462 @@
+﻿<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ogani Template">
+    <meta name="keywords" content="Ogani, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="../Layout/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="../Layout/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="../Layout/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="../Layout/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="../Layout/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="../Layout/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="../Layout/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="../Layout/css/style.css" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        li.active > a {
+            color: #7fad39 !important; /* Màu chữ cho trang đang truy cập */
+            font-weight: bold;
+        }
+        /* Ensure Tailwind dropdown is not overridden by Bootstrap */
+        /* Container user menu */
+        .user-menu {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        /* Tên người dùng */
+        .user-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            padding: 6px 0;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+            .user-name i {
+                font-size: 14px;
+            }
+
+        .user-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #333;
+            text-decoration: none;
+        }
+
+            .user-link:hover {
+                color: #007bff;
+            }
+
+        /* Dropdown */
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 160px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+            .dropdown a {
+                padding: 8px 12px;
+                text-decoration: none;
+                color: #333;
+                display: block;
+            }
+
+                .dropdown a:hover {
+                    background-color: #f0f0f0;
+                }
+
+        /* Hover mở menu */
+        .user-menu:hover .dropdown {
+            display: flex;
+        }
+
+        /* Nút đăng nhập */
+        .user-link,
+        .login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0;
+            background: none;
+            border: none;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+            .user-link:hover,
+            .login-btn:hover {
+                color: #7fad39; /* màu xanh khi hover */
+            }
+
+            .user-link i,
+            .login-btn i {
+                font-size: 14px;
+            }
+
+            
+    </style>
+
+
+
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Humberger Begin -->
+    <div class="humberger__menu__overlay"></div>
+    <div class="humberger__menu__wrapper">
+    </div>
+    <!-- Humberger End -->
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__left">
+                            @* <ul>
+                                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
+                                <li>Free Shipping for all Order of $99</li>
+                            </ul> *@
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__right">
+                           @*  <div class="header__top__right__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                            </div>
+                            <div class="header__top__right__language">
+                                <img src="../Layout/img/language.png" alt="">
+                                <div>English</div>
+                                <span class="arrow_carrot-down"></span>
+                                <ul>
+                                    <li><a href="#">Spanis</a></li>
+                                    <li><a href="#">English</a></li>
+                                </ul>
+                            </div> *@
+                            <div>
+                                @{
+                                    var tenDangNhap = Context.Session.GetString("TenDangNhap");
+                                }
+
+                                @if (!string.IsNullOrEmpty(tenDangNhap))
+                                {
+                                    <!-- Đã đăng nhập -->
+                                    <div class="user-menu">
+                                        <span class="user-name">
+                                            <i class="fa fa-user"></i> @tenDangNhap
+                                        </span>
+                                        <div class="dropdown">
+                                            <a asp-controller="Account" asp-action="UserProfile" >
+                                                Thông tin người dùng
+                                            </a>
+                                            <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <!-- Chưa đăng nhập -->
+                                    <a href="@Url.Action("Login", "Account")" class="login-btn">
+                                        <i class="fa fa-user"></i> Đăng nhập
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a href="./index.html"><img src="../Layout/img/logo1.jpg" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul>
+                            @{
+                                string currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                                string currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                            }
+                            <li class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+                                <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                            </li>
+                            <li class="@(currentController == "Shop" && currentAction == "Index" ? "active" : "")">
+                                <a asp-controller="Shop" asp-action="Index">Cửa Hàng</a>
+                            </li>
+
+                            <li class="@(currentController == "HoaDon" && currentAction == "DonHang" ? "active" : "")">
+                                <a asp-controller="HoaDon" asp-action="DonHang">Đơn Hàng</a>
+                            </li>
+                            <li class="@(currentController == "HoaDon" && currentAction == "CheckOut" ? "active" : "")">
+                                <a asp-controller="HoaDon" asp-action="CheckOut">Liên Hệ</a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    <div class="header__cart">
+                        <ul>
+                           @*  <li><a asp-controller="Home" asp-action="SpYeuThich"><i class="fa fa-heart"></i> <span>@numberOfItemsInSpyt</span></a></li> *@
+                            <li><a asp-controller="Cart" asp-action="Index"><i class="fa fa-shopping-bag"></i> </a></li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Header Section End -->
+    <!-- Hero Section Begin -->
+    <section class="hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span>All departments</span>
+                        </div>
+                        <ul>
+                            <li><a href="#">Fresh Meat</a></li>
+                            <li><a href="#">Vegetables</a></li>
+                            <li><a href="#">Fruit & Nut Gifts</a></li>
+                            <li><a href="#">Fresh Berries</a></li>
+                            <li><a href="#">Ocean Foods</a></li>
+                            <li><a href="#">Butter & Eggs</a></li>
+                            <li><a href="#">Fastfood</a></li>
+                            <li><a href="#">Fresh Onion</a></li>
+                            <li><a href="#">Papayaya & Crisps</a></li>
+                            <li><a href="#">Oatmeal</a></li>
+                            <li><a href="#">Fresh Bananas</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form method="post" asp-action="TimKiemSanPham" asp-controller="Home">
+                                <div class="hero__search__categories">
+                                    Tất cả sản phẩm
+                                    <span class="arrow_carrot-down"></span>
+                                </div>
+                                <input type="text" name="Saech" placeholder="Bạn cần gì ?">
+                                <button type="submit" class="site-btn">SEARCH</button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="hero__search__phone__text">
+                                <h5>0987567544</h5>
+                                <span>Hotline hỗ trợ </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero__item set-bg" data-setbg="../Layout/img/hero/banner1.jpg">
+                        @* <div class="hero__text">
+                            <span>FRUIT FRESH</span>
+                            <h2>Vegetable <br />100% Organic</h2>
+                            <p>Free Pickup and Delivery Available</p>
+                            <a asp-action="Shop" asp-controller="Home" class="primary-btn">SHOP NOW</a>
+                        </div> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+    <!-- Categories Section Begin -->
+    <section class="categories">
+        <div class="container">
+            @*  <div class="row">
+            <div class="categories__slider owl-carousel">
+            <div class="col-lg-3">
+            <div class="categories__item set-bg" data-setbg="../Layout/img/categories/cat-1.jpg">
+            <h5><a href="#">Fresh Fruit</a></h5>
+            </div>
+            </div>
+            <div class="col-lg-3">
+            <div class="categories__item set-bg" data-setbg="../Layout/img/categories/cat-2.jpg">
+            <h5><a href="#">Dried Fruit</a></h5>
+            </div>
+            </div>
+            <div class="col-lg-3">
+            <div class="categories__item set-bg" data-setbg="../Layout/img/categories/cat-3.jpg">
+            <h5><a href="#">Vegetables</a></h5>
+            </div>
+            </div>
+            <div class="col-lg-3">
+            <div class="categories__item set-bg" data-setbg="../Layout/img/categories/cat-4.jpg">
+            <h5><a href="#">drink fruits</a></h5>
+            </div>
+            </div>
+            <div class="col-lg-3">
+            <div class="categories__item set-bg" data-setbg="../Layout/img/categories/cat-5.jpg">
+            <h5><a href="#">drink fruits</a></h5>
+            </div>
+            </div>
+            </div>
+            </div> *@
+        </div>
+    </section>
+    <!-- Categories Section End -->
+    <!-- Featured Section Begin -->
+    <section class="featured spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <h2>Sản Phẩm Nổi Bật</h2>
+                    </div>
+                    @* <div class="featured__controls">
+                    <ul>
+                    <li class="active" data-filter="*">All</li>
+                    <li data-filter=".oranges">Oranges</li>
+                    <li data-filter=".fresh-meat">Fresh Meat</li>
+                    <li data-filter=".vegetables">Vegetables</li>
+                    <li data-filter=".fastfood">Fastfood</li>
+                    </ul>
+                    </div> *@
+                </div>
+            </div>
+
+            @RenderBody()
+
+        </div>
+    </section>
+    <!-- Featured Section End -->
+    <!-- Banner Begin -->
+    <!-- Latest Product Section End -->
+    <!-- Blog Section Begin -->
+    <!-- Blog Section End -->
+    <!-- Footer Section Begin -->
+    <footer class="footer spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="footer__about">
+                        <div class="footer__about__logo">
+                            <a href="./index.html"><img src="../Layout/img/logo1.jpg" alt=""></a>
+                        </div>
+                        <ul>
+                            <li>Address: 60-49 Road 11378 New York</li>
+                            <li>Phone: +65 11.188.888</li>
+                            <li>Email: hello@colorlib.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                    <div class="footer__widget">
+                        <h6>Useful Links</h6>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">About Our Shop</a></li>
+                            <li><a href="#">Secure Shopping</a></li>
+                            <li><a href="#">Delivery infomation</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Our Sitemap</a></li>
+                        </ul>
+                        <ul>
+                            <li><a href="#">Who We Are</a></li>
+                            <li><a href="#">Our Services</a></li>
+                            <li><a href="#">Projects</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">Innovation</a></li>
+                            <li><a href="#">Testimonials</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="footer__widget">
+                        <h6>Join Our Newsletter Now</h6>
+                        <p>Get E-mail updates about our latest shop and special offers.</p>
+                        <form action="#">
+                            <input type="text" placeholder="Enter your mail">
+                            <button type="submit" class="site-btn">Subscribe</button>
+                        </form>
+                        <div class="footer__widget__social">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-instagram"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="footer__copyright">
+                        <div class="footer__copyright__text">
+                            <p>
+                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            </p>
+                        </div>
+                        <div class="footer__copyright__payment"><img src="../Layout/img/payment-item.png" alt=""></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer Section End -->
+    <!-- Js Plugins -->
+    <script src="../Layout/js/jquery-3.3.1.min.js"></script>
+    <script src="../Layout/js/bootstrap.min.js"></script>
+    <script src="../Layout/js/jquery.nice-select.min.js"></script>
+    <script src="../Layout/js/jquery-ui.min.js"></script>
+    <script src="../Layout/js/jquery.slicknav.js"></script>
+    <script src="../Layout/js/mixitup.min.js"></script>
+    <script src="../Layout/js/owl.carousel.min.js"></script>
+    <script src="../Layout/js/main.js"></script>
+
+    
+    
+    @RenderSection("Scripts", required: false)
+</body>
+
+</html>

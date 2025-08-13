@@ -1,0 +1,127 @@
+﻿@using System.Linq
+@{
+    ViewData["Title"] = "DonHang";
+    Layout = "~/Views/Shared/_LayoutCart.cshtml";
+}
+
+@model List<AuthDemo.Models.ViewModels.HoaDonKHVM>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    .order-status-tabs {
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+        .order-status-tabs .nav-link {
+            border: none;
+            background-color: transparent;
+            font-weight: 500;
+            color: #333;
+            position: relative;
+            padding: 10px 16px;
+            transition: color 0.2s ease;
+        }
+
+            .order-status-tabs .nav-link:hover {
+                color: #7fad39;
+            }
+
+            .order-status-tabs .nav-link.active {
+                color: #7fad39;
+                font-weight: 600;
+            }
+
+                .order-status-tabs .nav-link.active::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    height: 3px;
+                    width: 100%;
+                    background-color: #7fad39;
+                    border-radius: 2px 2px 0 0;
+                }
+
+    .order-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .order-header {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-bottom: 1px solid #ddd;
+        font-weight: 600;
+    }
+
+    .product-item {
+        display: flex;
+        padding: 10px 15px;
+        border-bottom: 1px dashed #eee;
+    }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+</style>
+<div class="container mt-4">
+    <ul class="nav nav-tabs order-status-tabs" id="orderTab" role="tablist">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tatca" data-status="">Tất cả</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cho-xac-nhan" data-status="0">Chờ xác nhận</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cho-van-chuyen" data-status="1">Chờ vận chuyển</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#hoan-thanh" data-status="3">Hoàn thành</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#da-huy" data-status="4">Đã hủy</a></li> 
+    </ul>
+
+<div class="tab-content mt-3" id="orderContent">
+    <!-- Đơn hàng sẽ được load vào đây bằng Ajax -->
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        function loadOrders(status) {
+            $.ajax({
+                url: '/HoaDon/LayDonHangTheoTrangThai',
+                type: 'GET',
+                data: { trangThai: status },
+                success: function (data) {
+                    $('#orderContent').html(data);
+                },
+                error: function () {
+                    $('#orderContent').html('<p class="text-danger">Lỗi khi tải đơn hàng.</p>');
+                }
+            });
+        }
+
+        // Tải mặc định "Tất cả"
+        loadOrders('');
+
+        // Khi bấm tab
+        $('.order-status-tabs .nav-link').on('click', function () {
+            var status = $(this).data('status');
+            loadOrders(status);
+        });
+    });
+            $(document).ready(function () {
+                $('.order-status-tabs .nav-link').on('click', function (e) {
+                    e.preventDefault(); // Ngăn điều hướng mặc định của thẻ <a>
+
+                    // Xóa .active ở tất cả các tab
+                    $('.order-status-tabs .nav-link').removeClass('active');
+
+                    // Gán .active cho tab vừa được click
+                    $(this).addClass('active');
+
+                    // 👉 Nếu bạn đang lọc đơn hàng bằng Ajax, gọi hàm xử lý tại đây
+                    var status = $(this).data('status');
+                    loadOrdersByStatus(status); // Giả sử bạn có hàm này
+                });
+            });
+</script>
+}
+   
+</div>
+

@@ -1,0 +1,531 @@
+# Coding Standards - Tiêu chuẩn viết code
+
+## C# Naming Conventions
+
+### Classes & Interfaces
+- **Classes**: PascalCase
+  ```csharp
+  public class GiayService { }
+  public class HoaDonController { }
+  public class UserManager { }
+  ```
+- **Interfaces**: PascalCase với prefix "I"
+  ```csharp
+  public interface IGiayService { }
+  public interface IHoaDonRepository { }
+  ```
+
+### Methods & Properties
+- **Methods**: PascalCase
+  ```csharp
+  public async Task<IEnumerable<Giay>> GetAllAsync() { }
+  public async Task<Giay> GetByIdAsync(int id) { }
+  public async Task<Giay> CreateAsync(Giay giay) { }
+  ```
+- **Properties**: PascalCase
+  ```csharp
+  public string TenGiay { get; set; }
+  public decimal Gia { get; set; }
+  public DateTime NgayTao { get; set; }
+  ```
+
+### Private Fields
+- **Private fields**: camelCase với underscore prefix
+  ```csharp
+  private readonly IGiayService _giayService;
+  private readonly ApplicationDbContext _context;
+  private readonly ILogger<GiayController> _logger;
+  ```
+
+### Constants
+- **Constants**: UPPER_CASE với underscore
+  ```csharp
+  public const int MAX_PRICE = 1000000;
+  public const string DEFAULT_SIZE = "42";
+  ```
+
+## ASP.NET Core MVC Conventions
+
+### Controllers
+- **Naming**: `[Entity]Controller`
+- **Location**: `Controllers/` hoặc `Areas/[Area]/Controllers/`
+- **Inheritance**: Inherit from `Controller`
+- **Dependency Injection**: Use constructor injection
+
+```csharp
+public class GiayController : Controller
+{
+    private readonly IGiayService _giayService;
+    private readonly ILogger<GiayController> _logger;
+
+    public GiayController(IGiayService giayService, ILogger<GiayController> logger)
+    {
+        _giayService = giayService;
+        _logger = logger;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var giayList = await _giayService.GetAllAsync();
+        return View(giayList);
+    }
+}
+```
+
+### Services
+- **Naming**: `[Entity]Service`
+- **Location**: `Areas/[Area]/Services/`
+- **Interface**: `I[Entity]Service`
+- **Registration**: In `Program.cs`
+
+```csharp
+public interface IGiayService
+{
+    Task<IEnumerable<Giay>> GetAllAsync();
+    Task<Giay> GetByIdAsync(int id);
+    Task<Giay> CreateAsync(Giay giay);
+    Task<Giay> UpdateAsync(Giay giay);
+    Task DeleteAsync(int id);
+}
+
+public class GiayService : IGiayService
+{
+    private readonly ApplicationDbContext _context;
+
+    public GiayService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Giay>> GetAllAsync()
+    {
+        return await _context.Giay.ToListAsync();
+    }
+}
+```
+
+### Models & ViewModels
+- **Entities**: `[Entity].cs`
+- **ViewModels**: `[Entity]VM.cs`
+- **Location**: `Models/` và `Models/ViewModels/`
+
+```csharp
+// Entity
+public class Giay
+{
+    public int Id { get; set; }
+    public string TenGiay { get; set; }
+    public decimal Gia { get; set; }
+    public DateTime NgayTao { get; set; }
+}
+
+// ViewModel
+public class GiayVM
+{
+    [Required(ErrorMessage = "Tên giày không được để trống")]
+    public string TenGiay { get; set; }
+    
+    [Required(ErrorMessage = "Giá không được để trống")]
+    [Range(0, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
+    public decimal Gia { get; set; }
+}
+```
+
+## Architecture Patterns
+
+### Repository Pattern
+- **Interface**: `I[Entity]Repository`
+- **Implementation**: `[Entity]Repository`
+- **Usage**: Through services, not directly in controllers
+
+```csharp
+public interface IGiayRepository
+{
+    Task<IEnumerable<Giay>> GetAllAsync();
+    Task<Giay> GetByIdAsync(int id);
+    Task<Giay> AddAsync(Giay giay);
+    Task<Giay> UpdateAsync(Giay giay);
+    Task DeleteAsync(int id);
+}
+```
+
+### Service Layer Pattern
+- **Business Logic**: In services, not controllers
+- **Data Access**: Through repositories
+- **Validation**: In services or separate validators
+
+```csharp
+public class GiayService : IGiayService
+{
+    private readonly IGiayRepository _repository;
+    private readonly IValidator<Giay> _validator;
+
+    public GiayService(IGiayRepository repository, IValidator<Giay> validator)
+    {
+        _repository = repository;
+        _validator = validator;
+    }
+
+    public async Task<Giay> CreateAsync(Giay giay)
+    {
+        var validationResult = await _validator.ValidateAsync(giay);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+
+        return await _repository.AddAsync(giay);
+    }
+}
+```
+
+## Async/Await Pattern
+
+### Always use async/await for I/O operations
+```csharp
+// ✅ Correct
+public async Task<IEnumerable<Giay>> GetAllAsync()
+{
+    return await _context.Giay.ToListAsync();
+}
+
+public async Task<IActionResult> Index()
+{
+    var giayList = await _giayService.GetAllAsync();
+    return View(giayList);
+}
+
+// ❌ Wrong
+public IEnumerable<Giay> GetAll()
+{
+    return _context.Giay.ToList(); // Blocking call
+}
+```
+
+### Exception Handling
+```csharp
+public async Task<IActionResult> Details(int id)
+{
+    try
+    {
+        var giay = await _giayService.GetByIdAsync(id);
+        if (giay == null)
+            return NotFound();
+        
+        return View(giay);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Lỗi khi lấy giày với ID {Id}", id);
+        return StatusCode(500, "Có lỗi xảy ra");
+    }
+}
+```
+
+## Data Annotations & Validation
+
+### Model Validation
+```csharp
+public class GiayVM
+{
+    [Required(ErrorMessage = "Tên giày không được để trống")]
+    [StringLength(100, ErrorMessage = "Tên giày không quá 100 ký tự")]
+    [Display(Name = "Tên giày")]
+    public string TenGiay { get; set; }
+
+    [Required(ErrorMessage = "Giá không được để trống")]
+    [Range(0, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
+    [Display(Name = "Giá")]
+    [DataType(DataType.Currency)]
+    public decimal Gia { get; set; }
+
+    [Display(Name = "Mô tả")]
+    [StringLength(500, ErrorMessage = "Mô tả không quá 500 ký tự")]
+    public string MoTa { get; set; }
+}
+```
+
+### Custom Validation
+```csharp
+public class GiayValidator : AbstractValidator<Giay>
+{
+    public GiayValidator()
+    {
+        RuleFor(x => x.TenGiay)
+            .NotEmpty().WithMessage("Tên giày không được để trống")
+            .MaximumLength(100).WithMessage("Tên giày không quá 100 ký tự");
+
+        RuleFor(x => x.Gia)
+            .GreaterThan(0).WithMessage("Giá phải lớn hơn 0");
+    }
+}
+```
+
+## Razor Views Conventions
+
+### View Naming
+- **Index.cshtml**: List view
+- **Create.cshtml**: Create form
+- **Edit.cshtml**: Edit form
+- **Details.cshtml**: Detail view
+- **Delete.cshtml**: Delete confirmation
+
+### View Structure
+```html
+@model IEnumerable<Giay>
+
+@{
+    ViewData["Title"] = "Danh sách giày";
+}
+
+<div class="container">
+    <h2>@ViewData["Title"]</h2>
+    
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Thêm mới</a>
+    </p>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.TenGiay)</th>
+                <th>@Html.DisplayNameFor(model => model.Gia)</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.TenGiay)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Gia)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Chi tiết</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+```
+
+## Comments & Documentation
+
+### XML Documentation
+```csharp
+/// <summary>
+/// Service để quản lý các thao tác liên quan đến giày
+/// </summary>
+public interface IGiayService
+{
+    /// <summary>
+    /// Lấy tất cả giày
+    /// </summary>
+    /// <returns>Danh sách tất cả giày</returns>
+    Task<IEnumerable<Giay>> GetAllAsync();
+
+    /// <summary>
+    /// Lấy giày theo ID
+    /// </summary>
+    /// <param name="id">ID của giày</param>
+    /// <returns>Giày tương ứng hoặc null nếu không tìm thấy</returns>
+    Task<Giay> GetByIdAsync(int id);
+}
+```
+
+### Inline Comments
+```csharp
+public async Task<Giay> CreateAsync(Giay giay)
+{
+    // Validate input
+    if (giay == null)
+        throw new ArgumentNullException(nameof(giay));
+
+    // Set creation timestamp
+    giay.NgayTao = DateTime.Now;
+
+    // Save to database
+    _context.Giay.Add(giay);
+    await _context.SaveChangesAsync();
+
+    return giay;
+}
+```
+
+## Error Handling
+
+### Controller Error Handling
+```csharp
+public async Task<IActionResult> Edit(int id, GiayVM giayVM)
+{
+    if (id != giayVM.Id)
+        return NotFound();
+
+    if (ModelState.IsValid)
+    {
+        try
+        {
+            var giay = _mapper.Map<Giay>(giayVM);
+            await _giayService.UpdateAsync(giay);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await GiayExists(giayVM.Id))
+                return NotFound();
+            else
+                throw;
+        }
+    }
+    return View(giayVM);
+}
+```
+
+### Service Error Handling
+```csharp
+public async Task<Giay> GetByIdAsync(int id)
+{
+    try
+    {
+        var giay = await _context.Giay
+            .Include(g => g.ChiTietGiay)
+            .FirstOrDefaultAsync(g => g.Id == id);
+
+        if (giay == null)
+            throw new NotFoundException($"Giày với ID {id} không tồn tại");
+
+        return giay;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Lỗi khi lấy giày với ID {Id}", id);
+        throw;
+    }
+}
+```
+
+## Performance Best Practices
+
+### Database Queries
+```csharp
+// ✅ Efficient - Include related data
+public async Task<IEnumerable<Giay>> GetAllWithDetailsAsync()
+{
+    return await _context.Giay
+        .Include(g => g.ChiTietGiay)
+        .Include(g => g.ThuongHieu)
+        .ToListAsync();
+}
+
+// ❌ Inefficient - N+1 query problem
+public async Task<IEnumerable<Giay>> GetAllAsync()
+{
+    var giayList = await _context.Giay.ToListAsync();
+    foreach (var giay in giayList)
+    {
+        giay.ChiTietGiay = await _context.ChiTietGiay
+            .Where(ct => ct.GiayId == giay.Id)
+            .ToListAsync();
+    }
+    return giayList;
+}
+```
+
+### Caching
+```csharp
+public async Task<IEnumerable<Giay>> GetAllAsync()
+{
+    var cacheKey = "all_giay";
+    var cachedResult = await _cache.GetAsync<IEnumerable<Giay>>(cacheKey);
+    
+    if (cachedResult != null)
+        return cachedResult;
+
+    var result = await _context.Giay.ToListAsync();
+    await _cache.SetAsync(cacheKey, result, TimeSpan.FromMinutes(10));
+    
+    return result;
+}
+```
+
+## Security Best Practices
+
+### Input Validation
+```csharp
+public async Task<IActionResult> Create(GiayVM giayVM)
+{
+    if (!ModelState.IsValid)
+        return View(giayVM);
+
+    // Additional server-side validation
+    if (giayVM.Gia <= 0)
+    {
+        ModelState.AddModelError("Gia", "Giá phải lớn hơn 0");
+        return View(giayVM);
+    }
+
+    var giay = _mapper.Map<Giay>(giayVM);
+    await _giayService.CreateAsync(giay);
+    
+    return RedirectToAction(nameof(Index));
+}
+```
+
+### SQL Injection Prevention
+```csharp
+// ✅ Safe - Use parameterized queries
+public async Task<IEnumerable<Giay>> GetByBrandAsync(string brand)
+{
+    return await _context.Giay
+        .Where(g => g.ThuongHieu.TenThuongHieu == brand)
+        .ToListAsync();
+}
+
+// ❌ Unsafe - String concatenation
+public async Task<IEnumerable<Giay>> GetByBrandAsync(string brand)
+{
+    var sql = $"SELECT * FROM Giay WHERE ThuongHieu = '{brand}'";
+    return await _context.Giay.FromSqlRaw(sql).ToListAsync();
+}
+```
+
+## Testing Conventions
+
+### Unit Test Naming
+```csharp
+[Test]
+public async Task GetAllAsync_ShouldReturnAllGiay()
+{
+    // Arrange
+    var mockRepository = new Mock<IGiayRepository>();
+    var service = new GiayService(mockRepository.Object);
+    
+    // Act
+    var result = await service.GetAllAsync();
+    
+    // Assert
+    Assert.IsNotNull(result);
+}
+```
+
+### Integration Test Structure
+```csharp
+[Test]
+public async Task CreateAsync_WithValidData_ShouldCreateGiay()
+{
+    // Arrange
+    var giay = new Giay { TenGiay = "Test Giay", Gia = 100000 };
+    
+    // Act
+    var result = await _service.CreateAsync(giay);
+    
+    // Assert
+    Assert.IsNotNull(result);
+    Assert.AreEqual("Test Giay", result.TenGiay);
+}
+```
+description:
+globs:
+alwaysApply: false
+---
+ 
