@@ -127,7 +127,7 @@ namespace Controllers
                 {
                     warnings.Add($"Sản phẩm '{product.ChiTietGiay.Giay.TenGiay}' chỉ còn {product.ChiTietGiay.SoLuong} sản phẩm. Đã cập nhật lại số lượng.");
                     product.SoLuong = product.ChiTietGiay.SoLuong;
-                    _context.SaveChanges(); 
+                    _context.SaveChanges(); // cập nhật lại số lượng trong giỏ
                     hasInvalid = true;
                 }
                 if (requestedQty <= product.ChiTietGiay.SoLuong)
@@ -216,10 +216,40 @@ namespace Controllers
 
 
 
-            var hoaDons = _context.HoaDons
+
+            var hoaDonsRaw = _context.HoaDons
     .Where(h => h.UserID == users)
     .OrderByDescending(h => h.NgayTao)
-            .Select(h => new HoaDonKHVM
+    .Select(h => new
+    {
+        h.BillID,
+        h.HoTen,
+        h.SoDienThoai,
+        h.DiaChi,
+        h.TrangThai,
+        h.NgayTao,
+        h.TongTien,
+        h.PhuongThucThanhToan,
+        ChiTiet = _context.ChiTietHoaDons
+            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.Giay)
+            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.MauSac)
+            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.KichThuoc)
+            .Where(c => c.BillID == h.BillID)
+            .Select(c => new
+            {
+                TenSanPham = c.ChiTietGiay.Giay.TenGiay,
+                HinhAnh = c.ChiTietGiay.Giay.AnhDaiDien,
+                Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
+                MauSac = c.ChiTietGiay.MauSac.TenMau,
+                c.SoLuong,
+                c.DonGia
+            }).ToList()
+    })
+    .ToList();
+
+            // Map sang ViewModel và xử lý Enum
+            var hoaDons = hoaDonsRaw.Select(h => new HoaDonKHVM
+
             {
                 BillID = h.BillID,
                 HoTen = h.HoTen,
@@ -228,24 +258,91 @@ namespace Controllers
                 TrangThai = Enum.GetName(typeof(TrangThaiHoaDon), h.TrangThai) ?? "Chưa xác định",
                 NgayTao = h.NgayTao,
                 TongTien = h.TongTien,
-                ChiTiet = _context.ChiTietHoaDons
-            .Include(c => c.ChiTietGiay)
-            .ThenInclude(ctg => ctg.Giay)
-            .Include(c => c.ChiTietGiay)
-            .ThenInclude(ctg => ctg.MauSac)
-            .Include(c => c.ChiTietGiay)
-            .ThenInclude(ctg => ctg.KichThuoc)
-            .Where(c => c.BillID == h.BillID)
 
-            .Select(c => new ChiTietHoaDonKHVM
+                PhuongThuc = Enum.GetName(typeof(PhuongThucThanhToan), h.PhuongThucThanhToan) ?? "Chưa xác định",
+                ChiTiet = h.ChiTiet.Select(c => new ChiTietHoaDonKHVM
+                {
+                    TenSanPham = c.TenSanPham,
+                    HinhAnh = c.HinhAnh,
+                    Size = c.Size,
+                    MauSac = c.MauSac,
+                    SoLuong = c.SoLuong,
+                    DonGia = c.DonGia
+                }).ToList()
+            }).ToList();
+
+
+            return View(hoaDons);
+
+
+        }
+        [HttpGet]
+        public IActionResult ChiTietDonHang(Guid HoaDonId)
+        {
+            var check = HttpContext.Session.GetString("TenDangNhap");
+
+            if (string.IsNullOrEmpty(check))
+            {
+
+                return RedirectToAction("Login", "Account");
+            }
+
+            //lấy iduser
+            var users = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
+
+
+
+            var hoaDonsRaw = _context.HoaDons
+    .Where(h => h.BillID == HoaDonId)
+    .OrderByDescending(h => h.NgayTao)
+    .Select(h => new
+    {
+        h.BillID,
+        h.HoTen,
+        h.SoDienThoai,
+        h.DiaChi,
+        h.TrangThai,
+        h.NgayTao,
+        h.TongTien,
+        h.PhuongThucThanhToan,
+        ChiTiet = _context.ChiTietHoaDons
+            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.Giay)
+            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.MauSac)
+            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.KichThuoc)
+            .Where(c => c.BillID == h.BillID)
+            .Select(c => new
             {
                 TenSanPham = c.ChiTietGiay.Giay.TenGiay,
                 HinhAnh = c.ChiTietGiay.Giay.AnhDaiDien,
-                Size = c.ChiTietGiay.MauSac.TenMau,
-                MauSac = c.ChiTietGiay.KichThuoc.TenKichThuoc,
-                SoLuong = c.SoLuong,
-                DonGia = c.DonGia
+                Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
+                MauSac = c.ChiTietGiay.MauSac.TenMau,
+                c.SoLuong,
+                c.DonGia
             }).ToList()
+    })
+    .ToList();
+
+            // Map sang ViewModel và xử lý Enum
+            var hoaDons = hoaDonsRaw.Select(h => new HoaDonKHVM
+            {
+                BillID = h.BillID,
+                HoTen = h.HoTen,
+                SoDienThoai = h.SoDienThoai,
+                DiaChi = h.DiaChi,
+                TrangThai = Enum.GetName(typeof(TrangThaiHoaDon), h.TrangThai) ?? "Chưa xác định",
+                NgayTao = h.NgayTao,
+                TongTien = h.TongTien,
+                PhuongThuc = Enum.GetName(typeof(PhuongThucThanhToan), h.PhuongThucThanhToan) ?? "Chưa xác định",
+                ChiTiet = h.ChiTiet.Select(c => new ChiTietHoaDonKHVM
+                {
+                    TenSanPham = c.TenSanPham,
+                    HinhAnh = c.HinhAnh,
+                    Size = c.Size,
+                    MauSac = c.MauSac,
+                    SoLuong = c.SoLuong,
+                    DonGia = c.DonGia
+                }).ToList()
+
             }).ToList();
 
 
@@ -256,13 +353,15 @@ namespace Controllers
         [HttpGet]
         public IActionResult LayDonHangTheoTrangThai(string trangThai)
         {
-            var userId = HttpContext.Session.GetString("UserID");
+            var check = HttpContext.Session.GetString("TenDangNhap");
+            var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
 
-            if (string.IsNullOrEmpty(userId))
+            if (userId == null)
                 return BadRequest("Người dùng chưa đăng nhập");
 
             var query = _context.HoaDons
-                .Where(h => h.UserID.ToString() == userId);
+                .Where(h => h.UserID == userId);
+
 
             if (!string.IsNullOrEmpty(trangThai))
             {
@@ -277,6 +376,9 @@ namespace Controllers
                 }
             }
 
+            var enumType = typeof(TrangThaiHoaDon);
+
+
             var result = query
                 .Select(h => new HoaDonKHVM
                 {
@@ -284,7 +386,8 @@ namespace Controllers
                     HoTen = h.HoTen,
                     SoDienThoai = h.SoDienThoai,
                     DiaChi = h.DiaChi,
-                    TrangThai = Enum.GetName(typeof(TrangThaiHoaDon), h.TrangThai) ?? "Chưa xác định",
+                    TrangThai = Enum.GetName(enumType, h.TrangThai) ?? "Chưa xác định",
+
                     NgayTao = h.NgayTao ,
                     TongTien = h.TongTien,
                     ChiTiet = _context.ChiTietHoaDons

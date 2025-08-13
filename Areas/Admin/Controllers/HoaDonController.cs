@@ -30,7 +30,6 @@ namespace AuthDemo.Areas.Admin.Controllers
         [Route("Admin/HoaDon/CreateHoaDon")]
         public async Task<IActionResult> CreateHoaDon([FromBody] CreateHoaDonVM createHoaDonVM)
         {
-
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(tenDangNhap))
             {
@@ -48,7 +47,6 @@ namespace AuthDemo.Areas.Admin.Controllers
             {
                 message = "Hóa đơn đã được tạo thành công.",
                 hoaDon = result.Data
-
             });
         }
         [HttpPost]
@@ -69,8 +67,5 @@ namespace AuthDemo.Areas.Admin.Controllers
             }
             return Ok(new { message = "Cập nhật trạng thái thanh toán thành công." });
         }
-        
-
-
     }
 }

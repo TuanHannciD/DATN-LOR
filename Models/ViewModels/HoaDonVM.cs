@@ -37,6 +37,7 @@ namespace AuthDemo.Models.ViewModels
     
     public class CreateHoaDonVM
     {
+
         [JsonPropertyName("userID")]
         public Guid ?UserID { get; set; } 
         [JsonPropertyName("hinhThucThanhToan")]
@@ -48,6 +49,7 @@ namespace AuthDemo.Models.ViewModels
         [JsonPropertyName("giamGiaTienMat")]
         public decimal? GiamGiaTienMat { get; set; }
         [JsonPropertyName("lyDo")]
+
         public string? LyDo { get; set; }
     }
     

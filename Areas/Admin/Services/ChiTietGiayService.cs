@@ -19,6 +19,7 @@ namespace AuthDemo.Areas.Admin.Services
             try
             {
                 return [.. _db.ChiTietGiays];
+
             }
             catch (Exception ex)
             {
@@ -73,6 +74,7 @@ namespace AuthDemo.Areas.Admin.Services
 
             return ApiResponse<string>.SuccessResponse("Cập nhật chi tiết giày thành công.");
         }
+
 
         public void Delete(Guid id)
         {

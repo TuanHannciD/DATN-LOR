@@ -65,6 +65,7 @@ namespace AuthDemo.Controllers
             // Lưu thông tin đăng nhập vào session
             HttpContext.Session.SetString("TenDangNhap", user.TenDangNhap);
             HttpContext.Session.SetString("VaiTro", string.Join(",", tenVaiTroList));
+
             // Loại bỏ các phần tử null khỏi danh sách vai trò để kiểm tra
             var vaiTroListNonNull = tenVaiTroList.Where(x => x != null).Cast<string>();
             // Nếu user có cả vai trò admin và user, chuyển sang trang chọn vai trò
@@ -229,6 +230,126 @@ namespace AuthDemo.Controllers
                 var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return Convert.ToBase64String(hashedBytes);
             }
+        }
+
+        public IActionResult UserProfile()
+        {
+            var userId = HttpContext.Session.GetString("UserID");
+
+            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var id))
+            {
+                return NotFound();
+            }
+
+            var user = _context.NguoiDungs.FirstOrDefault(a => a.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        public IActionResult EditProfile()
+        {
+            var userId = HttpContext.Session.GetString("UserID");
+            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var id))
+            {
+                return NotFound();
+            }
+
+            var user = _context.NguoiDungs
+                .Include(u => u.VaiTroNguoiDungs)
+                .FirstOrDefault(a => a.UserID == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(NguoiDung model, IFormFile? avatarFile)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("ModelState is invalid during EditProfile for UserID: {UserID}", model?.UserID ?? Guid.Empty);
+                ViewBag.Errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return View(model);
+            }
+
+            var user = _context.NguoiDungs
+                .Include(u => u.VaiTroNguoiDungs)
+                .FirstOrDefault(u => u.UserID == model.UserID);
+
+            if (user == null)
+            {
+                _logger.LogWarning("User not found with UserID: {UserID}", model.UserID);
+                return NotFound();
+            }
+
+            _logger.LogInformation("Updating user with UserID: {UserID}", model.UserID);
+            user.HoTen = model.HoTen;
+            user.Email = model.Email;
+            user.SoDienThoai = model.SoDienThoai;
+
+            // Xử lý upload ảnh
+            if (avatarFile != null && avatarFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatar");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(avatarFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                try
+                {
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await avatarFile.CopyToAsync(stream);
+                    }
+                    user.AnhDaiDien = fileName; // Lưu tên file vào SQL
+                    _logger.LogInformation("Avatar uploaded successfully for UserID: {UserID}, File: {FileName}", model.UserID, fileName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error uploading avatar for UserID: {UserID}", model.UserID);
+                    ViewBag.Errors = new List<string> { $"Lỗi upload ảnh: {ex.Message}" };
+                    return View(model);
+                }
+            }
+
+            // Điền các trường từ ThongTinChung
+            user.NguoiTao = user.NguoiTao ?? HttpContext.Session.GetString("TenDangNhap") ?? "system";
+            user.NguoiCapNhat = HttpContext.Session.GetString("TenDangNhap") ?? "system";
+            user.NgayTao = user.NgayTao == default ? DateTime.Now : user.NgayTao;
+            user.NgayCapNhat = DateTime.Now;
+
+            // Xử lý VaiTroNguoiDungs
+            if (user.VaiTroNguoiDungs == null)
+            {
+                user.VaiTroNguoiDungs = new List<VaiTroNguoiDung>();
+            }
+
+            try
+            {
+                _context.Update(user);
+                _context.SaveChanges();
+                _logger.LogInformation("User {UserID} updated successfully.", model.UserID);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving changes for UserID: {UserID}", model.UserID);
+                ViewBag.Errors = new List<string> { $"Lỗi lưu dữ liệu: {ex.Message}" };
+                return View(model);
+            }
+
+            return RedirectToAction("UserProfile");
         }
     }
 } 

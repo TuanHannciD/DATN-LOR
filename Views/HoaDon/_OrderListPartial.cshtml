@@ -7,7 +7,9 @@
             <span>Mã đơn: @hoaDon.BillID</span>
             <span class="badge bg-info text-dark">@hoaDon.TrangThai</span>
         </div>
-        <div class="px-3 pt-2">
+
+        @* <div class="px-3 pt-2">
+
             <div><strong>Khách:</strong> @hoaDon.HoTen (@hoaDon.SoDienThoai)</div>
             <div><strong>Địa chỉ:</strong> @hoaDon.DiaChi</div>
             <div><strong>Ngày đặt:</strong> @(hoaDon.NgayTao.HasValue
@@ -15,23 +17,32 @@
                         : "")
             </div>
         </div>
-        <hr />
+
+        <hr /> *@
         @foreach (var item in hoaDon.ChiTiet)
         {
+            
             <div class="product-item">
                 <div style="width: 70%;">
                     <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+                        <a asp-controller="HoaDon"
+                                           asp-action="ChiTietDonHang"
+                                           asp-route-HoaDonId="@hoaDon.BillID">
                         <img src="@Url.Content("~/AnhDoiGiay/" + item.HinhAnh)" alt="" width="100"
                             style="border-radius: 8px;" />
+                        </a>
                         <div style="line-height: 1.5;">
                             <div><strong>@item.TenSanPham</strong></div>
+                           
+
                             <div>Size: @item.Size - Màu: @item.MauSac</div>
                             <div>x @item.SoLuong</div>
                         </div>
                     </div>
                 </div>
                 <div style="width: 30%; text-align: right;">
-                    <div>@item.DonGia.ToString("N0") đ</div>
+
+                    <div>@item.DonGia.ToString("N0") VNĐ</div>
                 </div>
             </div>
         }

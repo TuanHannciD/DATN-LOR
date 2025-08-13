@@ -17,6 +17,7 @@ namespace AuthDemo.Areas.Admin.Controllers
         private readonly ApplicationDbContext _context;
 
         public ChiTietGiayController(ApplicationDbContext context, IChiTietGiayService chiTietGiayService)
+
         {
             _context = context;
             _chiTietGiayService = chiTietGiayService;
@@ -42,7 +43,6 @@ namespace AuthDemo.Areas.Admin.Controllers
                 categoryList
             });
         }
-
 
         public IActionResult Index()
         {
@@ -169,4 +169,5 @@ namespace AuthDemo.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
     }
+
 }
