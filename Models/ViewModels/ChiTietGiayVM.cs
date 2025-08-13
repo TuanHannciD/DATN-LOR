@@ -34,6 +34,7 @@ namespace AuthDemo.Models.ViewModels
         // ViewModel cho Edit
         public class EditVM
         {
+            public string ?TenGiay { get; set; }
             public Guid ShoeDetailID { get; set; }
             public Guid ShoeID { get; set; }
             public Guid SizeID { get; set; }

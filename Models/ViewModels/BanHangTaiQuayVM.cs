@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
 namespace AuthDemo.Models.ViewModels
 {
     public class BanHangTaiQuayVM
@@ -43,4 +46,12 @@ namespace AuthDemo.Models.ViewModels
         public string? DanhMuc { get; set; }
         public string? LyDo { get; set; }
     }
+    public class UpdateCartRequestVM
+    {
+        [JsonPropertyName("shoeDetailId")   ]
+        public Guid ShoeDetailID { get; set; }
+        [JsonPropertyName("actionType")]
+        public string ActionType { get; set; } // "add", "remove", "increase", "decrease"
+    }
+    
 } 

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AuthDemo.Models.Enums;
 
 namespace AuthDemo.Models.ViewModels
@@ -36,13 +37,17 @@ namespace AuthDemo.Models.ViewModels
     
     public class CreateHoaDonVM
     {
-
-        public Guid UserID { get; set; }
-
+        [JsonPropertyName("userID")]
+        public Guid ?UserID { get; set; } 
+        [JsonPropertyName("hinhThucThanhToan")]
         public string HinhThucThanhToan { get; set; }
+        [JsonPropertyName("hinhThucVanChuyen")]
         public string HinhThucVanChuyen { get; set; }
+        [JsonPropertyName("giamGiaPhanTram")]
         public decimal? GiamGiaPhanTram { get; set; }
+        [JsonPropertyName("giamGiaTienMat")]
         public decimal? GiamGiaTienMat { get; set; }
+        [JsonPropertyName("lyDo")]
         public string? LyDo { get; set; }
     }
     

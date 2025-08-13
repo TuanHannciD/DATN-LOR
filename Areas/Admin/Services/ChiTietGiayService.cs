@@ -3,6 +3,7 @@ using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
 using static AuthDemo.Models.ViewModels.ChiTietGiayVM;
+using AuthDemo.Common;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -17,7 +18,7 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                return [.._db.ChiTietGiays];
+                return [.. _db.ChiTietGiays];
             }
             catch (Exception ex)
             {
@@ -49,31 +50,30 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi thêm chi tiết giày: " + ex.Message, ex);
             }
         }
-        public void Update(EditVM entity)
+        public ApiResponse<string> Update(EditVM entity)
         {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(entity);
-                var obj = _db.ChiTietGiays.Find(entity.ShoeDetailID);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy chi tiết giày để cập nhật!");
+            if (entity.ShoeDetailID == Guid.Empty)
+                return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "ID chi tiết giày không hợp lệ!");
 
-                // Ánh xạ thủ công các thuộc tính từ EditVM sang ChiTietGiay
-                obj.ShoeID = entity.ShoeID;
-                obj.SizeID = entity.SizeID;
-                obj.ColorID = entity.ColorID;
-                obj.MaterialID = entity.MaterialID;
-                obj.BrandID = entity.BrandID;
-                obj.CategoryID = entity.CategoryID;
-                obj.SoLuong = entity.SoLuong;
-                obj.Gia = entity.Gia;
+            var existingDetail = _db.ChiTietGiays.Find(entity.ShoeDetailID);
+            if (existingDetail == null)
+                return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy chi tiết giày để cập nhật.");
 
-                _db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Lỗi khi cập nhật chi tiết giày: " + ex.Message, ex);
-            }
+            // Cập nhật các trường
+            existingDetail.ShoeID = entity.ShoeID;
+            existingDetail.SizeID = entity.SizeID;
+            existingDetail.ColorID = entity.ColorID;
+            existingDetail.MaterialID = entity.MaterialID;
+            existingDetail.BrandID = entity.BrandID;
+            existingDetail.CategoryID = entity.CategoryID;
+            existingDetail.SoLuong = entity.SoLuong;
+            existingDetail.Gia = entity.Gia;
+
+            _db.SaveChanges();
+
+            return ApiResponse<string>.SuccessResponse("Cập nhật chi tiết giày thành công.");
         }
+
         public void Delete(Guid id)
         {
             try
@@ -104,4 +104,4 @@ namespace AuthDemo.Areas.Admin.Services
             }).ToList();
         }
     }
-} 
+}
