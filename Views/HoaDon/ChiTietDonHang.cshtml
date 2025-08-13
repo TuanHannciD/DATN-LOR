@@ -1,0 +1,216 @@
+﻿@using AuthDemo.Models.Enums
+@model List<AuthDemo.Models.ViewModels.HoaDonKHVM>
+
+@{
+    ViewData["Title"] = "DonHang";
+    Layout = "~/Views/Shared/_LayoutCart.cshtml";
+
+    var steps = new[] {
+        new { Name = "Chờ xác nhận", Value = TrangThaiHoaDon.ChoXacNhan, Icon = "⏳" },
+        new { Name = "Đã xác nhận", Value = TrangThaiHoaDon.DaXacNhan, Icon = "✅" },
+        new { Name = "Đang giao hàng", Value = TrangThaiHoaDon.DangGiaoHang, Icon = "🚚" },
+        new { Name = "Đã giao", Value = TrangThaiHoaDon.DaGiao, Icon = "📦" }
+    };
+}
+<style>
+    .order-container {
+        max-width: 980px;
+        margin: 30px auto;
+        padding: 22px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .order-container h2 {
+        text-align: center;
+        font-size: 20px;
+        margin-bottom: 18px;
+        color: #222;
+    }
+
+    /* progress background line */
+    .order-steps {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 18px 40px 34px;
+    }
+    .order-steps::before {
+        content: "";
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 28px;
+        height: 4px;
+        background: #e6e6e6;
+        z-index: 1;
+        border-radius: 4px;
+    }
+
+    /* colored progress (will be sized inline) */
+    .progress-line {
+        position: absolute;
+        left: 60px;
+        top: 28px;
+        height: 4px;
+        background: #28a745;
+        z-index: 2;
+        border-radius: 4px;
+        transition: width 0.28s ease;
+    }
+
+    .step {
+        position: relative;
+        z-index: 3;
+        flex: 1;
+        text-align: center;
+    }
+    .step .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #cfcfcf;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-size: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .step.active .icon {
+        background: #28a745;
+        box-shadow: 0 6px 18px rgba(40,167,69,0.18);
+        transform: translateY(-2px);
+    }
+    .step .name {
+        font-size: 13px;
+        color: #333;
+        font-weight: 500;
+    }
+
+    /* shipping info */
+    .shipping-info {
+        background: #fbfbfb;
+        border: 1px solid #f0f0f0;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+    }
+    .shipping-info h3 { margin:0 0 8px 0; font-size:18px; }
+    .shipping-info p { margin:3px 0; color:#555; }
+
+    /* product list */
+    .product {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 6px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .product img { width:80px; height:auto; border-radius:6px; border:1px solid #eee; }
+    .product-info { flex: 1; }
+    .product-line { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .product-name { color:#333; font-weight:500; }
+    .product-qty { color:#666; margin-top:6px; }
+    .product-price { font-weight:600; color:#333; white-space:nowrap; }
+
+    /* order summary box (placed centered under content) */
+    .order-summary {
+        max-width: 320px;
+        margin: 22px 0 0 auto; /* sang phải */
+        border-radius: 8px;
+        padding: 14px;
+        background: #fff8f6;
+        border: 1px solid #f5e8e5;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    }
+    .summary-item { display:flex; justify-content:space-between; margin:8px 0; color:#333; }
+    .summary-item.total { font-weight:700; font-size:16px; margin-top:10px; }
+    .total-price { color:#e84c3d; font-size:18px; font-weight:800; }
+
+    /* small screens (optional) */
+   
+    /* --- giữ nguyên CSS của bạn --- */
+</style>
+
+<div class="order-container">
+    @foreach (var hoaDon in Model)
+    {
+        <h2>Mã đơn hàng: @hoaDon.BillID</h2>
+
+        
+            var trangThaiEnum = Enum.Parse<TrangThaiHoaDon>(hoaDon.TrangThai);
+            int activeIndex = 0;
+            for (int i = 0; i < steps.Length; i++)
+            {
+                if (steps[i].Value.Equals(trangThaiEnum))
+                {
+                    activeIndex = i;
+                    break;
+                }
+            }
+            var progressPercent = (steps.Length > 1) ? (activeIndex * 100.0 / (steps.Length - 1)) : 0.0;
+        
+
+        <!-- progress bar and steps -->
+        <div class="order-steps">
+            <div class="progress-line" style="width:@progressPercent%;"></div>
+
+            @for (int i = 0; i < steps.Length; i++)
+            {
+                var step = steps[i];
+                var isActive = i <= activeIndex ? "active" : "";
+                <div class="step @isActive">
+                    <div class="icon">@step.Icon</div>
+                    <div class="name">@step.Name</div>
+                </div>
+            }
+        </div>
+
+        <div class="shipping-info">
+            <h3>Địa chỉ nhận hàng</h3>
+            <p><strong>@hoaDon.HoTen</strong> | @hoaDon.SoDienThoai</p>
+            <p>@hoaDon.DiaChi</p>
+        </div>
+
+        <h5>Chi tiết sản phẩm</h5>
+        @foreach (var item in hoaDon.ChiTiet)
+        {
+            <div class="product">
+                
+                <img src="@Url.Content("~/AnhDoiGiay/" + item.HinhAnh)" alt="@item.TenSanPham" />
+                
+                <div class="product-info">
+                    <div class="product-line">
+                        <div class="product-name">@item.TenSanPham (@item.MauSac @item.Size)</div>
+                        <div class="product-price">@item.DonGia.ToString("N0") VNĐ</div>
+                    </div>
+                    <div class="product-qty">x @item.SoLuong</div>
+                </div>
+            </div>
+        }
+
+        <div class="order-summary">
+            <div class="summary-item">
+                <span>Tổng tiền hàng</span>
+                <span>@hoaDon.TongTien.ToString("N0") VNĐ</span>
+            </div>
+            <div class="summary-item">
+                <span>Phí vận chuyển</span>
+                <span>0 ₫</span>
+            </div>
+            <div class="summary-item total">
+                <span>Thành tiền</span>
+                <span class="total-price">@hoaDon.TongTien.ToString("N0") VNĐ</span>
+            </div>
+            <div class="summary-item">
+                <span>Phương thức thanh toán</span>
+                <span>@hoaDon.PhuongThuc</span>
+            </div>
+        </div>
+    }
+</div>

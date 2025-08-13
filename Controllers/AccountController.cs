@@ -239,6 +239,7 @@ namespace AuthDemo.Controllers
 
         public IActionResult UserProfile()
         {
+
             var check = HttpContext.Session.GetString("TenDangNhap");
             var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
 
@@ -249,6 +250,7 @@ namespace AuthDemo.Controllers
             //}
 
             var user = _context.NguoiDungs.FirstOrDefault(a => a.UserID == userId);
+
             if (user == null)
             {
                 return NotFound();
@@ -258,6 +260,7 @@ namespace AuthDemo.Controllers
 
         public IActionResult EditProfile()
         {
+
             var check = HttpContext.Session.GetString("TenDangNhap");
             var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
 
@@ -269,6 +272,7 @@ namespace AuthDemo.Controllers
             var user = _context.NguoiDungs
                 .Include(u => u.VaiTroNguoiDungs)
                 .FirstOrDefault(a => a.UserID == userId);
+
             if (user == null)
             {
                 return NotFound();

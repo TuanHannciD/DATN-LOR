@@ -16,11 +16,11 @@ namespace AuthDemo.Controllers
         public IActionResult Index()
         {
             var check = HttpContext.Session.GetString("TenDangNhap");
-
             if (string.IsNullOrEmpty(check))
             {
                 return RedirectToAction("Login", "Account");
             }
+
 
             var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
             var cartId = _context.GioHangs.FirstOrDefault(a => a.UserID == userId).CartID;
@@ -61,12 +61,18 @@ namespace AuthDemo.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult UpdateQuantity(Guid shoeDetailId, int newQuantity)
         {
+
+            var check = HttpContext.Session.GetString("TenDangNhap");
+            var userId = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
+            var cartId = _context.GioHangs.FirstOrDefault(a => a.UserID == userId).CartID;
+
             var cartItem = _context.ChiTietGioHangs
             .Include(c => c.ChiTietGiay)
+            .ThenInclude(ct => ct.Giay)
+            .Where(c => c.CartID == cartId)
             .FirstOrDefault(c => c.ShoeDetailID == shoeDetailId);
 
-          
-                  if (cartItem == null)
+            if (cartItem == null)
                 return Json(new { success = false, message = "Không tìm thấy sản phẩm trong giỏ hàng." });
 
             var stockQuantity = cartItem.ChiTietGiay.SoLuong;

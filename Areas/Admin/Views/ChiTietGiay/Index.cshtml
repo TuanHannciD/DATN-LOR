@@ -39,7 +39,7 @@
                             <td>@item.SoLuong</td>
                             <td>@item.Gia.ToString("N0")</td>
                             <td>
-                                <a class="btn btn-warning btn-sm"
+                    <a class="btn btn-warning btn-sm"
                                     href="@Url.Action("Edit", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })">Sửa</a>
                                 <a class="btn btn-danger btn-sm"
                                     href="@Url.Action("Delete", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })"
@@ -129,3 +129,4 @@
     const brandList = @Html.Raw(Json.Serialize(ViewBag.BrandList));
     const categoryList = @Html.Raw(Json.Serialize(ViewBag.CategoryList));
 </script>
+
