@@ -140,7 +140,6 @@ namespace AuthDemo.Areas.Admin.Services
                 }
                 _db.ChiTietGioHangs.RemoveRange(gioHang.ChiTietGioHangs); // Xóa chi tiết giỏ hàng
                 await _db.SaveChangesAsync();
-
                 return Result<HoaDonDTO>.Success(hoaDonDTO);
             }
             catch (Exception ex)
@@ -167,7 +166,6 @@ namespace AuthDemo.Areas.Admin.Services
             }
 
             decimal tongTienHang = 0;
-
             decimal giamGiaHoaDon = 0;
             decimal giamGiaSanPham = 0;
 
@@ -239,6 +237,5 @@ namespace AuthDemo.Areas.Admin.Services
 
             return Result<string>.Success("Cập nhật trạng thái thanh toán thành công.");
         }
-        
     }
 }
