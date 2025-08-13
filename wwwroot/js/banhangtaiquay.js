@@ -4,20 +4,14 @@ import { openDiscountModal, setDiscountType, handleDiscountSave, handleTangKemCh
 import { openOrderDiscountModal, setOrderDiscountType, handleOrderDiscountSave, handleOrderDiscountQuickValue } from './modules/order-discount-modal.js';
 import { searchCustomer, renderCustomerDropdown, selectCustomer } from './modules/customer-search.js';
 import { tinhThanhTienSauGiam, fillInvoiceSummary } from './modules/order-summary.js';
-<<<<<<< HEAD
-=======
 import { updateCart } from './modules/update-cart.js';
 
->>>>>>> backup-main
+
 
 let currentDiscountRow = null;
 
 $(document).ready(function () {
-<<<<<<< HEAD
-     $('#search-input').on('input', function () {
-=======
     $('#search-input').on('input', function () {
->>>>>>> backup-main
         var keyword = $(this).val().trim();
         if (keyword.length === 0) {
             $('#search-dropdown').removeClass('show').empty();
@@ -33,20 +27,13 @@ $(document).ready(function () {
                         <div class="text-muted">Thương hiệu: ${sp.thuongHieu} | Chất liệu: ${sp.chatLieu}</div>
                         <div class="text-muted">Danh mục: ${sp.danhMuc}</div>
             </button>`;
-<<<<<<< HEAD
-        });
-        $('#search-dropdown').html(html).addClass('show');
-=======
                 });
                 $('#search-dropdown').html(html).addClass('show');
->>>>>>> backup-main
             } else {
                 $('#search-dropdown').html('<div class="dropdown-item text-muted">Không tìm thấy sản phẩm</div>').addClass('show');
             }
         });
     });
-<<<<<<< HEAD
-=======
     $('#phuongthuc-thanh-toan').select2({
         width: '100%',
         templateResult: function (state) {
@@ -104,7 +91,6 @@ $(document).ready(function () {
         const actionType = $(this).data('action');
         updateCart(shoeDetailId, actionType);
     });
->>>>>>> backup-main
 
     // Khi click vào sản phẩm trong dropdown
     $('#search-dropdown').on('click', '.dropdown-item', function () {
@@ -342,12 +328,6 @@ $(document).ready(function () {
     });
     // Tính tổng tiền sau giảm khi load trang
     tinhThanhTienSauGiam(giamGiaHoaDon);
-
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> backup-main
     // Xử lý sự kiện click
     $(document).on('click', '#btn-thanhtoan', async function () {
         const selectedShippingMethod = $('#phuongthuc-van-chuyen').val();
@@ -363,91 +343,6 @@ $(document).ready(function () {
         console.log("[FE] ID khách hàng:", khachhangId);
         try {
             // ajax tạo hóa đơn thanh toán trước
-<<<<<<< HEAD
-            const createOrderResponse = await fetch('/Admin/HoaDon/CreateHoaDon', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    hinhThucVanChuyen: selectedShippingMethod,
-                    hinhThucThanhToan: selecttedPaymentMethod,
-                    userID: khachhangId,
-                    giamGiaPhanTram: giamGiaHoaDon.phanTram,
-                    giamGiaTienMat: giamGiaHoaDon.tienMat,
-                    lyDo: giamGiaHoaDon.lyDo,
-                    
-                })
-                        
-            });
-            if (!createOrderResponse.ok) {
-                const errorHtml = await createOrderResponse.text();
-                console.error("[FE] ❌ Lỗi HTTP khi tạo hóa đơn:", createOrderResponse.status, errorHtml);  
-                alert('Lỗi khi tạo hóa đơn: ' + createOrderResponse.statusText);
-                return;
-            }
-
-            const createOrderData = await createOrderResponse.json();
-            console.log("[FE] ✅ Hóa đơn đã được tạo:", createOrderData);
-            
-            
-        
-        if (selecttedPaymentMethod == '1') {
-            try {
-                const response = await fetch('/Admin/Payment/CreatePayment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        tongTien,
-                        orderId: 'test-' + Date.now(), // ID đơn hàng test
-                        orderInfo: 'Don hang test VNPay', // Thông tin đơn hàng
-                        bankCode: 'VNBank' ,// Mã ngân hàng mặc định
-                        returnUrl: window.location.origin + '/Admin/Payment/VNPayReturn' // URL trả về sau thanh toán
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorHtml = await response.text();
-                    console.error("[VNPay] ❌ Lỗi HTTP từ server:", response.status, errorHtml);
-
-                    
-
-                    return;
-                }
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch (parseErr) {
-                    console.error("[VNPay] ❌ Lỗi khi parse JSON từ server:", parseErr);
-                    alert("Lỗi: Phản hồi không hợp lệ (không phải JSON). Kiểm tra phía server.");
-                    return;
-                }
-
-                console.log("[VNPay] ✅ Phản hồi JSON từ server:", data);
-
-                if (data && data.paymentUrl) {
-                    console.log("[VNPay] ✅ Mở URL thanh toán:", data.paymentUrl);
-                    window.open(data.paymentUrl, '_blank');
-                } else {
-                    console.warn("[VNPay] ⚠️ Không có paymentUrl trong phản hồi:", data);
-                    alert('Không nhận được URL thanh toán từ server!');
-                }
-
-            } catch (err) {
-                console.error('[VNPay] ❌ Lỗi tạo đơn hàng VNPay:', err);
-                alert('Tạo đơn test thất bại: ' + err.message);
-            }
-        }
-        else if (selecttedPaymentMethod == '2') {
-            // Xử lý thanh toán bằng tiền mặt
-            const confirmPayment = confirm('Bạn có chắc chắn muốn thanh toán bằng tiền mặt không?');
-            if (confirmPayment) {
-                try {
-                    const response = await fetch('/Admin/Payment/CompleteCashPayment', {
-=======
             if (khachhangId === '') {
                 showToast('Vui lòng chọn khách hàng trước khi thanh toán!', 'error');
                 return;
@@ -489,23 +384,10 @@ $(document).ready(function () {
             if (selecttedPaymentMethod == '1') {
                 try {
                     const response = await fetch('/Admin/Payment/CreatePayment', {
->>>>>>> backup-main
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-<<<<<<< HEAD
-                        body: JSON.stringify({ tongTien })
-                    });
-                }
-                catch (err) {
-                    console.error('[Cash Payment] ❌ Lỗi thanh toán tiền mặt:', err);
-                    alert('Thanh toán tiền mặt thất bại: ' + err.message);
-                }
-            }
-            
-        }
-=======
                         body: JSON.stringify({
                             tongTien,
                             orderId,
@@ -580,7 +462,6 @@ $(document).ready(function () {
                 }
 
             }
->>>>>>> backup-main
         }
         catch (error) {
             console.error("[FE] ❌ Lỗi khi tạo hóa đơn:", error);
