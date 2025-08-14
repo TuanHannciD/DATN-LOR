@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    console.log("JS validation loaded");
-
     document.querySelectorAll('input[type="number"]').forEach(input => {
         // Chặn gõ dấu trừ
         input.addEventListener('keydown', function (e) {

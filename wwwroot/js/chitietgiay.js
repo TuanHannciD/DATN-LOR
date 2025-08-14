@@ -80,7 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   editForm.addEventListener('submit', async e => {
     e.preventDefault();
-
+     // ✅ Gọi hàm validate trước
+    if (!validateForm(editForm)) {
+        // Nếu validate fail → không gửi API
+        return;
+    }
     const entity = {
       ShoeDetailID: document.getElementById('ShoeDetailID').value,
       ShoeID: document.getElementById('ShoeID').value,
@@ -95,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Kiểm tra dữ liệu trước khi gửi
     console.log('Dữ liệu gửi đi:', entity);
+    
     try {
       const res = await fetch('/Admin/ChiTietGiay/Update', {
         method: 'POST',
