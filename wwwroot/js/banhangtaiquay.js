@@ -359,23 +359,17 @@ $(document).ready(function () {
                     giamGiaPhanTram: giamGiaHoaDon.phanTram,
                     giamGiaTienMat: giamGiaHoaDon.tienMat,
                     lyDo: giamGiaHoaDon.lyDo,
-
                 })
-
             });
             const createOrderData = await createOrderResponse.json(); // parse JSON trước
 
             if (!createOrderResponse.ok) {
-                console.error("[FE] ❌ Lỗi tạo hóa đơn:", createOrderData.data?.message || createOrderData.message);
                 showToast('Lỗi: ' + (createOrderData.data?.message || createOrderData.message || 'Không rõ nguyên nhân'));
                 return;
             }
             else {
                 showToast(createOrderData.message, 'success');
             }
-            console.log("[FE] ✅ Hóa đơn đã được tạo:", createOrderData);
-            console.log("[FE] ✅ Hóa đơn đã được tạo:", createOrderData.hoaDon.billID);
-
             var orderId = createOrderData.hoaDon.billID
             if (!orderId) {
                 showToast('Không nhận được ID hóa đơn từ server!', 'error');
@@ -396,34 +390,29 @@ $(document).ready(function () {
                             returnUrl: window.location.origin + '/Admin/Payment/VNPayReturn' // URL trả về sau thanh toán
                         })
                     });
-
                     if (!response.ok) {
                         const errorHtml = await response.text();
-                        console.error("[VNPay] ❌ Lỗi HTTP từ server:", response.status, errorHtml);
+                        showToast("Lỗi từ server:" + errorHtml,"error");
                         return;
                     }
                     let data;
                     try {
                         data = await response.json();
                     } catch (parseErr) {
-                        console.error("[VNPay] ❌ Lỗi khi parse JSON từ server:", parseErr);
-                        alert("Lỗi: Phản hồi không hợp lệ (không phải JSON). Kiểm tra phía server.");
+                        showToast("Lỗi: Phản hồi không hợp lệ (không phải JSON). Kiểm tra phía server.",error);
                         return;
                     }
 
-                    console.log("[VNPay] ✅ Phản hồi JSON từ server:", data);
-
                     if (data && data.paymentUrl) {
-                        console.log("[VNPay] ✅ Mở URL thanh toán:", data.paymentUrl);
-                        window.open(data.paymentUrl, '_blank');
+                        showToast("[VNPay] ✅ Mở URL thanh toán","success")
+                        window.location.href = data.paymentUrl;
                     } else {
                         console.warn("[VNPay] ⚠️ Không có paymentUrl trong phản hồi:", data);
-                        alert('Không nhận được URL thanh toán từ server!');
+                        showToast('Không nhận được URL thanh toán từ server!','error');
                     }
 
                 } catch (err) {
-                    console.error('[VNPay] ❌ Lỗi tạo đơn hàng VNPay:', err);
-                    alert('Tạo đơn test thất bại: ' + err.message);
+                    showToast('Tạo đơn test thất bại: ' + err.message,'error');
                 }
             }
             else if (selecttedPaymentMethod == '0') {
@@ -444,19 +433,18 @@ $(document).ready(function () {
                                 })
                             });
                             const responseText = await response.json();
-                            console.log("[FE] ✅ Cập nhật trạng thái thanh toán:", responseText);
+                            showToast("[FE] ✅ Cập nhật trạng thái thanh toán:"+ responseText,"success");
                             if (!response.ok) {
                                 showToast('Lỗi khi cập nhật trạng thái thanh toán: ' + responseText.message, 'error');
                                 return;
                             }
                             showToast(responseText.message, 'success');
-                            alert('Thanh toán tiền mặt thành công!');
+                            showToast('Thanh toán tiền mặt thành công!','success');
                             window.location.reload(); // Tải lại trang để cập nhật giỏ hàng và hóa đơn
 
                         }
                         catch (err) {
-                            console.error('[Cash Payment] ❌ Lỗi thanh toán tiền mặt:', err);
-                            alert('Thanh toán tiền mặt thất bại: ' + err.message);
+                            showToast('Thanh toán tiền mặt thất bại: ' + err.message, 'error');
                         }
                     }
                 }
@@ -464,11 +452,35 @@ $(document).ready(function () {
             }
         }
         catch (error) {
-            console.error("[FE] ❌ Lỗi khi tạo hóa đơn:", error);
-            alert('Lỗi khi tạo hóa đơn: ' + error.message);
+            showToast('Lỗi khi tạo hóa đơn: ' + error.message,'error');
         }
     });
 });
+// Xử lý khi VNPay redirect về cùng trang
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const responseCode = params.get('vnp_ResponseCode');
+    const orderId = params.get('vnp_TxnRef');
+    const amount = params.get('vnp_Amount');
+
+    if (responseCode) {
+        if (responseCode === '00') {
+            showToast(
+                `✅ Thanh toán thành công!<br>
+                Hóa đơn: ${orderId}<br>
+                Số tiền: ${Number(amount).toLocaleString('vi-VN')} VNĐ`,
+                'success'
+            );
+
+        } else {
+            showToast(`Thanh toán đơn ${orderId} thất bại: ${responseCode}`, 'error');
+        }
+
+        // Xóa query string để tránh reload lặp lại toast
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
+
 
 
 

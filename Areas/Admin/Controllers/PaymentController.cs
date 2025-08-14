@@ -9,7 +9,6 @@ using AuthDemo.Areas.Admin.Interface;
 namespace AuthDemo.Areas.Admin.Controllers
 {
     [Route("Admin/[controller]/[action]")]
-    [ApiController]
     public class PaymentController : Controller
     {
         private readonly IVNPayService _vnpayService;
@@ -42,10 +41,15 @@ namespace AuthDemo.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult VnPayReturn()
+        public IActionResult VNPayReturn()
         {
-            // TODO: Xử lý phản hồi từ VNPay sau khi thanh toán thành công/thất bại
-            return View();
+            var queryParams = Request.Query.ToDictionary(q => q.Key, q => q.Value.ToString(), StringComparer.OrdinalIgnoreCase);
+            var result = _vnpayService.ProcessPaymentReturn(queryParams);
+
+            // Chuyển hướng về trang gốc kèm query params kết quả thanh toán
+            var redirectUrl = $"/Admin/BanHangTaiQuay?vnp_ResponseCode={result.ResponseCode}&vnp_TxnRef={result.OrderId}&vnp_Amount={result.Amount}";
+            
+            return Redirect(redirectUrl);
         }
     }
 }
