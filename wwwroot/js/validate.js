@@ -19,6 +19,13 @@ function validateForm(form) {
                     valid = false;
                 }
             }
+            if (rule.startsWith("minValue:")) {
+                const minVal = parseFloat(rule.split(":")[1]);
+                if (parseFloat(value) < minVal) {
+                    showToast(`${labelName} phải lớn hơn hoặc bằng ${minVal}`,false);
+                    valid = false;
+                }
+            }
         });
     });
 
