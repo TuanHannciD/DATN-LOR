@@ -28,6 +28,24 @@ namespace AuthDemo.Areas.Admin.Helpers
             string secureHash = ComputeHashHmacSHA512(hashSecret, rawData);
             return $"{baseUrl}?{rawData}&vnp_SecureHash={secureHash}";
         }
+        public string CreateReturnUrl(IDictionary<string, string> queryParams, string hashSecret)
+        {
+            queryParams.Remove("vnp_SecureHash");
+            queryParams.Remove("vnp_SecureHashType");
+
+            // Sắp xếp key theo Ordinal để hash đúng
+            var sorted = new SortedList<string, string>(queryParams, new VNPayCompare());
+
+            var query = new StringBuilder();
+            foreach (var kv in sorted)
+            {
+                query.AppendFormat("{0}={1}&", WebUtility.UrlEncode(kv.Key), WebUtility.UrlEncode(kv.Value));
+            }
+
+            string rawData = query.ToString().TrimEnd('&');
+            return ComputeHashHmacSHA512(hashSecret, rawData) ;
+        }
+
 
         public static string ComputeHashHmacSHA512(string key, string input)
         {
