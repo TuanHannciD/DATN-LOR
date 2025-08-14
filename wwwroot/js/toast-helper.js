@@ -18,7 +18,7 @@ function showToast(message, isSuccess) {
     `;
 
     toastContainer.appendChild(toastEl);
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
     toast.show();
 
     // Tự xóa DOM sau khi toast ẩn
