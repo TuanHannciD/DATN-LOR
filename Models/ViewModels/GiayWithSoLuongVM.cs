@@ -6,6 +6,7 @@ namespace AuthDemo.Models.ViewModels
     public class GiayWithSoLuongVM
     {
         public Giay Giay { get; set; }
+        public string TrangThai { get; set; }
         public int TongSoLuong { get; set; }
 
          public string ?NguoiCapNhat { get; set; }
