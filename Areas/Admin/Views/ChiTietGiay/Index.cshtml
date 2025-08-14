@@ -54,7 +54,7 @@
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form id="editForm">
+                <form id="editForm" class="ajax">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editModalLabel">Sửa sản phẩm chi tiết</h5>
                         <input type="hidden" name="ShoeDetailID" id="ShoeDetailID" />
@@ -95,20 +95,19 @@
 
                             <div class="col-md-6">
                                 <label for="SoLuong" class="form-label">Số lượng</label>
-                                <input type="number" id="SoLuong" name="SoLuong" class="form-control" min="0"
-                                    required />
+                                <input type="number" id="SoLuong" name="SoLuong" class="form-control" data-validate="required|minValue:1" data-label="Số lượng" />
                             </div>
 
                             <div class="col-md-6">
                                 <label for="Gia" class="form-label">Giá</label>
                                 <input type="number" id="Gia" name="Gia" class="form-control" min="0" step="1000"
-                                    required />
+                                    data-validate="required|minValue:1000" data-label="Giá"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-success ">
                             <i class="mdi mdi-content-save"></i> Lưu
                         </button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

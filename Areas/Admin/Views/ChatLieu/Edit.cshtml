@@ -14,12 +14,12 @@
                     <input type="hidden" asp-for="MaterialID" />
                     <div class="mb-3">
                         <label asp-for="TenChatLieu" class="form-label fw-bold">Tên chất liệu</label>
-                        <input asp-for="TenChatLieu" class="form-control rounded-3" placeholder="Nhập tên chất liệu..." />
+                        <input asp-for="TenChatLieu" class="form-control rounded-3" data-validate="required|min:3" data-label="Tên chất liệu" placeholder="Nhập tên chất liệu..." />
                         <span asp-validation-for="TenChatLieu" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
                         <label asp-for="MaChatLieuCode" class="form-label fw-bold">Mã chất liệu</label>
-                        <input asp-for="MaChatLieuCode" class="form-control rounded-3" placeholder="Nhập mã chất liệu..." />
+                        <input asp-for="MaChatLieuCode" class="form-control rounded-3" data-validate="required|min:3" data-label="Mã chất liệu" placeholder="Nhập mã chất liệu..." />
                         <span asp-validation-for="MaChatLieuCode" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
