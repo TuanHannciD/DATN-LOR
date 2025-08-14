@@ -1,4 +1,4 @@
-@model AuthDemo.Models.ChiTietGiay
+@model AuthDemo.Models.ViewModels.ChiTietGiayVM.EditVM
 @{
     ViewData["Title"] = "Thêm sản phẩm chi tiết";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -44,17 +44,16 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="SoLuong" class="form-label fw-bold">Số lượng</label>
-                        <input asp-for="SoLuong" class="form-control rounded-3" type="number" min="0" />
+                        <input asp-for="SoLuong" class="form-control rounded-3" type="number" data-validate="required" data-label="Số lượng" />
                         <span asp-validation-for="SoLuong" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Gia" class="form-label fw-bold">Giá</label>
-                        <input asp-for="Gia" class="form-control rounded-3" type="number" min="0" 
-                        oninput="if(this.value<0) this.value =0;"/>
+                        <input asp-for="Gia" class="form-control rounded-3" type="number" data-validate="required|minValue:3" data-label="Giá">
                         <span asp-validation-for="Gia" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <button type="submit" class="btn btn-success px-4">
+                        <button type="submit" class="btn btn-success px-4" data-skip-validate="true">
                             <i class="mdi mdi-content-save"></i> Lưu
                         </button>
                         <a class="btn btn-secondary px-4"

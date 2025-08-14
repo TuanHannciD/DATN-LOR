@@ -12,13 +12,13 @@
             <div class="card-body">
                 <form asp-action="Create" asp-controller="ThuongHieu" asp-area="Admin" method="post">
                     <div class="form-group">
-                        <label asp-for="MaThuongHieuCode" class="form-label fw-bold">Mã thương hiệu</label>
-                        <input asp-for="MaThuongHieuCode" class="form-control" />
+                        <label asp-for="MaThuongHieuCode" class="form-label fw-bold">Mã hãng sản xuất</label>
+                        <input asp-for="MaThuongHieuCode" class="form-control" placeholder="Nhập mã hãng..." data-validate="required" data-label="Mã hãng sản xuất" />
                         <span asp-validation-for="MaThuongHieuCode" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="TenThuongHieu" class="form-label fw-bold">Tên hãng sản xuất</label>
-                        <input asp-for="TenThuongHieu" class="form-control" />
+                        <input asp-for="TenThuongHieu" class="form-control"placeholder="Nhập tên hãng..." data-validate="required"  data-label="Tên hãng sản xuất" />
                         <span asp-validation-for="TenThuongHieu" class="text-danger"></span>
                     </div>
                     <div class="mb-3">

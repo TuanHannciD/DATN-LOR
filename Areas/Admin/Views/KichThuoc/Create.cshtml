@@ -13,12 +13,12 @@
                 <form asp-action="Create" asp-controller="KichThuoc" asp-area="Admin" method="post">
                     <div class="form-group mb-3">
                         <label asp-for="TenKichThuoc" class="form-label fw-bold">Tên size</label>
-                        <input asp-for="TenKichThuoc" class="form-control rounded-3" placeholder="Nhập tên size..." />
+                        <input asp-for="TenKichThuoc" class="form-control rounded-3" data-validate="required" data-label="Tên size" placeholder="Nhập tên size..." />
                         <span asp-validation-for="TenKichThuoc" class="text-danger"></span>
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="MaKichThuocCode" class="form-label fw-bold">Mã size</label>
-                        <input asp-for="MaKichThuocCode" class="form-control rounded-3" placeholder="Nhập mã size..." />
+                        <input asp-for="MaKichThuocCode" class="form-control rounded-3" data-validate="required" data-label="Mã size" placeholder="Nhập mã size..." />
                         <span asp-validation-for="MaKichThuocCode" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
