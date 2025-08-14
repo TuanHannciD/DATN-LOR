@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AuthDemo.Models.Enums;
 
 namespace AuthDemo.Models
 {
@@ -14,7 +15,7 @@ namespace AuthDemo.Models
         public string MoTa { get; set; }
         public string ? AnhDaiDien { get; set; } // ImageURL
         [StringLength(50)]
-        public string ?TrangThai { get; set; }
+        public TrangThai trangThai { get; set; }
         public ICollection<ChiTietGiay> ? ChiTietGiays { get; set; }
 
     }

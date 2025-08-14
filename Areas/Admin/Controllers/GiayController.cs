@@ -4,6 +4,9 @@ using AuthDemo.Models;
 using AuthDemo.Data;
 using AuthDemo.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using AuthDemo.Helpers;
+using AuthDemo.Models.Enums;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -25,12 +28,19 @@ namespace AuthDemo.Areas.Admin.Controllers
                 .GroupBy(ct => ct.ShoeID)
                 .ToDictionary(g => g.Key, g => g.Sum(ct => ct.SoLuong));
             var giayEntities = _db.Giays.AsNoTracking().ToList();
-
+            
+ 
             var viewModel = list.Select(g => {
                 var giayDb = giayEntities.FirstOrDefault(x => x.ShoeID == g.ShoeID);
+                if (giayDb == null)
+                {
+                    throw new InvalidOperationException($"Không tìm thấy giày với ShoeID = {g.ShoeID}");
+                }
+                
                 return new GiayWithSoLuongVM
                 {
                     Giay = g,
+                    TrangThai = giayDb.trangThai.GetDisplayName(),
                     TongSoLuong = tongSoLuongDict.ContainsKey(g.ShoeID) ? tongSoLuongDict[g.ShoeID] : 0,
                     NguoiCapNhat = giayDb?.NguoiCapNhat,
                     NgayCapNhat = giayDb?.NgayCapNhat,
@@ -42,7 +52,12 @@ namespace AuthDemo.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            ViewBag.TrangThai = EnumHelper.GetEnumSelectList<TrangThai>();
+            return View();
+        }
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -61,16 +76,17 @@ namespace AuthDemo.Areas.Admin.Controllers
         {
             var giay = _sanPhamService.GetById(id);
             if (giay == null) return NotFound();
-
+            ViewBag.TrangThai = EnumHelper.GetEnumSelectList<TrangThai>();
             var vm = new GiayVM
             {
                 ShoeID = giay.ShoeID,
                 TenGiay = giay.TenGiay,
                 MaGiayCode = giay.MaGiayCode,
                 MoTa = giay.MoTa,
-                TrangThai = giay.TrangThai,
+                TrangThai = giay.trangThai.GetDisplayName(),
                 NguoiCapNhat = giay.NguoiCapNhat,
                 NgayCapNhat = giay.NgayCapNhat
+                
             };
             return View(vm);
         }
@@ -85,7 +101,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             giay.TenGiay = vm.TenGiay;
             giay.MaGiayCode = vm.MaGiayCode;
             giay.MoTa = vm.MoTa;
-            giay.TrangThai = vm.TrangThai;
+            giay.trangThai = Enum.Parse<TrangThai>(vm.TrangThai);
             giay.NguoiCapNhat = User.Identity?.Name ?? "ad";
             giay.NgayCapNhat = DateTime.Now;
 
@@ -118,6 +134,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             var firstDetail = chiTietList.FirstOrDefault();
             var viewModel = new GiayFullInfoVM
             {
+                TrangThai = giay.trangThai.GetDisplayName(),
                 Giay = giay,
                 TenDanhMuc = firstDetail?.DanhMuc?.TenDanhMuc ?? "",
                 TenThuongHieu = firstDetail?.ThuongHieu?.TenThuongHieu ?? "",

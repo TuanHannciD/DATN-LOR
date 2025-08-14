@@ -7,6 +7,7 @@ namespace AuthDemo.Models.ViewModels
     public class GiayFullInfoVM
     {
         public Giay Giay { get; set; }
+        public string TrangThai { get; set; }
         public string TenDanhMuc { get; set; }
         public string MaGiayCode { get; set; }
         public string MoTa { get; set; }
