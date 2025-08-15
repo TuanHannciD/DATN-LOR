@@ -4,6 +4,9 @@ using AuthDemo.Models.ViewModels;
 using AuthDemo.Models.Enums;
 using AuthDemo.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using AuthDemo.Common;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -13,6 +16,23 @@ namespace AuthDemo.Areas.Admin.Services
         public HoaDonService(ApplicationDbContext db)
         {
             _db = db;
+        }
+        public List<object> GetTrangThaiList()
+        {
+            var list = Enum.GetValues(typeof(TrangThaiHoaDon))
+                           .Cast<TrangThaiHoaDon>()
+                           .Select(e =>
+                           {
+                               var member = e.GetType().GetMember(e.ToString()).First();
+                               var displayAttr = member.GetCustomAttribute<DisplayAttribute>(); // .NET 8 cho phép dùng generic
+                               return new
+                               {
+                                   value = (int)e,
+                                   text = displayAttr?.Name ?? e.ToString()
+                               };
+                           }).ToList<object>();
+
+            return list;
         }
 
         public List<GetAllHoaDonVM> GetAllHoaDon()
@@ -208,7 +228,7 @@ namespace AuthDemo.Areas.Admin.Services
                 TongThanhToan = tongThanhToan
             };
         }
-        public async Task<Result<string>> UpdateTranhThaiThanhToan(bool confirmdone, Guid orderId)
+        public async Task<Result<string>> XacnhanTienMat(bool confirmdone, Guid orderId)
         {
             if (orderId == Guid.Empty)
             {
@@ -237,5 +257,21 @@ namespace AuthDemo.Areas.Admin.Services
 
             return Result<string>.Success("Cập nhật trạng thái thanh toán thành công.");
         }
+
+        public async Task<ApiResponse<string>> UpdateTrangThai(Guid HoaDonID, string trangThai)
+        {
+            var hoaDon = _db.HoaDons.Find(HoaDonID);
+            if (hoaDon == null)
+            {
+                return ApiResponse<string>.FailResponse("Null", "Không tìm thấy hóa đơn");
+            }
+            hoaDon.TrangThai = Enum.Parse<TrangThaiHoaDon>(trangThai);
+
+            await _db.SaveChangesAsync();
+
+            return ApiResponse<string>.SuccessResponse("Cập nhật trạng thái thanh toán thành công.");
+
+        }
+
     }
 }

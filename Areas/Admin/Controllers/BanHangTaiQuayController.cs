@@ -76,13 +76,14 @@ namespace DATN_Lor.Areas.Admin.Controllers
                 return BadRequest(result); // Trả về lỗi nếu không thành công
             }
             var cartItems = _banHangTaiQuayService.GetCartItems(tenDangNhap);
-            int totalQuantity = cartItems.Sum(item => item.SoLuong);
-            TempData["SuccessMessage"] = result.Data; // Lưu thông báo thành công vào TempData
+            var productQuantity = cartItems
+                 .FirstOrDefault(item => item.ShoeDetailID == request.ShoeDetailID)?.SoLuong ?? 0;
+            TempData["SuccessMessage"] = result.Data; // Lưu thông báo thành công vào TempDataư
             return Json(new
             {
                 success = true,
                 code = (string?)null,
-                totalItems = "Số lượng:"  +totalQuantity,
+                productQuantity,
                 message = result.Message
             });
         }

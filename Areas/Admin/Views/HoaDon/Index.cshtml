@@ -6,9 +6,7 @@
 <div class="card mt-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0"><i class="mdi mdi-file-document-box"></i> Danh sách hóa đơn</h4>
-        <a class="btn btn-primary" href="#">
-            <i class="mdi mdi-plus"></i> Thêm hóa đơn
-        </a>
+
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -36,7 +34,14 @@
                         <td>@item.TenKhachHang</td>
                         <td>@item.SoDienThoai</td>
                         <td>@item.Email</td>
-                        <td><span class="badge bg-info">@item.TrangThaiDisplay</span></td>
+                        <td>
+                            <span class="badge bg-info status-badge" 
+                                data-id="@item.HoaDonID" 
+                                style="cursor:pointer;">
+                                @item.TrangThaiDisplay
+                            </span>
+                        </td>
+
                         <td>@item.HinhThucThanhToanDisplay</td>
                         <td>@item.HinhThucVanChuyenDisplay</td>
                         <td><span class="badge bg-success">@item.TongTien.ToString("N0")</span></td>
@@ -76,3 +81,88 @@
         </div>
     </div>
 </div> 
+<!-- Modal cập nhật trạng thái -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <form id="updateStatusForm">
+        <!-- Header -->
+        <div class="modal-header bg-primary text-white rounded-top-4 px-4 py-3">
+          <h5 class="modal-title" id="updateStatusModalLabel">
+            <i class="mdi mdi-update"></i> Cập nhật trạng thái
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body px-4 py-4">
+          <input type="hidden" id="hdHoaDonId" name="hoaDonId" />
+
+          <div class="mb-4">
+            <label for="selectStatus" class="form-label fw-semibold">Trạng thái</label>
+            <select class="form-select form-select-lg" id="selectStatus" name="trangThai">
+              <!-- Options sẽ load bằng Ajax -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 px-4 pb-4">
+          <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">
+            Hủy
+          </button>
+          <button type="submit" class="btn btn-primary rounded-pill" data-skip-validate="true">
+            <i class="mdi mdi-check"></i> Cập nhật
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<style>
+/* Bo góc + shadow nhẹ */
+.select2-container--bootstrap-5 .select2-selection {
+    border-radius: 0.75rem; 
+    box-shadow: 0 0 0 0.1rem rgba(0,0,0,0.05);
+    padding: 0.375rem 0.75rem;
+    height: auto;
+}
+
+/* Focus */
+.select2-container--bootstrap-5.select2-container--focus .select2-selection {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Placeholder */
+.select2-container--bootstrap-5 .select2-selection__placeholder {
+    color: #6c757d;
+}
+
+/* Option hover */
+.select2-container--bootstrap-5 .select2-results__option--highlighted[aria-selected] {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+}
+
+/* Option active */
+.select2-container--bootstrap-5 .select2-results__option[aria-selected="true"] {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+/* Icon trong option */
+.select2-results__option i {
+    margin-right: 8px;
+}
+</style>
+
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="~/js/hoadon.js"></script>
+    <!-- Thư viện Select2 cho select đẹp + icon -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+}
