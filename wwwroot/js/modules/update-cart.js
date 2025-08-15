@@ -1,32 +1,58 @@
-function updateCart(shoeDetailId, actionType) {
-    fetch('/Admin/BanHangTaiQuay/UpdateCart', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            // Thêm token CSRF nếu cần
-        },
-        body: JSON.stringify({ shoeDetailId, actionType })
+export function updateCart(shoeDetailId, actionType, clickedBtn) {
+  console.log("updateCart: gửi request", shoeDetailId, actionType);
+
+  if (clickedBtn) clickedBtn.disabled = true;
+
+  fetch("/Admin/BanHangTaiQuay/UpdateCart", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ shoeDetailId, actionType }),
+  })
+    .then(async (res) => {
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        throw new Error(`Server response is not JSON: ${text}`);
+      }
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            showToast(data.message, 'success');
+    .then((data) => {
+      console.log("updateCart: response từ server", data);
 
-            // Cập nhật số lượng giỏ hàng trên UI
-            $('#cart-count').text(data.totalItems);
+      if (!data.success) {
+        console.error("updateCart lỗi:", data.message || "Có lỗi xảy ra");
+        return;
+      }
+      showToast(
+        "Cập nhật giỏ hàng thành công. Reload lại sau 2 giây",
+        "success"
+      );
+      // const qty =
+      //   typeof data.productQuantity === "number" ? data.productQuantity : 0;
+      // window.cartState[shoeDetailId] = qty;
 
-            // Nếu bạn có phần UI khác cần cập nhật cũng làm tương tự
-            // Ví dụ: cập nhật tổng tiền, danh sách sản phẩm,...
+      // // Tạo/ẩn controls theo qty
+      // ensureCartControls(shoeDetailId, qty, clickedBtn);
 
-        } else {
-            showToast(data.message || 'Có lỗi xảy ra', 'error');
-        }
+      // // Cập nhật tổng giỏ hàng
+      // const totalEl = document.querySelector("#total-cart-items");
+      // if (totalEl) {
+      //   const total = Object.values(window.cartState).reduce(
+      //     (s, q) => s + (q || 0),
+      //     0
+      //   );
+      //   totalEl.textContent = total;
+      // }
+
+      // Reload trang sau 2s
+      setTimeout(() => location.reload(), 2000);
     })
-    .catch(error => {
-        showToast('Không thể kết nối tới server', 'error');
-        console.error('Error updating cart:', error);
+    .catch((err) => {
+      console.error("updateCart: error", err);
+      // Reload trang sau 2s nếu cần
+      setTimeout(() => location.reload(), 2000);
+    })
+    .finally(() => {
+      if (clickedBtn) clickedBtn.disabled = false;
     });
 }
-
-
-export { updateCart };

@@ -19,7 +19,14 @@ namespace AuthDemo.Areas.Admin.Controllers
         public IActionResult Index()
         {
             var hoaDons = _hoaDonService.GetAllHoaDon();
+            var listTrangThai = _hoaDonService.GetTrangThaiList();
             return View(hoaDons);
+        }
+
+        public IActionResult GetTrangThaiList()
+        {
+            var list = _hoaDonService.GetTrangThaiList();
+            return Json(list);
         }
         public IActionResult Create()
         {
@@ -50,7 +57,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             });
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateTranhThaiThanhToan(bool confirmdone, Guid orderId)
+        public async Task<IActionResult> XacnhanTienMat(bool confirmdone, Guid orderId)
         {
             if (orderId == Guid.Empty)
             {
@@ -60,12 +67,22 @@ namespace AuthDemo.Areas.Admin.Controllers
             {
                 return BadRequest(new { message = "Bạn chưa xác nhận đã thanh toán." });
             }
-            var result = await _hoaDonService.UpdateTranhThaiThanhToan(confirmdone, orderId);
+            var result = await _hoaDonService.XacnhanTienMat(confirmdone, orderId);
             if (!result.IsSuccess)
             {
                 return BadRequest(new { message = result.Error ?? "Cập nhật trạng thái thanh toán thất bại." });
             }
             return Ok(new { message = "Cập nhật trạng thái thanh toán thành công." });
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateTrangThai(Guid HoaDonID, string trangThai)
+        {
+            var result = await _hoaDonService.UpdateTrangThai(HoaDonID, trangThai);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(new { success = true, message = result.Message });
         }
     }
 }
