@@ -70,7 +70,7 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 var obj = _db.Giays.Find(id);
                 ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy sản phẩm để xóa!");
-                _db.Giays.Remove(obj);
+                obj.IsDelete = true;
                 _db.SaveChanges();
             }
             catch (Exception ex)

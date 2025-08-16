@@ -68,7 +68,7 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 var obj = _db.ChatLieus.Find(id);
                 ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy chất liệu để xóa!");
-                _db.ChatLieus.Remove(obj);
+                obj.IsDelete = true;
                 _db.SaveChanges();
             }
             catch (Exception ex)

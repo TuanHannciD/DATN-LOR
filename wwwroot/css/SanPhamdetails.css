@@ -1,0 +1,52 @@
+.mau-option.disabled,
+.size-option.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+.selected {
+  border: 2px solid #7fad39; /* màu viền xanh */
+  box-shadow: 0 0 0 2px rgba(127, 173, 57, 0.3); /* hiệu ứng viền ngoài */
+  background-color: white; /* giữ nguyên nền */
+  color: #333; /* giữ nguyên màu chữ */
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 320px;
+  background: #28a745;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.toast.show {
+  display: flex;
+  opacity: 1;
+}
+
+.toast-close {
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: auto;
+}
+/* Ẩn mũi tên tăng giảm trên trình duyệt Chrome, Safari, Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Ẩn mũi tên trên Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}

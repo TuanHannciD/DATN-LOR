@@ -68,7 +68,7 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 var obj = _db.MauSacs.Find(id);
                 ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy màu sắc để xóa!");
-                _db.MauSacs.Remove(obj);
+                obj.IsDelete = true;
                 _db.SaveChanges();
             }
             catch (Exception ex)

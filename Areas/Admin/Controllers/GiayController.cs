@@ -40,7 +40,7 @@ namespace AuthDemo.Areas.Admin.Controllers
                 return new GiayWithSoLuongVM
                 {
                     Giay = g,
-                    TrangThai = giayDb.trangThai.GetDisplayName(),
+                    TrangThai = giayDb.TrangThai.GetDisplayName(),
                     TongSoLuong = tongSoLuongDict.ContainsKey(g.ShoeID) ? tongSoLuongDict[g.ShoeID] : 0,
                     NguoiCapNhat = giayDb?.NguoiCapNhat,
                     NgayCapNhat = giayDb?.NgayCapNhat,
@@ -83,7 +83,7 @@ namespace AuthDemo.Areas.Admin.Controllers
                 TenGiay = giay.TenGiay,
                 MaGiayCode = giay.MaGiayCode,
                 MoTa = giay.MoTa,
-                TrangThai = giay.trangThai.GetDisplayName(),
+                TrangThai = giay.TrangThai.GetDisplayName(),
                 NguoiCapNhat = giay.NguoiCapNhat,
                 NgayCapNhat = giay.NgayCapNhat
                 
@@ -101,7 +101,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             giay.TenGiay = vm.TenGiay;
             giay.MaGiayCode = vm.MaGiayCode;
             giay.MoTa = vm.MoTa;
-            giay.trangThai = Enum.Parse<TrangThai>(vm.TrangThai);
+            giay.TrangThai = Enum.Parse<TrangThai>(vm.TrangThai);
             giay.NguoiCapNhat = User.Identity?.Name ?? "ad";
             giay.NgayCapNhat = DateTime.Now;
 
@@ -134,7 +134,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             var firstDetail = chiTietList.FirstOrDefault();
             var viewModel = new GiayFullInfoVM
             {
-                TrangThai = giay.trangThai.GetDisplayName(),
+                TrangThai = giay.TrangThai.GetDisplayName(),
                 Giay = giay,
                 TenDanhMuc = firstDetail?.DanhMuc?.TenDanhMuc ?? "",
                 TenThuongHieu = firstDetail?.ThuongHieu?.TenThuongHieu ?? "",

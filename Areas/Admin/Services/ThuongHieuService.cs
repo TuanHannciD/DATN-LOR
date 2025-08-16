@@ -15,7 +15,7 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                return [.._db.ThuongHieus];
+                return [.. _db.ThuongHieus];
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 var obj = _db.ThuongHieus.Find(id);
                 ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy thương hiệu để xóa!");
-                _db.ThuongHieus.Remove(obj);
+                obj.IsDelete = true;
                 _db.SaveChanges();
             }
             catch (Exception ex)
@@ -77,4 +77,4 @@ namespace AuthDemo.Areas.Admin.Services
             }
         }
     }
-} 
+}
