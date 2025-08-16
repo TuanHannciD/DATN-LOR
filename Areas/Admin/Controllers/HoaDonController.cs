@@ -75,14 +75,14 @@ namespace AuthDemo.Areas.Admin.Controllers
             return Ok(new { message = "Cập nhật trạng thái thanh toán thành công." });
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateTrangThai(Guid HoaDonID, string trangThai)
+        public async Task<IActionResult> UpdateTrangThai(Guid HoaDonID)
         {
-            var result = await _hoaDonService.UpdateTrangThai(HoaDonID, trangThai);
+            var result = await _hoaDonService.UpdateTrangThai(HoaDonID);
             if (!result.Success)
             {
                 return BadRequest(result);
             }
-            return Ok(new { success = true, message = result.Message });
+            return Ok(new { success = true, message = result });
         }
     }
 }

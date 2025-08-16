@@ -258,20 +258,45 @@ namespace AuthDemo.Areas.Admin.Services
             return Result<string>.Success("Cập nhật trạng thái thanh toán thành công.");
         }
 
-        public async Task<ApiResponse<string>> UpdateTrangThai(Guid HoaDonID, string trangThai)
+        public async Task<ApiResponse<UpdateTrangThaiResponse>> UpdateTrangThai(Guid HoaDonID)
         {
             var hoaDon = _db.HoaDons.Find(HoaDonID);
             if (hoaDon == null)
             {
-                return ApiResponse<string>.FailResponse("Null", "Không tìm thấy hóa đơn");
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Null", "Không tìm thấy hóa đơn");
             }
-            hoaDon.TrangThai = Enum.Parse<TrangThaiHoaDon>(trangThai);
 
+            var currentStatus = hoaDon.TrangThai;
+            int nextStatus = (int)currentStatus + 1;
+
+            if (currentStatus == TrangThaiHoaDon.DaGiao || currentStatus == TrangThaiHoaDon.DaHuy)
+            {
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn đã được thanh toán hoặc ở trạng thái cuối.");
+            }
+
+            hoaDon.TrangThai = (TrangThaiHoaDon)nextStatus;
             await _db.SaveChangesAsync();
 
-            return ApiResponse<string>.SuccessResponse("Cập nhật trạng thái thanh toán thành công.");
+            var responseData = new UpdateTrangThaiResponse
+            {
+                Id = hoaDon.BillID,
+                NewStatus = hoaDon.TrangThai,
+                NewStatusDisplay = hoaDon.TrangThai.GetDisplayName()
+            };
 
+            return ApiResponse<UpdateTrangThaiResponse>.SuccessResponse("Cập nhật trạng thái thành công", responseData);
+        }
+        public class UpdateTrangThaiResponse
+        {
+            public Guid Id { get; set; }
+            public TrangThaiHoaDon NewStatus { get; set; }
+            public string NewStatusDisplay { get; set; }
         }
 
+
+
+
     }
+
+
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AuthDemo.Common;
 using AuthDemo.Models;
 using AuthDemo.Models.ViewModels;
+using static AuthDemo.Areas.Admin.Services.HoaDonService;
 
 namespace AuthDemo.Areas.Admin.Interface
 {
@@ -15,6 +16,6 @@ namespace AuthDemo.Areas.Admin.Interface
         HoaDonTongTienVM TinhTienHoaDon(Guid cartID, decimal? giamGiaPhanTram, decimal? giamGiaTienMat);
         // Cập nhật trạng thái thanh toán của hóa đơn
         Task<Result<string>> XacnhanTienMat(bool confirmdone, Guid orderId);
-        Task<ApiResponse<string>> UpdateTrangThai(Guid HoaDonID, string TrangThai);
+        Task<ApiResponse<UpdateTrangThaiResponse>> UpdateTrangThai(Guid HoaDonID);
     }
 }

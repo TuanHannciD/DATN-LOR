@@ -13,16 +13,16 @@ namespace AuthDemo.Models.Enums
         DaXacNhan = 1,
 
         [Display(Name = "Đang giao hàng")]
-        DangGiaoHang = 2,
+        DangGiaoHang = 3,
 
         [Display(Name = "Đã giao")]
-        DaGiao = 3,
+        DaGiao = 4,
 
         [Display(Name = "Đã hủy")]
-        DaHuy = 4,
+        DaHuy = 5,
 
         [Display(Name = "Đã thanh toán")]
-        DaThanhToan = 5
+        DaThanhToan = 2
 
         
     }

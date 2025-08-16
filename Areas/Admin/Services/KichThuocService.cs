@@ -69,7 +69,7 @@ namespace AuthDemo.Areas.Admin.Services
                 ArgumentNullException.ThrowIfNull(id);
                 var obj = _db.KichThuocs.Find(id);
                 ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy kích thước để xóa!");
-                _db.KichThuocs.Remove(obj);
+                obj.IsDelete = true;
                 _db.SaveChanges();
             }
             catch (Exception ex)

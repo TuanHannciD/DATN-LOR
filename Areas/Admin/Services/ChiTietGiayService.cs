@@ -82,7 +82,7 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 var obj = _db.ChiTietGiays.Find(id);
                 ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy chi tiết giày để xóa!");
-                _db.ChiTietGiays.Remove(obj);
+                obj.IsDelete = true;
                 _db.SaveChanges();
             }
             catch (Exception ex)

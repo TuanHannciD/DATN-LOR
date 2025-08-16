@@ -1,66 +1,51 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const $select = $("#selectStatus"); // Select2 dùng jQuery
-
+  // Gán màu khi reload dựa trên text
   document.querySelectorAll(".status-badge").forEach(function (badge) {
-    badge.addEventListener("click", function () {
-      const hoaDonId = this.getAttribute("data-id");
+    badge.className = "badge status-badge"; // reset class cũ
+    badge.classList.add(getBadgeClassFromText(badge.textContent));
 
-      // Lưu ID vào modal
-      document.getElementById("hdHoaDonId").value = hoaDonId;
+    badge.addEventListener("click", async function () {
+      const hoaDonID = this.getAttribute("data-id");
+      const badgeEl = this;
+      try {
+        const res = await fetch(
+          `/Admin/HoaDon/UpdateTrangThai?HoaDonID=${hoaDonID}`,
+          { method: "POST" }
+        );
+        const data = await res.json();
 
-      // Lấy danh sách trạng thái từ server
-      fetch(`/Admin/HoaDon/GetTrangThaiList`)
-        .then((res) => res.json())
-        .then((data) => {
-          $select.empty(); // Xóa option cũ
-          $select.append(
-            "<option disabled selected>Chọn trạng thái...</option>"
+        if (data.success) {
+          badgeEl.textContent = data.message.data.newStatusDisplay;
+          badgeEl.className = "badge status-badge";
+          badgeEl.classList.add(
+            getBadgeClassFromText(data.message.data.newStatusDisplay)
           );
-          data.forEach((s) => {
-            $select.append(`<option value="${s.value}">${s.text}</option>`);
-          });
-
-          // Khởi tạo Select2 (hoặc refresh nếu đã khởi tạo trước)
-          if ($select.hasClass("select2-hidden-accessible")) {
-            $select.select2("destroy"); // xóa instance cũ
-          }
-
-          $select.select2({
-            theme: "bootstrap-5",
-            dropdownParent: $("#updateStatusModal"),
-            width: "100%",
-            placeholder: "Chọn trạng thái...",
-          });
-        });
-
-      // Hiển thị modal
-      const modal = new bootstrap.Modal(
-        document.getElementById("updateStatusModal")
-      );
-      modal.show();
+        } else {
+          showToast(data.message, "error");
+        }
+      } catch (err) {
+        console.error("Lỗi khi cập nhật trạng thái:", err);
+        showToast("Có lỗi kết nối server!");
+      }
     });
   });
-
-  // Submit form
-  document
-    .getElementById("updateStatusForm")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      fetch("/Admin/HoaDon/UpdateTrangThai", {
-        method: "POST",
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            showToast(data.message, "success");
-            setTimeout(() => {
-              location.reload(); // reload sau 1 giây
-            }, 1000);
-          } else {
-            showToast(data.message, "error");
-          }
-        });
-    });
 });
+
+function getBadgeClassFromText(text) {
+  switch (text.trim()) {
+    case "Chờ xác nhận":
+      return "bg-dark";
+    case "Đã xác nhận":
+      return "bg-primary";
+    case "Đang giao hàng":
+      return "bg-warning";
+    case "Đã giao":
+      return "bg-success";
+    case "Đã hủy":
+      return "bg-danger";
+    case "Đã thanh toán":
+      return "bg-primary";
+    default:
+      return "bg-light";
+  }
+}

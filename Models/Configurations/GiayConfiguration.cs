@@ -12,7 +12,7 @@ namespace AuthDemo.Models.Configurations
             builder.Property(x => x.TenGiay).IsRequired().HasMaxLength(100);
             builder.Property(x => x.MaGiayCode).HasMaxLength(50);
             builder.Property(x => x.MoTa).HasMaxLength(255);
-            builder.Property(x => x.trangThai).HasMaxLength(50);
+            builder.Property(x => x.TrangThai).HasMaxLength(50);
             builder.Property(x => x.NguoiTao).HasMaxLength(50);
             builder.Property(x => x.NguoiCapNhat).HasMaxLength(50);
             _ = builder.HasData(
@@ -22,7 +22,7 @@ namespace AuthDemo.Models.Configurations
                     TenGiay = "Air Max",
                     MaGiayCode = "AMX",
                     MoTa = "Giày thể thao Nike",
-                    trangThai = TrangThai.Conhang,
+                    TrangThai = TrangThai.Conhang,
                     NguoiTao = "system",
                     NguoiCapNhat = "system"
                 },
@@ -32,7 +32,7 @@ namespace AuthDemo.Models.Configurations
                     TenGiay = "Ultraboost",
                     MaGiayCode = "UBS",
                     MoTa = "Giày thể thao Adidas",
-                    trangThai = TrangThai.HetHang,
+                    TrangThai = TrangThai.HetHang,
                     NguoiTao = "system",
                     NguoiCapNhat = "system"
                 }
