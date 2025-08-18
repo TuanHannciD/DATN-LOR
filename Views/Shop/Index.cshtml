@@ -297,7 +297,16 @@
             function formatVND(val) {
                 return Number(val).toLocaleString('vi-VN') + " đ";
             }
+            function setBackgroundImages() {
+                $('.set-bg').each(function () {
+                    var bg = $(this).data('setbg');
+                    $(this).css('background-image', 'url(' + bg + ')');
+                });
+            }
 
+            $(document).ready(function () {
+                setBackgroundImages(); // chạy khi trang load
+            });
             function unformatVND(str) {
                 return parseInt(str.replace(/[^\d]/g, '')) || 0;
             }
