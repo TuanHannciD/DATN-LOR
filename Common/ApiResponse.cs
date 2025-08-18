@@ -7,7 +7,7 @@ namespace AuthDemo.Common
         public string Message { get; set; }
         public T? Data { get; set; }
 
-        public static ApiResponse<T> SuccessResponse(string message, T? data = default)
+        public static ApiResponse<T> SuccessResponse(T? data = default, string message = "Không có thông báo")
         {
             return new ApiResponse<T>
             {

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using AuthDemo.Helpers;
 using AuthDemo.Models.Enums;
+using System.Threading.Tasks;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -25,23 +26,28 @@ namespace AuthDemo.Areas.Admin.Controllers
         {
             var list = _sanPhamService.GetAll().ToList();
             var tongSoLuongDict = _db.ChiTietGiays
-                .GroupBy(ct => ct.ShoeID)
-                .ToDictionary(g => g.Key, g => g.Sum(ct => ct.SoLuong));
+            .Where(ct => !ct.IsDelete) // chỉ tính các chi tiết chưa xóa
+            .GroupBy(ct => ct.ShoeID)
+            .ToDictionary(g => g.Key, g => g.Sum(ct => ct.SoLuong));
+
             var giayEntities = _db.Giays.AsNoTracking().ToList();
-            
- 
-            var viewModel = list.Select(g => {
+
+
+            var viewModel = list.Select(g =>
+            {
                 var giayDb = giayEntities.FirstOrDefault(x => x.ShoeID == g.ShoeID);
-                if (giayDb == null)
+                var trangThai = giayDb?.TrangThai.GetDisplayName() ?? "Chưa xác định";
+                // Lấy TongSoLuong bằng TryGetValue
+                if (!tongSoLuongDict.TryGetValue(g.ShoeID, out var tongSoLuong))
                 {
-                    throw new InvalidOperationException($"Không tìm thấy giày với ShoeID = {g.ShoeID}");
+                    tongSoLuong = 0;
                 }
-                
+
                 return new GiayWithSoLuongVM
                 {
                     Giay = g,
-                    TrangThai = giayDb.TrangThai.GetDisplayName(),
-                    TongSoLuong = tongSoLuongDict.ContainsKey(g.ShoeID) ? tongSoLuongDict[g.ShoeID] : 0,
+                    TrangThai = trangThai,
+                    TongSoLuong = tongSoLuong,
                     NguoiCapNhat = giayDb?.NguoiCapNhat,
                     NgayCapNhat = giayDb?.NgayCapNhat,
                     NguoiTao = giayDb?.NguoiTao,
@@ -57,7 +63,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             ViewBag.TrangThai = EnumHelper.GetEnumSelectList<TrangThai>();
             return View();
         }
-        
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -86,7 +92,7 @@ namespace AuthDemo.Areas.Admin.Controllers
                 TrangThai = giay.TrangThai.GetDisplayName(),
                 NguoiCapNhat = giay.NguoiCapNhat,
                 NgayCapNhat = giay.NgayCapNhat
-                
+
             };
             return View(vm);
         }
@@ -113,9 +119,12 @@ namespace AuthDemo.Areas.Admin.Controllers
             return View(vm);
         }
 
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            _sanPhamService.Delete(id);
+            var response = await _sanPhamService.Delete(id);
+            // Lưu message vào TempData
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
             return RedirectToAction("Index");
         }
 
@@ -145,4 +154,4 @@ namespace AuthDemo.Areas.Admin.Controllers
             return View(viewModel);
         }
     }
-} 
+}

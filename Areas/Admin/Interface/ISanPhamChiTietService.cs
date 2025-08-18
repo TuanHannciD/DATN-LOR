@@ -9,11 +9,12 @@ namespace AuthDemo.Areas.Admin.Interface
 {
     public interface IChiTietGiayService
     {
-        IEnumerable<ChiTietGiay> GetAll();
+        List<ChiTietGiay> GetAll();
+        Task<ApiResponse<IEnumerable<IndexVM>>> GetAllIndexVMAsync();
         ChiTietGiay? GetById(Guid id);
-        void Add(ChiTietGiay entity);
+        ApiResponse<EditVM> Add(EditVM editVM);
 
         ApiResponse<string> Update(EditVM entity);
-        void Delete(Guid id);
+        ApiResponse<string> Delete(Guid id);
     }
-} 
+}

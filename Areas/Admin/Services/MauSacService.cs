@@ -1,6 +1,8 @@
 using AuthDemo.Models;
 using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
+using AuthDemo.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -11,18 +13,21 @@ namespace AuthDemo.Areas.Admin.Services
         {
             _db = db;
         }
-        public IEnumerable<MauSac> GetAll()
+        public async Task<ApiResponse<IEnumerable<MauSac>>> GetAll()
         {
             try
             {
-                return [.._db.MauSacs];
+                var data = await _db.MauSacs
+                .Where(ct => !ct.IsDelete)
+                .ToListAsync();
+                return ApiResponse<IEnumerable<MauSac>>.SuccessResponse(data, "Lấy danh sách thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi lấy danh sách màu sắc: " + ex.Message, ex);
+                return ApiResponse<IEnumerable<MauSac>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
             }
         }
-        public MauSac?  GetById(Guid id)
+        public MauSac? GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("ID không hợp lệ!");
             try
@@ -62,19 +67,21 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi cập nhật màu sắc: " + ex.Message, ex);
             }
         }
-        public void Delete(Guid id)
+        public async Task<ApiResponse<string>> Delete(Guid id)
         {
             try
             {
                 var obj = _db.MauSacs.Find(id);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy màu sắc để xóa!");
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chất liệu");
+
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi xóa màu sắc: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
             }
         }
     }
-} 
+}

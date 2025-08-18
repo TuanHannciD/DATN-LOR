@@ -28,59 +28,58 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.TenKhachHang</td>
-                        <td>@item.SoDienThoai</td>
-                        <td>@item.Email</td>
-                        <td>
-                            <span class="badge  status-badge" 
-                                data-id="@item.HoaDonID" 
-                                style="cursor:pointer;">
-                                @item.TrangThaiDisplay
-                            </span>
-                        </td>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.TenKhachHang</td>
+                            <td>@item.SoDienThoai</td>
+                            <td>@item.Email</td>
+                            <td>
+                                <span class="badge  status-badge" data-id="@item.HoaDonID" style="cursor:pointer;">
+                                    @item.TrangThaiDisplay
+                                </span>
+                            </td>
 
-                        <td>@item.HinhThucThanhToanDisplay</td>
-                        <td>@item.HinhThucVanChuyenDisplay</td>
-                        <td><span class="badge bg-success">@item.TongTien.ToString("N0")</span></td>
-                        <td>@item.NguoiTao</td>
-                        <td>
-                            @if (item.NgayTao.HasValue)
-                            {
-                                <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
-                                    @item.NgayTao.Value.ToString("HH:mm dd/MM/yyyy")
-                                </span>
-                            }
-                        </td>
-                        <td>@item.NguoiCapNhat</td>
-                        <td>
-                            @if (item.NgayCapNhat.HasValue)
-                            {
-                                <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
-                                    @item.NgayCapNhat.Value.ToString("HH:mm dd/MM/yyyy")
-                                </span>
-                            }
-                        </td>
-                        <td class="text-center">
-                            <a class="btn btn-info btn-sm me-1" href="#">
-                                <i class="mdi mdi-eye"></i> Xem
-                            </a>
-                            <a class="btn btn-warning btn-sm me-1" href="#">
-                                <i class="mdi mdi-pencil"></i> Sửa
-                            </a>
-                            <a class="btn btn-danger btn-sm" href="#" onclick="return confirm('Bạn có chắc muốn xóa?');">
-                                <i class="mdi mdi-delete"></i> Xóa
-                            </a>
-                        </td>
-                    </tr>
-                }
+                            <td>@item.HinhThucThanhToanDisplay</td>
+                            <td>@item.HinhThucVanChuyenDisplay</td>
+                            <td><span class="badge bg-success">@item.TongTien.ToString("N0")</span></td>
+                            <td>@item.NguoiTao</td>
+                            <td>
+                                @if (item.NgayTao.HasValue)
+                                {
+                                    <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
+                                        @item.NgayTao.Value.ToString("HH:mm dd/MM/yyyy")
+                                    </span>
+                                }
+                            </td>
+                            <td>@item.NguoiCapNhat</td>
+                            <td>
+                                @if (item.NgayCapNhat.HasValue)
+                                {
+                                    <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
+                                        @item.NgayCapNhat.Value.ToString("HH:mm dd/MM/yyyy")
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a class="btn btn-info btn-sm me-1" href="#">
+                                    <i class="mdi mdi-eye"></i> Xem
+                                </a>
+                                <a class="btn btn-warning btn-sm me-1" href="#">
+                                    <i class="mdi mdi-pencil"></i> Sửa
+                                </a>
+                                <a class="btn btn-danger btn-sm btn-huy-hoa-don" href="#" data-id="@item.HoaDonID">
+                                    <i class="mdi mdi-delete"></i> Cập nhật trạng thái
+                                </a>
+
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
-</div> 
+</div>
 
 
 

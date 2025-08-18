@@ -84,5 +84,19 @@ namespace AuthDemo.Areas.Admin.Controllers
             }
             return Ok(new { success = true, message = result });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> HuyHoaDon(Guid id)
+        {
+            var result = await _hoaDonService.HuyHoaDon(id);
+
+            if (!result.Success)
+                return BadRequest(new { message = result.Message ?? "Hủy hóa đơn thất bại." });
+
+            return Ok(new { message = result.Message, data = result.Data });
+        }
+
+
+
     }
 }

@@ -191,11 +191,8 @@
     min-width: 120px;
 }
 .bhq-cart-table .bhq-cart-qty {
-<<<<<<< HEAD
-    width: 90px;
-=======
+
     width: 180px;
->>>>>>> backup-main
 }
 .bhq-cart-table .bhq-cart-price {
     width: 110px;

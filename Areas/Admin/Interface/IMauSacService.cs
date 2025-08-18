@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using AuthDemo.Common;
 using AuthDemo.Models;
 
 namespace AuthDemo.Areas.Admin.Interface
 {
     public interface IMauSacService
     {
-        IEnumerable<MauSac> GetAll();
+        Task<ApiResponse<IEnumerable<MauSac>>> GetAll();
         MauSac? GetById(Guid id);
         void Add(MauSac entity);
         void Update(MauSac entity);
-        void Delete(Guid id);
+        Task<ApiResponse<string>> Delete(Guid id);
     }
-} 
+}

@@ -4,6 +4,7 @@ using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
 using static AuthDemo.Models.ViewModels.ChiTietGiayVM;
 using AuthDemo.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -14,18 +15,27 @@ namespace AuthDemo.Areas.Admin.Services
         {
             _db = db;
         }
-        public IEnumerable<ChiTietGiay> GetAll()
+        public List<ChiTietGiay> GetAll()
         {
             try
             {
-                return [.. _db.ChiTietGiays];
+                // Kiểm tra DbSet có null không, tránh lỗi ArgumentNullException
+                var query = _db.ChiTietGiays ?? Enumerable.Empty<ChiTietGiay>();
 
+                // Lọc các bản ghi chưa bị xóa
+                var result = query
+                    .Where(ct => !ct.IsDelete)
+                    .ToList();
+
+                return result;
             }
             catch (Exception ex)
             {
+                // Ném lại exception với thông báo rõ ràng
                 throw new Exception("Lỗi khi lấy danh sách chi tiết giày: " + ex.Message, ex);
             }
         }
+
         public ChiTietGiay? GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("ID không hợp lệ!");
@@ -36,19 +46,6 @@ namespace AuthDemo.Areas.Admin.Services
             catch (Exception ex)
             {
                 throw new Exception("Lỗi khi lấy chi tiết giày theo ID: " + ex.Message, ex);
-            }
-        }
-        public void Add(ChiTietGiay entity)
-        {
-            try
-            {
-                ArgumentNullException.ThrowIfNull(entity);
-                _db.ChiTietGiays.Add(entity);
-                _db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Lỗi khi thêm chi tiết giày: " + ex.Message, ex);
             }
         }
         public ApiResponse<string> Update(EditVM entity)
@@ -76,34 +73,74 @@ namespace AuthDemo.Areas.Admin.Services
         }
 
 
-        public void Delete(Guid id)
+        public ApiResponse<string> Delete(Guid id)
         {
             try
             {
                 var obj = _db.ChiTietGiays.Find(id);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy chi tiết giày để xóa!");
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
+
                 obj.IsDelete = true;
                 _db.SaveChanges();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chi tiết giày");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi xóa chi tiết giày: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
             }
         }
-        public IEnumerable<ChiTietGiayVM.IndexVM> GetAllIndexVM()
+        public async Task<ApiResponse<IEnumerable<IndexVM>>> GetAllIndexVMAsync()
         {
-            return _db.ChiTietGiays.Select(ct => new ChiTietGiayVM.IndexVM
+            try
             {
-                ShoeDetailID = ct.ShoeDetailID,
-                TenGiay = ct.Giay != null ? ct.Giay.TenGiay : "Chưa có",
-                TenKichThuoc = ct.KichThuoc != null ? ct.KichThuoc.TenKichThuoc : "Chưa có",
-                TenMau = ct.MauSac != null ? ct.MauSac.TenMau : "Chưa có",
-                TenChatLieu = ct.ChatLieu != null ? ct.ChatLieu.TenChatLieu : "Chưa có",
-                TenThuongHieu = ct.ThuongHieu != null ? ct.ThuongHieu.TenThuongHieu : "Chưa có",
-                TenDanhMuc = ct.DanhMuc != null ? ct.DanhMuc.TenDanhMuc : "Chưa có",
-                SoLuong = ct.SoLuong,
-                Gia = ct.Gia
-            }).ToList();
+                var data = await _db.ChiTietGiays
+                    .Where(ct => !ct.IsDelete)
+                    .Select(ct => new IndexVM
+                    {
+                        ShoeDetailID = ct.ShoeDetailID,
+                        TenGiay = ct.Giay != null ? ct.Giay.TenGiay : "Chưa có",
+                        TenKichThuoc = ct.KichThuoc != null ? ct.KichThuoc.TenKichThuoc : "Chưa có",
+                        TenMau = ct.MauSac != null ? ct.MauSac.TenMau : "Chưa có",
+                        TenChatLieu = ct.ChatLieu != null ? ct.ChatLieu.TenChatLieu : "Chưa có",
+                        TenThuongHieu = ct.ThuongHieu != null ? ct.ThuongHieu.TenThuongHieu : "Chưa có",
+                        TenDanhMuc = ct.DanhMuc != null ? ct.DanhMuc.TenDanhMuc : "Chưa có",
+                        SoLuong = ct.SoLuong,
+                        Gia = ct.Gia
+                    })
+                    .ToListAsync();
+
+                return ApiResponse<IEnumerable<IndexVM>>.SuccessResponse(data, "Lấy danh sách thành công");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<IndexVM>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<EditVM> Add(EditVM editVM)
+        {
+            throw new NotImplementedException();
+            // if (editVM == null)
+            // {
+            //     return ApiResponse<EditVM>.FailResponse("Entity_null", "Lỗi dữ liệu gửi đến server null");
+            // }
+            // if (editVM.SoLuong < 0)
+            // {
+            //     return ApiResponse<EditVM>.FailResponse("Quantity_Exceeded", "Số lượng không được bé hơn 0");
+            // }
+            // if (editVM.Gia < 1000)
+            // {
+            //     return ApiResponse<EditVM>.FailResponse("Price_Fail", "Giá phải lớn hơn 100");
+            // }
+            // var entity = new EditVM
+            // {
+            //     ShoeDetailID = editVM.ShoeDetailID,
+            //     BrandID = editVM.BrandID,
+            //     CategoryID = editVM.CategoryID,
+            //     ColorID = editVM.ColorID,
+            //     Gia = editVM.Gia,
+
+            // };
         }
     }
 }

@@ -17,5 +17,6 @@ namespace AuthDemo.Areas.Admin.Interface
         // Cập nhật trạng thái thanh toán của hóa đơn
         Task<Result<string>> XacnhanTienMat(bool confirmdone, Guid orderId);
         Task<ApiResponse<UpdateTrangThaiResponse>> UpdateTrangThai(Guid HoaDonID);
+        Task<ApiResponse<object>> HuyHoaDon(Guid id);
     }
 }

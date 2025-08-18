@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using AuthDemo.Common;
 using AuthDemo.Models;
 
 namespace AuthDemo.Areas.Admin.Interface
 {
     public interface IThuongHieuService
     {
-        IEnumerable<ThuongHieu> GetAll();
+        Task<ApiResponse<IEnumerable<ThuongHieu>>> GetAll();
         ThuongHieu? GetById(Guid id);
         void Add(ThuongHieu entity);
         void Update(ThuongHieu entity);
-        void Delete(Guid id);
+        Task<ApiResponse<string>> Delete(Guid id);
     }
-} 
+}
