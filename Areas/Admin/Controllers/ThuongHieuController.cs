@@ -13,10 +13,17 @@ namespace AuthDemo.Areas.Admin.Controllers
             _thuongHieuService = thuongHieuService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = _thuongHieuService.GetAll();
-            return View(list);
+            var response = await _thuongHieuService.GetAll();
+            // nếu lấy thất bại thì trả về danh sách rỗng
+            if (!response.Success)
+            {
+                return View(new List<KichThuoc>());
+            }
+
+            // View nhận đúng IEnumerable<KichThuoc>
+            return View(response.Data);
         }
 
         [HttpGet]
@@ -54,10 +61,13 @@ namespace AuthDemo.Areas.Admin.Controllers
             return View(model);
         }
 
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            _thuongHieuService.Delete(id);
+            var response = await _thuongHieuService.Delete(id);
+            // Lưu message vào TempData
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
             return RedirectToAction("Index");
         }
     }
-} 
+}

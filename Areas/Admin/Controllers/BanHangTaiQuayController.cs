@@ -69,7 +69,7 @@ namespace DATN_Lor.Areas.Admin.Controllers
         {
             var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(tenDangNhap))
-                return BadRequest(ApiResponse<string>.FailResponse("User_Not_Logger_In","Không tìm thấy thông tin đăng nhập người dùng."));
+                return BadRequest(ApiResponse<string>.FailResponse("User_Not_Logger_In", "Không tìm thấy thông tin đăng nhập người dùng."));
             var result = _banHangTaiQuayService.UpdateCart(tenDangNhap, request.ShoeDetailID, request.ActionType);
             if (!result.Success)
             {
@@ -102,4 +102,4 @@ namespace DATN_Lor.Areas.Admin.Controllers
             return Json(users);
         }
     }
-} 
+}

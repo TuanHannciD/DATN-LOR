@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AuthDemo.Common;
 using AuthDemo.Models;
 using AuthDemo.Models.ViewModels;
 
@@ -11,7 +12,7 @@ namespace AuthDemo.Areas.Admin.Interface
         Giay? GetById(Guid id);
         void Add(Giay sp);
         void Update(Giay sp);
-        void Delete(Guid id);
+        Task<ApiResponse<string>> Delete(Guid id);
         IEnumerable<GiayFullInfoVM> GetGiayFullInfoList();
     }
 }

@@ -3,6 +3,7 @@ using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using AuthDemo.Common;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -17,14 +18,14 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                return [.._db.Giays];
+                return [.. _db.Giays];
             }
             catch (Exception ex)
             {
                 throw new Exception("Lỗi khi lấy danh sách sản phẩm: " + ex.Message, ex);
             }
         }
-            public Giay? GetById(Guid id)
+        public Giay? GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("ID không hợp lệ!");
             try
@@ -64,18 +65,21 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi cập nhật sản phẩm: " + ex.Message, ex);
             }
         }
-        public void Delete(Guid id)
+        public async Task<ApiResponse<string>> Delete(Guid id)
         {
             try
             {
-                var obj = _db.Giays.Find(id);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy sản phẩm để xóa!");
+                var obj = await _db.Giays.FindAsync(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chi tiết giày");
+
+
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi xóa sản phẩm: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
             }
         }
         public IEnumerable<GiayFullInfoVM> GetGiayFullInfoList()
@@ -120,4 +124,4 @@ namespace AuthDemo.Areas.Admin.Services
             return giayList;
         }
     }
-} 
+}

@@ -1,6 +1,8 @@
 using AuthDemo.Models;
 using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
+using AuthDemo.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -11,15 +13,18 @@ namespace AuthDemo.Areas.Admin.Services
         {
             _db = db;
         }
-        public IEnumerable<ChatLieu> GetAll()
+        public async Task<ApiResponse<IEnumerable<ChatLieu>>> GetAll()
         {
             try
             {
-                return [.._db.ChatLieus];
+                var data = await _db.ChatLieus
+                    .Where(ct => !ct.IsDelete)
+                    .ToListAsync();
+                return ApiResponse<IEnumerable<ChatLieu>>.SuccessResponse(data, "Lấy danh sách thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi lấy danh sách chất liệu: " + ex.Message, ex);
+                return ApiResponse<IEnumerable<ChatLieu>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
             }
         }
         public ChatLieu? GetById(Guid id)
@@ -62,18 +67,19 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi cập nhật chất liệu: " + ex.Message, ex);
             }
         }
-        public void Delete(Guid id)
+        public ApiResponse<string> Delete(Guid id)
         {
             try
             {
                 var obj = _db.ChatLieus.Find(id);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy chất liệu để xóa!");
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
                 _db.SaveChanges();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chi chất liệu");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi xóa chất liệu: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
             }
         }
     }
