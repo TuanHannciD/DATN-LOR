@@ -1,63 +1,189 @@
 ﻿@using X.PagedList.Mvc.Core;
-
 @model X.PagedList.IPagedList<AuthDemo.Models.ViewModels.ProductViewModel>
 @using AuthDemo.Models;
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Cửa Hàng";
     Layout = "~/Views/Shared/_LayoutShop.cshtml";
 }
+
+<!-- Thêm thư viện jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Thêm thư viện jQuery UI cho thanh trượt giá -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
 <style>
+    /* Ẩn mũi tên của ô nhập số */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* Phong cách cho bộ lọc */
     .filter-option {
         display: inline-block;
-        padding: 8px 14px;
-        margin: 4px 4px 4px 0;
-        border: 1px solid #ccc;
-        border-radius: 6px;
+        padding: 10px 16px;
+        margin: 6px 6px 6px 0;
+        border: 2px solid #E0E0E0;
+        border-radius: 12px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 500;
-        color: #333;
-        background-color: white;
-        transition: border-color 0.3s, box-shadow 0.3s;
+        color: #1A1A1A;
+        background-color: #FAFAFA;
+        transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-        .filter-option.selected {
-            border: 2px solid #7fad39; /* màu viền xanh */
-            box-shadow: 0 0 0 2px rgba(127, 173, 57, 0.3); /* hiệu ứng viền ngoài */
-            background-color: white; /* giữ nguyên nền */
-            color: #333; /* giữ nguyên màu chữ */
+        .filter-option:hover {
+            border-color: #FF6B6B;
+            background-color: #FFE8E8;
+            transform: scale(1.05);
         }
 
-    .price-input {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 15px;
-        gap: 5px;
+        .filter-option.selected {
+            border: 2px solid #FF6B6B;
+            background: linear-gradient(90deg, #FFE8E8, #FFD1D1);
+            color: #1A1A1A;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        }
+
+    /* Phong cách cho thanh trượt giá */
+    .ui-slider {
+        background: #E0E0E0;
+        border: none;
+        height: 8px;
+        border-radius: 4px;
     }
 
-        .price-input input {
-            width: 48%;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            color: #e53637;
-            background: transparent;
-            border: none;
-            overflow: hidden;
-            text-overflow: ellipsis;
+    .ui-slider-range {
+        background: linear-gradient(90deg, #FF6B6B, #FF9292);
+    }
+
+    .ui-slider-handle {
+        background: #FF6B6B;
+        border: 2px solid #FFFFFF;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        top: -6px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+        .ui-slider-handle:hover {
+            transform: scale(1.2);
+        }
+
+    .price-input input {
+        background: #FAFAFA;
+        border: 2px solid #E0E0E0;
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #FF6B6B;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+        .price-input input:focus {
+            border-color: #FF6B6B;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        }
+
+    /* Phong cách cho sản phẩm giảm giá */
+    .product__discount__item__pic {
+        background-size: cover;
+        background-position: center;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .product__discount__item:hover .product__discount__item__pic {
+        transform: scale(1.05);
+        box-shadow: 0 15px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .product__discount__percent {
+        background: linear-gradient(90deg, #FF6B6B, #FF3D3D);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
+
+    .product__item__pic__hover li a {
+        background: #FFFFFF;
+        color: #FF6B6B;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+        .product__item__pic__hover li a:hover {
+            background: #FF6B6B;
+            color: #FFFFFF;
+            transform: scale(1.1);
+        }
+
+    /* Phong cách cho phân trang */
+    .product__pagination a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin: 0 4px;
+        border: 2px solid #E0E0E0;
+        border-radius: 8px;
+        color: #1A1A1A;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .product__pagination a:hover,
+        .product__pagination a.active {
+            background: linear-gradient(90deg, #FF6B6B, #FF9292);
+            border-color: #FF6B6B;
+            color: #FFFFFF;
         }
 </style>
 
-<section class="product spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3 col-md-5">
-                <div class="sidebar">
-                    @* lọc loại  *@
-                    @* Lọc danh mục *@
-                    <div class="sidebar__item">
-                        <h4>Department</h4>
+<!-- Phần tử nền mơ mộng -->
+<div class="dream-element" style="width:200px; height:200px; background:#FFE8E8; top:10%; left:5%; animation: dreamFloat 12s ease-in-out infinite;"></div>
+<div class="dream-element" style="width:150px; height:150px; background:#C1E3FF; bottom:15%; right:10%; animation: dreamFloat 15s ease-in-out infinite reverse;"></div>
+
+<section class="py-24 bg-primary-50 relative overflow-hidden">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16 animate-fade-in">
+            <span class="inline-block text-accent-600 font-medium mb-3 tracking-widest">CỬA HÀNG MỘNG MƠ</span>
+            <h2 class="text-4xl font-serif font-bold text-primary-900 bg-gradient-to-r from-accent-600 to-accent-400 gradient-text">Khám Phá Bộ Sưu Tập Giày</h2>
+            <p class="max-w-xl mx-auto text-primary-600 mt-4">Tìm kiếm đôi giày hoàn hảo để bước vào giấc mơ của bạn.</p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar lọc -->
+            <div class="lg:w-1/4">
+                <div class="sidebar bg-white rounded-2xl p-6 dream-shadow">
+                    <!-- Lọc danh mục -->
+                    <div class="mb-8">
+                        <h4 class="text-xl font-serif font-bold text-primary-900 mb-4">Danh Mục</h4>
                         @foreach (var dm in ViewBag.DanhMucs as List<DanhMuc>)
                         {
                             <div class="filter-block">
@@ -66,9 +192,10 @@
                             </div>
                         }
                     </div>
-                    @* lọc giá *@
-                    <div class="sidebar__item">
-                        <h4>Price</h4>
+
+                    <!-- Lọc giá -->
+                    <div class="mb-8">
+                        <h4 class="text-xl font-serif font-bold text-primary-900 mb-4">Giá</h4>
                         <div class="price-range-wrap">
                             <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
                                  data-min="@Convert.ToInt32(ViewBag.MinPrice ?? 0)"
@@ -77,24 +204,16 @@
                                 <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
                                 <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
                             </div>
-
-                            <div class="range-slider mt-2">
-                                <div class="price-input d-flex justify-content-between" style="gap: 10px;">
-                                    <input type="text" id="minamount"
-                                           style="min-width: 100px; font-size: 14px; padding: 6px;"
-                                           value="@Convert.ToInt32(ViewBag.MinPrice ?? 0)" />
-
-                                    <input type="text" id="maxamount"
-                                           style="min-width: 100px; font-size: 14px; padding: 6px;"
-                                           value="@Convert.ToInt32(ViewBag.MaxPrice ?? 0)" />
-                                </div>
+                            <div class="price-input mt-4">
+                                <input type="text" id="minamount" value="@Convert.ToInt32(ViewBag.MinPrice ?? 0)" />
+                                <input type="text" id="maxamount" value="@Convert.ToInt32(ViewBag.MaxPrice ?? 0)" />
                             </div>
                         </div>
                     </div>
 
-                    @* lọc màu *@
-                    <div class="sidebar__item sidebar__item__color--option">
-                        <h4>Colors</h4>
+                    <!-- Lọc màu -->
+                    <div class="mb-8">
+                        <h4 class="text-xl font-serif font-bold text-primary-900 mb-4">Màu Sắc</h4>
                         @foreach (var color in ViewBag.MauSacs as List<MauSac>)
                         {
                             <div class="filter-block">
@@ -103,9 +222,10 @@
                             </div>
                         }
                     </div>
-                    @* lọc size *@
-                    <div class="sidebar__item">
-                        <h4>Size</h4>
+
+                    <!-- Lọc kích thước -->
+                    <div class="mb-8">
+                        <h4 class="text-xl font-serif font-bold text-primary-900 mb-4">Kích Thước</h4>
                         @foreach (var size in ViewBag.KichThuocs as List<KichThuoc>)
                         {
                             <div class="filter-block">
@@ -115,136 +235,54 @@
                         }
                     </div>
 
-                    <div class="mt-3">
-                        <button id="apply-filters" class="btn btn-primary">Áp dụng</button>
-                    </div>
-                    @* <div class="sidebar__item">
-                        <div class="latest-product__text">
-                            <h4>Latest Products</h4>
-                            <div class="latest-product__slider owl-carousel">
-                                <div class="latest-prdouct__slider__item">
-                                    <a href="#" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="img/latest-product/lp-1.jpg" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="img/latest-product/lp-2.jpg" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="img/latest-product/lp-3.jpg" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="latest-prdouct__slider__item">
-                                    <a href="#" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="img/latest-product/lp-1.jpg" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="img/latest-product/lp-2.jpg" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="img/latest-product/lp-3.jpg" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div> *@
+                    <!-- Nút áp dụng -->
+                    <button id="apply-filters" class="w-full bg-gradient-to-r from-accent-600 to-accent-400 text-white px-6 py-3 rounded-full font-medium hover:from-accent-700 hover:to-accent-500 transition dream-shadow">
+                        Áp Dụng Bộ Lọc
+                    </button>
                 </div>
             </div>
-            <div class="col-lg-9 col-md-7">
-                @* sp giảm giá *@
-                <div class="product__discount">
-                    <div class="section-title product__discount__title">
-                        <h2>Sale Off</h2>
-                    </div>
-                    <div class="row">
-                        <div class="product__discount__slider owl-carousel">
-                            
-                            <div class="col-lg-4">
-                                <div class="product__discount__item">
-                                    <div class="product__discount__item__pic set-bg"
-                                         data-setbg="img/product/discount/pd-2.jpg">
-                                        <div class="product__discount__percent">-20%</div>
-                                        <ul class="product__item__pic__hover">
-                                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="product__discount__item__text">
-                                        <span>Vegetables</span>
-                                        <h5><a href="#">Vegetables’package</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
+
+            <!-- Nội dung chính -->
+            <div class="lg:w-3/4">
+                <!-- Sản phẩm giảm giá -->
+                <div class="mb-12">
+                    <h3 class="text-2xl font-serif font-bold text-primary-900 mb-6 bg-gradient-to-r from-accent-600 to-accent-400 gradient-text">Giảm Giá Đặc Biệt</h3>
+                    <div class="relative">
+                        <div class="product__discount__slider owl-carousel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="product__discount__item product-card bg-white rounded-2xl overflow-hidden dream-shadow">
+                                <div class="product__discount__item__pic set-bg"
+                                     data-setbg="img/product/discount/pd-2.jpg">
+                                    <div class="product__discount__percent">-20%</div>
+                                    <ul class="product__item__pic__hover absolute bottom-4 right-4 flex flex-col gap-2">
+                                        <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                    </ul>
+                                </div>
+                                <div class="product__discount__item__text p-4">
+                                    <span class="text-primary-500">Vegetables</span>
+                                    <h5 class="font-medium text-primary-900 hover:text-accent-600 transition">
+                                        <a href="#">Vegetables’ package</a>
+                                    </h5>
+                                    <div class="product__item__price text-accent-600 font-bold">
+                                        $30.00 <span class="text-primary-500 line-through">$36.00</span>
                                     </div>
                                 </div>
-                            </div>                                                                                                        
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="filter__item">
-                    <div class="row">
-                        @* <div class="col-lg-4 col-md-5">
-                            <div class="filter__sort">
-                                <span>Sort By</span>
-                                <select>
-                                    <option value="0">Default</option>
-                                    <option value="0">Default</option>
-                                </select>
-                            </div>
-                        </div> *@
-                        @* <div class="col-lg-4 col-md-4">
-                            <div class="filter__found">
-                                <h6><span>16</span> Products found</h6>
-                            </div>
-                        </div> *@
-                        @* <div class="col-lg-4 col-md-3">
-                            <div class="filter__option">
-                                <span class="icon_grid-2x2"></span>
-                                <span class="icon_ul"></span>
-                            </div>
-                        </div> *@
                     </div>
                 </div>
 
-                @* sản phẩm  *@
-                <div class="row" id="product-list">
-                    @Html.Partial("_ProductListPartial", Model.ToList())
+                <!-- Danh sách sản phẩm -->
+                <!-- Danh sách sản phẩm -->
+                <div class="mb-12">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="product-list">
+                        @Html.Partial("_ProductListPartial", Model.ToList())
+                    </div>
                 </div>
-                <div class="product__pagination">
+
+                <!-- Phân trang -->
+                <div class="product__pagination text-center">
                     @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }))
                 </div>
             </div>
@@ -252,110 +290,111 @@
     </div>
 </section>
 
-<script>
-    $(document).ready(function () {
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Format tiền Việt Nam
+            function formatVND(val) {
+                return Number(val).toLocaleString('vi-VN') + " đ";
+            }
 
-        // Format VND
-        function formatVND(val) {
-            return Number(val).toLocaleString('vi-VN') + " đ";
-        }
+            function unformatVND(str) {
+                return parseInt(str.replace(/[^\d]/g, '')) || 0;
+            }
 
-        function unformatVND(str) {
-            return parseInt(str.replace(/[^\d]/g, '')) || 0;
-        }
+            // Khởi tạo thanh trượt giá
+            (function () {
+                const $priceRange = $(".price-range");
+                const min = parseInt($priceRange.data("min"));
+                const max = parseInt($priceRange.data("max"));
+                const $minInput = $("#minamount");
+                const $maxInput = $("#maxamount");
 
-        // Init price slider
-        (function () {
-            const $priceRange = $(".price-range");
-            const min = parseInt($priceRange.data("min"));
-            const max = parseInt($priceRange.data("max"));
-            const $minInput = $("#minamount");
-            const $maxInput = $("#maxamount");
+                const currentMin = unformatVND($minInput.val());
+                const currentMax = unformatVND($maxInput.val());
 
-            const currentMin = unformatVND($minInput.val());
-            const currentMax = unformatVND($maxInput.val());
+                $priceRange.slider({
+                    range: true,
+                    min: min,
+                    max: max,
+                    values: [currentMin, currentMax],
+                    slide: function (event, ui) {
+                        $minInput.val(formatVND(ui.values[0]));
+                        $maxInput.val(formatVND(ui.values[1]));
+                    }
+                });
 
-            $priceRange.slider({
-                range: true,
-                min: min,
-                max: max,
-                values: [currentMin, currentMax],
-                slide: function (event, ui) {
-                    $minInput.val(formatVND(ui.values[0]));
-                    $maxInput.val(formatVND(ui.values[1]));
-                }
-            });
+                // Format lần đầu
+                $minInput.val(formatVND(currentMin));
+                $maxInput.val(formatVND(currentMax));
 
-            // Format lần đầu
-            $minInput.val(formatVND(currentMin));
-            $maxInput.val(formatVND(currentMax));
+                // Xử lý nhập tay giá
+                $minInput.on("change", function () {
+                    const val = unformatVND($(this).val());
+                    $priceRange.slider("values", 0, val);
+                    $(this).val(formatVND(val));
+                });
 
-            // Khi người dùng nhập vào ô input
-            $minInput.on("change", function () {
-                const val = unformatVND($(this).val());
-                $priceRange.slider("values", 0, val);
-                $(this).val(formatVND(val));
-            });
+                $maxInput.on("change", function () {
+                    const val = unformatVND($(this).val());
+                    $priceRange.slider("values", 1, val);
+                    $(this).val(formatVND(val));
+                });
+            })();
 
-            $maxInput.on("change", function () {
-                const val = unformatVND($(this).val());
-                $priceRange.slider("values", 1, val);
-                $(this).val(formatVND(val));
-            });
-        })();
+            // Xử lý chọn bộ lọc kiểu toggle radio
+            function setupExclusiveSelectable(groupName) {
+                $(`label[for^='${groupName}-']`).click(function (e) {
+                    e.preventDefault();
+                    const label = $(this);
+                    const radioId = label.attr('for');
+                    const radio = $('#' + radioId);
 
-        // Xử lý chọn bộ lọc kiểu toggle radio
-        function setupExclusiveSelectable(groupName) {
-            $(`label[for^='${groupName}-']`).click(function (e) {
-                e.preventDefault();
-                const label = $(this);
-                const radioId = label.attr('for');
-                const radio = $('#' + radioId);
+                    if (label.hasClass('selected')) {
+                        label.removeClass('selected');
+                        radio.prop('checked', false);
+                    } else {
+                        $(`label[for^='${groupName}-']`).removeClass('selected');
+                        $(`input[name='${radio.attr("name")}']`).prop('checked', false);
 
-                if (label.hasClass('selected')) {
-                    label.removeClass('selected');
-                    radio.prop('checked', false);
-                } else {
-                    $(`label[for^='${groupName}-']`).removeClass('selected');
-                    $(`input[name='${radio.attr("name")}']`).prop('checked', false);
+                        label.addClass('selected');
+                        radio.prop('checked', true);
+                    }
+                });
+            }
 
-                    label.addClass('selected');
-                    radio.prop('checked', true);
-                }
-            });
-        }
+            setupExclusiveSelectable('dm');
+            setupExclusiveSelectable('mau');
+            setupExclusiveSelectable('size');
 
-        setupExclusiveSelectable('dm');
-        setupExclusiveSelectable('mau');
-        setupExclusiveSelectable('size');
+            // Gửi dữ liệu lọc
+            $('#apply-filters').click(function () {
+                const min = unformatVND($('#minamount').val());
+                const max = unformatVND($('#maxamount').val());
 
-        // Gửi dữ liệu lọc
-        $('#apply-filters').click(function () {
-            const min = unformatVND($('#minamount').val());
-            const max = unformatVND($('#maxamount').val());
+                const danhMucId = $('.filter-danhmuc-radio:checked').val();
+                const mauSacId = $('.filter-mau-radio:checked').val();
+                const kichThuocId = $('.filter-size-radio:checked').val();
 
-            const danhMucId = $('.filter-danhmuc-radio:checked').val();
-            const mauSacId = $('.filter-mau-radio:checked').val();
-            const kichThuocId = $('.filter-size-radio:checked').val();
-
-            $.ajax({
-                url: '/Shop/FilterProducts',
-                method: 'POST',
-                data: {
-                    danhMucIds: danhMucId ? [danhMucId] : [],
-                    mauSacIds: mauSacId ? [mauSacId] : [],
-                    kichThuocIds: kichThuocId ? [kichThuocId] : [],
-                    minPrice: min,
-                    maxPrice: max
-                },
-                success: function (data) {
-                    $('#product-list').html(data);
-                    $('.set-bg').each(function () {
-                        var bg = $(this).data('setbg');
-                        $(this).css('background-image', 'url(' + bg + ')');
-                    });
-                }
+                $.ajax({
+                    url: '/Shop/FilterProducts',
+                    method: 'POST',
+                    data: {
+                        danhMucIds: danhMucId ? [danhMucId] : [],
+                        mauSacIds: mauSacId ? [mauSacId] : [],
+                        kichThuocIds: kichThuocId ? [kichThuocId] : [],
+                        minPrice: min,
+                        maxPrice: max
+                    },
+                    success: function (data) {
+                        $('#product-list').html(data);
+                        $('.set-bg').each(function () {
+                            var bg = $(this).data('setbg');
+                            $(this).css('background-image', 'url(' + bg + ')');
+                        });
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
+}
