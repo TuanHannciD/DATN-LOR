@@ -284,8 +284,35 @@ namespace AuthDemo.Areas.Admin.Services
                 NewStatusDisplay = hoaDon.TrangThai.GetDisplayName()
             };
 
-            return ApiResponse<UpdateTrangThaiResponse>.SuccessResponse("Cập nhật trạng thái thành công", responseData);
+            return ApiResponse<UpdateTrangThaiResponse>.SuccessResponse(responseData, "Cập nhật trạng thái thành công");
         }
+
+        public async Task<ApiResponse<object>> HuyHoaDon(Guid id)
+        {
+            var hoadon = await _db.HoaDons.FindAsync(id);
+            if (hoadon == null)
+                return ApiResponse<object>.FailResponse("ID_HoaDon_Not_Found", "Không tìm thấy hóa đơn");
+
+            string message;
+            if (hoadon.TrangThai == TrangThaiHoaDon.DaHuy)
+            {
+                hoadon.TrangThai = TrangThaiHoaDon.ChoXacNhan;
+                message = "Đã khôi phục lại đơn đã hủy";
+            }
+            else
+            {
+                hoadon.TrangThai = TrangThaiHoaDon.DaHuy;
+                message = "Đã hủy hóa đơn";
+            }
+
+            await _db.SaveChangesAsync();
+            var trangThaiDisplay = hoadon.TrangThai.GetDisplayName();
+
+            // Trả về object chứa trạng thái enum chuẩn để JS map màu
+            return ApiResponse<object>.SuccessResponse(new { newStatus = trangThaiDisplay }, message);
+        }
+
+
         public class UpdateTrangThaiResponse
         {
             public Guid Id { get; set; }

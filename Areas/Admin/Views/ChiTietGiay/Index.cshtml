@@ -39,7 +39,7 @@
                             <td>@item.SoLuong</td>
                             <td>@item.Gia.ToString("N0")</td>
                             <td>
-                    <a class="btn btn-warning btn-sm"
+                                <a class="btn btn-warning btn-sm"
                                     href="@Url.Action("Edit", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })">Sửa</a>
                                 <a class="btn btn-danger btn-sm"
                                     href="@Url.Action("Delete", "ChiTietGiay", new { id = item.ShoeDetailID, area = "Admin" })"
@@ -84,9 +84,13 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="BrandID" class="form-label">Thương hiệu</label>
-                                <select id="BrandID" name="BrandID" class="form-select" required></select>
+                                <label for="BrandName" class="form-label">Thương hiệu</label>
+                                <input type="text" id="BrandName" name="BrandName" class="form-control" disabled
+                                    required />
+                                <input type="hidden" id="BrandID" name="BrandID" value="" />
                             </div>
+
+
 
                             <div class="col-md-6">
                                 <label for="CategoryID" class="form-label">Danh mục</label>
@@ -95,13 +99,14 @@
 
                             <div class="col-md-6">
                                 <label for="SoLuong" class="form-label">Số lượng</label>
-                                <input type="number" id="SoLuong" name="SoLuong" class="form-control" data-validate="required|minValue:1" data-label="Số lượng" />
+                                <input type="number" id="SoLuong" name="SoLuong" class="form-control"
+                                    data-validate="required|minValue:1" data-label="Số lượng" />
                             </div>
 
                             <div class="col-md-6">
                                 <label for="Gia" class="form-label">Giá</label>
                                 <input type="number" id="Gia" name="Gia" class="form-control" min="0" step="1000"
-                                    data-validate="required|minValue:1000" data-label="Giá"/>
+                                    data-validate="required|minValue:1000" data-label="Giá" />
                             </div>
                         </div>
                     </div>
@@ -128,4 +133,3 @@
     const brandList = @Html.Raw(Json.Serialize(ViewBag.BrandList));
     const categoryList = @Html.Raw(Json.Serialize(ViewBag.CategoryList));
 </script>
-

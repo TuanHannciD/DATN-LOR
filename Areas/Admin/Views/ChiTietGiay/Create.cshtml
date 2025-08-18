@@ -29,7 +29,8 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="MaterialID" class="form-label fw-bold">Chất liệu</label>
-                        <select asp-for="MaterialID" class="form-control rounded-3" asp-items="ViewBag.MaterialList"></select>
+                        <select asp-for="MaterialID" class="form-control rounded-3"
+                            asp-items="ViewBag.MaterialList"></select>
                         <span asp-validation-for="MaterialID" class="text-danger"></span>
                     </div>
                     <div class="form-group">
@@ -39,31 +40,52 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="CategoryID" class="form-label fw-bold">Danh mục</label>
-                        <select asp-for="CategoryID" class="form-control rounded-3" asp-items="ViewBag.CategoryList"></select>
+                        <select asp-for="CategoryID" class="form-control rounded-3"
+                            asp-items="ViewBag.CategoryList"></select>
                         <span asp-validation-for="CategoryID" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="SoLuong" class="form-label fw-bold">Số lượng</label>
-                        <input asp-for="SoLuong" class="form-control rounded-3" type="number" data-validate="required" data-label="Số lượng" />
+                        <input asp-for="SoLuong" class="form-control rounded-3" type="number" data-validate="required"
+                            data-label="Số lượng" />
                         <span asp-validation-for="SoLuong" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Gia" class="form-label fw-bold">Giá</label>
-                        <input asp-for="Gia" class="form-control rounded-3" type="number" data-validate="required|minValue:3" data-label="Giá">
+                        <input asp-for="Gia" class="form-control rounded-3" type="number"
+                            data-validate="required|minValue:3" data-label="Giá">
                         <span asp-validation-for="Gia" class="text-danger"></span>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="submit" class="btn btn-success px-4" data-skip-validate="true">
-                            <i class="mdi mdi-content-save"></i> Lưu
-                        </button>
-                        <a class="btn btn-secondary px-4"
-                            href="@Url.Action("Index", "ChiTietGiay", new { area = "Admin" })">
-                            <i class="mdi mdi-arrow-left"></i> Quay lại
-                        </a>
+                    <div class="form-group">
+                        <label asp-for="Image" for="" class="form-label fw-bold">Ảnh sản phẩm chi tiết</label>
+                        <input type="file" id="imageUpload" class="form-control rounded-3" accept="image/*" />
+                        <input type="hidden" asp-for="Image" id="ImageUrl" />
+                        <div class="mt-2">
+                            <img id="previewImage" src="" class="img-fluid rounded shadow-sm d-none"
+                                style="max-height: 200px;" />
+                        </div>
+                        <span asp-validation-for="Image" class="text-danger"></span>
+
                     </div>
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="mdi mdi-content-save"></i> Lưu
+                            </button>
+                            <a class="btn btn-secondary px-4"
+                                href="@Url.Action("Index", "ChiTietGiay", new { area = "Admin" })">
+                                <i class="mdi mdi-arrow-left"></i> Quay lại
+                            </a>
+                        </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
 
+<script>
+    const CLOUD_NAME = "@Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME")";
+    const UPLOAD_PRESET = "@Environment.GetEnvironmentVariable("CLOUDINARY_UPLOAD_PRESET")";
+</script>
+<script src="~/js/cloudinary.js"></script>
