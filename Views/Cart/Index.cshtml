@@ -1,58 +1,98 @@
 ﻿@using AuthDemo.Models;
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Giỏ Hàng";
     Layout = "~/Views/Shared/_LayoutCart.cshtml";
 }
 
 @model List<ChiTietGioHang>
+
 <style>
-    /* Ẩn mũi tên tăng giảm trên trình duyệt Chrome, Safari, Edge */
+    /* Hide number input arrows for Chrome, Safari, Edge */
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button {
         -webkit-appearance: none;
         margin: 0;
     }
 
-    /* Ẩn mũi tên trên Firefox */
+    /* Hide number input arrows for Firefox */
     input[type=number] {
         -moz-appearance: textfield;
     }
 
-     .text-muted.bg-light {
+    /* Style for out-of-stock items */
+    .out-of-stock {
         opacity: 0.6;
-        pointer-events: auto;
-     }
+        pointer-events: none;
+        background: #F5F5F5;
+    }
 
+    /* Custom hover effects for table rows */
+    .cart-row:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(255, 107, 107, 0.15);
+        transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Style for quantity buttons */
+    .quantity-btn {
+        background: linear-gradient(90deg, #FF6B6B, #FF9292);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .quantity-btn:hover {
+            background: linear-gradient(90deg, #FF3D3D, #FF6B6B);
+            transform: scale(1.1);
+        }
+
+    /* Checkbox styling */
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: #FF6B6B;
+        cursor: pointer;
+    }
+
+    /* Alert animation */
+    .alert {
+        animation: fadeIn 0.5s ease-out;
+    }
 </style>
-@if (TempData["CartWarnings"] != null)
-{
-    <div class="alert alert-warning alert-dismissible fade show mx-auto mt-3" role="alert" style="max-width: 600px;">
-        @Html.Raw(TempData["CartWarnings"])
-    </div>
-}
 
-<form method="post" action="@Url.Action("CheckOut", "HoaDon")" id="checkoutForm">
-    @Html.AntiForgeryToken()
+<!-- Dream background elements for cart page -->
+<div class="dream-element" style="width:200px; height:200px; background:#FFE8E8; top:10%; left:5%; animation: dreamFloat 12s ease-in-out infinite;"></div>
+<div class="dream-element" style="width:150px; height:150px; background:#C1E3FF; bottom:15%; right:10%; animation: dreamFloat 15s ease-in-out infinite reverse;"></div>
 
+<section class="py-24 bg-primary-50 relative">
+    <div class="container mx-auto px-6">
+        <!-- Alert for cart warnings -->
+        @if (TempData["CartWarnings"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show mx-auto mt-3 rounded-2xl dream-shadow max-w-2xl bg-gradient-to-r from-yellow-100 to-yellow-200 border border-yellow-300" role="alert">
+                @Html.Raw(TempData["CartWarnings"])
+                <button type="button" class="close text-yellow-700 opacity-75 hover:opacity-100" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="shoping__cart__table">
+        <form method="post" action="@Url.Action("CheckOut", "HoaDon")" id="checkoutForm" class="mt-8">
+            @Html.AntiForgeryToken()
 
-                    <table>
+            <div class="bg-white rounded-2xl dream-shadow p-8">
+                <h2 class="text-3xl font-serif font-bold text-primary-900 mb-6 bg-gradient-to-r from-accent-600 to-accent-400 gradient-text">Giỏ Hàng Của Bạn</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
                         <thead>
-                            <tr>
-
-                                <th>
-                                    <input type="checkbox" id="chon-tat-ca" />
-                                    
+                            <tr class="bg-primary-100 text-primary-800 text-left">
+                                <th class="p-4">
+                                    <input type="checkbox" id="chon-tat-ca" class="custom-checkbox" />
                                 </th>
-                                <th class="shoping__product">Sản Phẩm</th>
-                                <th>Đơn Giá</th>
-                                <th>Số Lượng</th>
-                                <th>Tổng</th>
-                                <th></th>
+                                <th class="p-4 font-medium">Sản Phẩm</th>
+                                <th class="p-4 font-medium">Đơn Giá</th>
+                                <th class="p-4 font-medium">Số Lượng</th>
+                                <th class="p-4 font-medium">Tổng</th>
+                                <th class="p-4"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,141 +100,102 @@
                             {
                                 decimal tong = item.SoLuong * item.ChiTietGiay.Gia;
                                 bool hetHang = item.ChiTietGiay.SoLuong == 0;
-                                <tr class="@(hetHang ? "text-muted bg-light" : "")">
-                                    <td>
+                                <tr class="cart-row border-b border-primary-200 @(hetHang ? "out-of-stock" : "")" style="transition: all 0.3s ease;">
+                                    <td class="p-4">
                                         <input type="checkbox"
                                                name="selectedIds"
                                                value="@item.ShoeDetailID"
-                                               class="chon-sp"
+                                               class="chon-sp custom-checkbox"
                                                data-price="@item.ChiTietGiay.Gia"
                                                data-id="@item.ShoeDetailID"
                                         @(hetHang ? "disabled" : "") />
                                     </td>
-
-                                    
-                                    <td class="shoping__cart__item">
-                                         @if (hetHang)
-                                            {
-                                                <div class="text-danger small mt-1">Hết hàng</div>
-                                            }
-                                        <a asp-controller="Home"
-                                           asp-action="SanPhamDetails"
-                                           asp-route-id="@item.ChiTietGiay.Giay.ShoeID">
-                                            <img src="@Url.Content("~/AnhDoiGiay/" + item.ChiTietGiay.Giay.AnhDaiDien)" alt="" width="150" />
-                                        </a>
-                                        <h5>
-                                            @item.ChiTietGiay.Giay.TenGiay
-                                            <br />
-                                            (@item.ChiTietGiay.MauSac.TenMau, @item.ChiTietGiay.KichThuoc.TenKichThuoc)
-                                           
-                                        </h5>
-                                    </td>
-
-                                    <td class="shoping__cart__price">
-                                        @item.ChiTietGiay.Gia.ToString("N0") VNĐ
-                                    </td>
-
-                                    <td class="shoping__cart__quantity">
-                                        <div class="quantity">
-                                            <div class="input-group quantity-control" style="width: 120px;">
-                                                <button type="button"
-                                                        class="btn btn-outline-secondary btn-decrease"
-                                                        data-id="@item.ShoeDetailID"
-                                                        style="padding:6px 12px; border:none; background:#eee; font-weight:bold;"
-                                                @(hetHang ? "disabled" : "")>
-                                                    −
-                                                </button>
-
-                                                <input type="number"
-                                                       value="@item.SoLuong"
-                                                       min="1"
-                                                       max="@item.ChiTietGiay.SoLuong"
-                                                       data-for-id="@item.ShoeDetailID"
-                                                       data-stock="@item.ChiTietGiay.SoLuong"
-                                                       class="quantity-input form-control text-center"
-                                                       style="width: 50px;"
-                                                @(hetHang ? "readonly" : "") />
-
-                                                <button type="button"
-                                                        class="btn btn-outline-secondary btn-increase"
-                                                        data-id="@item.ShoeDetailID"
-                                                        style="padding:6px 12px; border:none; background:#eee; font-weight:bold;"
-                                                @(hetHang ? "disabled" : "")>
-                                                    +
-                                                </button>
+                                    <td class="p-4">
+                                        @if (hetHang)
+                                        {
+                                            <div class="text-accent-600 text-sm font-medium">Hết hàng</div>
+                                        }
+                                        <div class="flex items-center space-x-4">
+                                            <a asp-controller="Home"
+                                               asp-action="SanPhamDetails"
+                                               asp-route-id="@item.ChiTietGiay.Giay.ShoeID"
+                                               class="block">
+                                                <img src="@Url.Content("~/AnhDoiGiay/" + item.ChiTietGiay.Giay.AnhDaiDien)"
+                                                     alt="@item.ChiTietGiay.Giay.TenGiay"
+                                                     class="w-20 h-20 object-cover rounded-lg dream-shadow hover:scale-105 transition-transform duration-300" />
+                                            </a>
+                                            <div>
+                                                <h5 class="font-medium text-primary-900 hover:text-accent-600 transition">
+                                                    @item.ChiTietGiay.Giay.TenGiay
+                                                </h5>
+                                                <p class="text-sm text-primary-500">
+                                                    (@item.ChiTietGiay.MauSac.TenMau, @item.ChiTietGiay.KichThuoc.TenKichThuoc)
+                                                </p>
                                             </div>
-                                            
                                         </div>
                                     </td>
-
-                                    <td class="shoping__cart__total">
-                                        @tong.ToString("N0") VNĐ
+                                    <td class="p-4 text-primary-900">@item.ChiTietGiay.Gia.ToString("N0") VNĐ</td>
+                                    <td class="p-4">
+                                        <div class="flex items-center space-x-2">
+                                            <button type="button"
+                                                    class="btn-decrease quantity-btn w-10 h-10 rounded-full flex items-center justify-center"
+                                                    data-id="@item.ShoeDetailID"
+                                            @(hetHang ? "disabled" : "")>
+                                                −
+                                            </button>
+                                            <input type="number"
+                                                   value="@item.SoLuong"
+                                                   min="1"
+                                                   max="@item.ChiTietGiay.SoLuong"
+                                                   data-for-id="@item.ShoeDetailID"
+                                                   data-stock="@item.ChiTietGiay.SoLuong"
+                                                   class="quantity-input form-control text-center w-16 h-10 rounded-full border border-primary-300 focus:outline-none focus:ring-2 focus:ring-accent-500 text-primary-900"
+                                            @(hetHang ? "readonly" : "") />
+                                            <button type="button"
+                                                    class="btn-increase quantity-btn w-10 h-10 rounded-full flex items-center justify-center"
+                                                    data-id="@item.ShoeDetailID"
+                                            @(hetHang ? "disabled" : "")>
+                                                +
+                                            </button>
+                                        </div>
                                     </td>
-
-                                    <td class="shoping__cart__item__close">
+                                    <td class="p-4 text-primary-900 shoping__cart__total">@tong.ToString("N0") VNĐ</td>
+                                    <td class="p-4">
                                         <a asp-controller="Cart"
                                            asp-action="RemoveCart"
-                                           asp-route-id="@item.CartDetailID">
-                                            <span class="icon_close"></span>
+                                           asp-route-id="@item.CartDetailID"
+                                           class="text-accent-600 hover:text-accent-800 transition">
+                                            <i class="fas fa-trash-alt"></i>
                                         </a>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-
-
                 </div>
 
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                
-                <div class="shoping__cart__btns">
-                    <a asp-controller="Shop" asp-action="Index" class="primary-btn">Tiếp Tục Mua Sắm</a>
-                    @*  @if (cartItem != null
-
-                    )
-                    {
-
-                    <button type="submit" class="primary-btn cart-btn cart-btn-right">
-                    <span class="icon_loading"></span>
-                    Cập Nhật
-                    </button>
-
-
-                    } *@
+                <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-6">
+                    <a asp-controller="Shop" asp-action="Index"
+                       class="inline-flex items-center bg-white border-2 border-accent-500 text-accent-600 px-6 py-3 rounded-full font-medium hover:bg-accent-100 hover:border-accent-600 transition dream-shadow">
+                        Tiếp Tục Mua Sắm <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                    <div class="text-right">
+                        <h5 class="text-lg font-medium text-primary-900">Tổng Tiền</h5>
+                        <p class="text-2xl font-bold text-accent-600" id="tong-tien">0 VNĐ</p>
+                        <button type="submit"
+                                class="mt-4 inline-flex items-center bg-gradient-to-r from-accent-600 to-accent-400 text-white px-8 py-3 rounded-full font-medium hover:from-accent-700 hover:to-accent-500 transition dream-shadow">
+                            Tiến Hành Thanh Toán <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-            </div>
-            <div class="col-lg-6">
-                <div class="shoping__checkout">
-                    <h5>Cart Total</h5>
-
-                    <ul>
-
-                        <li> Tổng tiền: <span id="tong-tien">0 VNĐ</span></li>
-                    </ul>
-
-
-                    <button type="submit" class="primary-btn">TIẾN HÀNH THANH TOÁN</button>
-
-
-
-
-                </div>
-            </div>
-        </div>
+        </form>
     </div>
+</section>
 
-</form>
 @section Scripts {
     <script>
-
-
-        // 1. Chọn tất cả
+        // 1. Select all checkboxes
         document.getElementById("chon-tat-ca").addEventListener("change", function () {
             const checkAll = this.checked;
             document.querySelectorAll(".chon-sp:not([disabled])").forEach(cb => {
@@ -203,7 +204,7 @@
             updateTotal();
         });
 
-        // 2. Cập nhật tổng tiền khi chọn checkbox
+        // 2. Update total when checkboxes change
         document.querySelectorAll(".chon-sp").forEach(cb => {
             cb.addEventListener("change", updateTotal);
         });
@@ -223,7 +224,7 @@
             document.getElementById("tong-tien").textContent = total.toLocaleString('vi-VN') + " VNĐ";
         }
 
-        // 3. Ngăn submit nếu không có sản phẩm được chọn
+        // 3. Prevent form submission if no products are selected
         document.getElementById("checkoutForm").addEventListener("submit", function (e) {
             const selected = document.querySelectorAll(".chon-sp:checked");
             const form = this;
@@ -234,31 +235,24 @@
                 return;
             }
 
-            // Xoá các input cũ nếu có (phòng tránh double)
+            // Remove old quantity inputs to prevent duplication
             document.querySelectorAll("input[name='quantities']").forEach(el => el.remove());
 
-            // Với mỗi sản phẩm được chọn
+            // Add hidden inputs for quantities
             selected.forEach(cb => {
                 const id = cb.value;
                 const qtyInput = document.querySelector(`.quantity-input[data-for-id='${id}']`);
                 const qty = qtyInput ? parseInt(qtyInput.value) : 1;
 
-                // Tạo input hidden tương ứng quantity
                 const hiddenQty = document.createElement("input");
                 hiddenQty.type = "hidden";
                 hiddenQty.name = "quantities";
                 hiddenQty.value = qty;
-
                 form.appendChild(hiddenQty);
             });
         });
 
-
-        
-
-       
-
-        // Gán sự kiện cho nút tăng
+        // 4. Handle quantity increase
         document.querySelectorAll(".btn-increase").forEach(btn => {
             btn.addEventListener("click", function () {
                 const id = this.getAttribute("data-id");
@@ -271,17 +265,14 @@
                 if (current < stock) {
                     const newQty = current + 1;
                     input.value = newQty;
-
                     updateServerQuantity(id, newQty);
-                    
-                   
                 } else {
                     alert("Đã đạt số lượng tối đa trong kho: " + stock);
                 }
             });
         });
 
-        // Gán sự kiện cho nút giảm
+        // 5. Handle quantity decrease
         document.querySelectorAll(".btn-decrease").forEach(btn => {
             btn.addEventListener("click", function () {
                 const id = this.getAttribute("data-id");
@@ -293,14 +284,14 @@
                 if (current > 1) {
                     const newQty = current - 1;
                     input.value = newQty;
-
                     updateServerQuantity(id, newQty);
-                   
                 } else {
                     alert("Số lượng tối thiểu là 1");
                 }
             });
         });
+
+        // 6. Handle manual quantity input
         document.querySelectorAll('.quantity-input').forEach(input => {
             input.addEventListener('change', function () {
                 const id = this.getAttribute('data-for-id');
@@ -316,18 +307,17 @@
                 }
 
                 this.value = value;
-
-                // Gọi cập nhật server và tổng tiền
                 updateServerQuantity(id, value);
                 updateTotal();
             });
         });
+
+        // 7. Update server quantity
         function updateServerQuantity(id, quantity, callback) {
             const formData = new URLSearchParams();
             formData.append("shoeDetailId", id);
             formData.append("newQuantity", quantity);
 
-            
             fetch('/Cart/UpdateQuantity', {
                 method: 'POST',
                 headers: {
@@ -358,22 +348,19 @@
                     alert("Có lỗi xảy ra khi cập nhật số lượng.");
                 });
         }
-        
-        // 4. Cập nhật tổng tiền ban đầu (nếu cần)
 
+        // 8. Auto-hide alert after 5 seconds
+        setTimeout(function () {
+            const alert = document.querySelector(".alert");
+            if (alert) {
+                alert.classList.remove("show");
+                alert.classList.add("fade");
+                alert.style.opacity = 0;
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 5000);
 
-       
-            // Ẩn alert sau 5 giây
-            setTimeout(function () {
-                const alert = document.querySelector(".alert");
-                if (alert) {
-                    alert.classList.remove("show");
-                    alert.classList.add("fade");
-                    alert.style.opacity = 0;
-                }
-            }, 5000);
-   
+        // Initial total update
+        updateTotal();
     </script>
 }
-
-
