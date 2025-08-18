@@ -4,6 +4,7 @@ using AuthDemo.Models;
 using AuthDemo.Data;
 using AuthDemo.Models.ViewModels;
 using AuthDemo.Models.Enums;
+using AuthDemo.Helpers;
 
 
 namespace Controllers
@@ -79,7 +80,10 @@ namespace Controllers
             }
 
             // Nếu mọi thứ hợp lệ → sang trang thanh toán
-            ViewBag.TongTien = cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia);
+            decimal ship = 30000;
+            ViewBag.Ship = ship;
+            ViewBag.TongTien1 = cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia);
+            ViewBag.TongTien = (cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia)) + ship;
             return View(cartItems); // view: Views/HoaDon/CheckOut.cshtml
         }
 
@@ -143,9 +147,10 @@ namespace Controllers
             }
 
             decimal tongTien = 0;
+            decimal ship = 30000;
             for (int i = 0; i < selectedIds.Count; i++)
             {
-                tongTien += cartItems[i].ChiTietGiay.Gia * quantities[i];
+                tongTien += (cartItems[i].ChiTietGiay.Gia * quantities[i]) + ship;
             }
 
             var hoaDon = new HoaDon
@@ -190,7 +195,7 @@ namespace Controllers
                 };
                 _context.ChiTietHoaDons.Add(hdct);
 
-                product.ChiTietGiay.SoLuong -= soLuong;
+                
             }
 
             _context.ChiTietGioHangs.RemoveRange(cartItems);
@@ -255,7 +260,7 @@ namespace Controllers
                 HoTen = h.HoTen,
                 SoDienThoai = h.SoDienThoai,
                 DiaChi = h.DiaChi,
-                TrangThai = Enum.GetName(typeof(TrangThaiHoaDon), h.TrangThai) ?? "Chưa xác định",
+                TrangThai = EnumHelper.GetDisplayName((TrangThaiHoaDon)h.TrangThai),
                 NgayTao = h.NgayTao,
                 TongTien = h.TongTien,
 
@@ -344,8 +349,8 @@ namespace Controllers
                 }).ToList()
 
             }).ToList();
-
-
+            decimal ship = 30000;
+            ViewBag.Ship = ship;
             return View(hoaDons);
 
 

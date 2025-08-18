@@ -67,6 +67,12 @@
                         }
                     </ul>
                     <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
+                        Tổng tiền hàng <span  class="text-accent-600">@ViewBag.TongTien1.ToString("N0") VNĐ</span>
+                    </div>
+                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
+                        Phí vận chuyển  <span  class="text-accent-600">@ViewBag.Ship.ToString("N0") VNĐ</span>
+                    </div>
+                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
                         Tổng <span id="tongtien" name="tongtien" class="text-accent-600">@ViewBag.TongTien.ToString("N0") VNĐ</span>
                     </div>
                     <div class="checkout__input__checkbox mb-6 relative z-10">

@@ -20,5 +20,18 @@ namespace AuthDemo.Helpers
                 })
                 .ToList();
         }
+        public static string GetDisplayName<T>(T enumValue) where T : Enum
+        {
+            var member = enumValue.GetType().GetMember(enumValue.ToString()).FirstOrDefault();
+            if (member != null)
+            {
+                var displayAttr = member.GetCustomAttribute<DisplayAttribute>();
+                if (displayAttr != null)
+                {
+                    return displayAttr.Name;
+                }
+            }
+            return enumValue.ToString();
+        }
     }
 }
