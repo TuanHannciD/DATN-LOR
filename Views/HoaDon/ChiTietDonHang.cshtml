@@ -6,166 +6,416 @@
     Layout = "~/Views/Shared/_LayoutCart.cshtml";
 
     var steps = new[] {
-        new { Name = "Chờ xác nhận", Value = TrangThaiHoaDon.ChoXacNhan, Icon = "⏳" },
-        new { Name = "Đã xác nhận", Value = TrangThaiHoaDon.DaXacNhan, Icon = "✅" },
-        new { Name = "Đang giao hàng", Value = TrangThaiHoaDon.DangGiaoHang, Icon = "🚚" },
-        new { Name = "Đã giao", Value = TrangThaiHoaDon.DaGiao, Icon = "📦" }
+        new { Name = "Chờ xác nhận", Value = TrangThaiHoaDon.ChoXacNhan, Icon = "⏳", Color = "#FFB6C1" },
+        new { Name = "Đã xác nhận", Value = TrangThaiHoaDon.DaXacNhan, Icon = "✅", Color = "#98FF98" },
+        new { Name = "Đang giao hàng", Value = TrangThaiHoaDon.DangGiaoHang, Icon = "🚚", Color = "#87CEEB" },
+        new { Name = "Đã giao", Value = TrangThaiHoaDon.DaGiao, Icon = "📦", Color = "#FFD700" }
     };
 }
+
 <style>
     .order-container {
-        max-width: 980px;
-        margin: 30px auto;
-        padding: 22px;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        max-width: 1024px; /* Giới hạn chiều rộng để căn giữa */
+        margin: 0 auto; /* Căn giữa trang */
+        padding: 2rem;
+        background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 1s ease-in-out;
     }
 
-    .order-container h2 {
-        text-align: center;
-        font-size: 20px;
-        margin-bottom: 18px;
-        color: #222;
-    }
+        .order-container h2 {
+            font-size: 2rem;
+            font-family: 'Georgia', serif;
+            font-weight: 900; /* Tăng độ đậm cho chữ */
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: linear-gradient(90deg, #1E40AF, #6B7280);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientShift 4s infinite;
+        }
 
-    /* progress background line */
     .order-steps {
         position: relative;
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        margin: 18px 40px 34px;
-    }
-    .order-steps::before {
-        content: "";
-        position: absolute;
-        left: 60px;
-        right: 60px;
-        top: 28px;
-        height: 4px;
-        background: #e6e6e6;
-        z-index: 1;
-        border-radius: 4px;
+        padding: 1rem 2rem;
+        margin-bottom: 2rem;
     }
 
-    /* colored progress (will be sized inline) */
+        .order-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5rem;
+            right: 5rem;
+            height: 0.25rem;
+            background: #E5E7EB;
+            border-radius: 0.125rem;
+            z-index: 0;
+        }
+
     .progress-line {
         position: absolute;
-        left: 60px;
-        top: 28px;
-        height: 4px;
-        background: #28a745;
-        z-index: 2;
-        border-radius: 4px;
-        transition: width 0.28s ease;
+        top: 50%;
+        left: 5rem;
+        height: 0.25rem;
+        background: linear-gradient(90deg, #3B82F6, #9333EA);
+        border-radius: 0.125rem;
+        z-index: 10;
+        transition: width 0.8s ease-in-out;
     }
 
     .step {
         position: relative;
-        z-index: 3;
-        flex: 1;
-        text-align: center;
-    }
-    .step .icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #cfcfcf;
-        color: #fff;
-        display: inline-flex;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        margin: 0 auto 8px;
-        font-size: 20px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
-    .step.active .icon {
-        background: #28a745;
-        box-shadow: 0 6px 18px rgba(40,167,69,0.18);
-        transform: translateY(-2px);
-    }
-    .step .name {
-        font-size: 13px;
-        color: #333;
-        font-weight: 500;
+        z-index: 20;
     }
 
-    /* shipping info */
+        .step .icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            background: #D1D5DB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .step.active .icon {
+            background: linear-gradient(45deg, #3B82F6, #9333EA);
+            transform: scale(1.2);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .step .name {
+            font-size: 0.875rem;
+            font-weight: 600; /* Tăng độ đậm cho chữ */
+            color: #4B5563;
+            transition: color 0.3s ease;
+        }
+
+        .step.active .name {
+            color: #1E40AF;
+            font-weight: 700; /* Tăng độ đậm khi active */
+        }
+
     .shipping-info {
-        background: #fbfbfb;
-        border: 1px solid #f0f0f0;
-        padding: 16px;
-        border-radius: 8px;
-        margin-bottom: 18px;
+        background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
+        border: 1px solid #E5E7EB;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        animation: slideUp 0.8s ease-out;
     }
-    .shipping-info h3 { margin:0 0 8px 0; font-size:18px; }
-    .shipping-info p { margin:3px 0; color:#555; }
 
-    /* product list */
+        .shipping-info h3 {
+            font-size: 1.25rem;
+            font-family: 'Georgia', serif;
+            font-weight: 700; /* Tăng độ đậm */
+            color: #1F2937;
+            margin-bottom: 0.75rem;
+        }
+
+        .shipping-info p {
+            font-size: 1rem;
+            color: #374151; /* Màu đậm hơn để giảm cảm giác mờ */
+            font-weight: 500; /* Tăng độ đậm */
+        }
+
+            .shipping-info p strong {
+                color: #1F2937;
+                font-weight: 600;
+            }
+
     .product {
         display: flex;
         align-items: center;
-        gap: 14px;
-        padding: 12px 6px;
-        border-bottom: 1px solid #f0f0f0;
+        gap: 1.25rem;
+        padding: 1rem;
+        border-bottom: 1px dashed #E5E7EB;
+        transition: background 0.3s ease;
+        animation: slideIn 0.6s ease-out;
     }
-    .product img { width:80px; height:auto; border-radius:6px; border:1px solid #eee; }
-    .product-info { flex: 1; }
-    .product-line { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .product-name { color:#333; font-weight:500; }
-    .product-qty { color:#666; margin-top:6px; }
-    .product-price { font-weight:600; color:#333; white-space:nowrap; }
 
-    /* order summary box (placed centered under content) */
+        .product:last-child {
+            border-bottom: none;
+        }
+
+        .product:hover {
+            background: #F3F4F6;
+        }
+
+        .product img {
+            width: 6rem;
+            height: 6rem;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .product-info {
+        flex: 1;
+    }
+
+    .product-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .product-name {
+        font-size: 1.125rem;
+        font-weight: 600; /* Tăng độ đậm */
+        color: #1F2937;
+    }
+
+    .product-qty {
+        font-size: 0.875rem;
+        color: #6B7280;
+        font-weight: 500; /* Tăng độ đậm */
+    }
+
+    .product-price {
+        font-size: 1.125rem;
+        font-weight: 700; /* Tăng độ đậm */
+        color: #1F2937;
+    }
+
     .order-summary {
-        max-width: 320px;
-        margin: 22px 0 0 auto; /* sang phải */
-        border-radius: 8px;
-        padding: 14px;
-        background: #fff8f6;
-        border: 1px solid #f5e8e5;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+        max-width: 40rem;
+        margin-left: auto; /* vẫn căn phải */
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #F9FAFB, #FFFFFF);
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* bóng nhẹ, bỏ border */
+        animation: slideInLeft 0.8s ease-out;
     }
-    .summary-item { display:flex; justify-content:space-between; margin:8px 0; color:#333; }
-    .summary-item.total { font-weight:700; font-size:16px; margin-top:10px; }
-    .total-price { color:#e84c3d; font-size:18px; font-weight:800; }
 
-    /* small screens (optional) */
-   
-    /* --- giữ nguyên CSS của bạn --- */
+    .summary-item {
+        display: flex;
+        justify-content: space-between; /* 2 span ra 2 bên */
+        align-items: center; /* căn giữa theo dòng */
+        font-size: 0.9rem;
+        color: #374151;
+        font-weight: 500;
+        margin-bottom: 0.5rem; /* khoảng cách đều hơn */
+    }
+
+        .summary-item.total {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-top: 0.75rem;
+        }
+
+    .total-price {
+        color: #DC2626;
+        font-size: 1.4rem;
+        font-weight: 800;
+    }
+
+    .dream-element {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.2; /* Giảm độ mờ */
+        filter: blur(1.5rem); /* Giảm hiệu ứng mờ */
+        z-index: 0;
+        animation: dreamFloat 15s ease-in-out infinite;
+    }
+
+    .dream-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), transparent); /* Tăng độ trong suốt */
+        border-radius: 1.5rem;
+        opacity: 0.5;
+        pointer-events: none;
+        animation: gradientFlow 8s infinite;
+    }
+
+    /* Animations */
+    keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    keyframes slideUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    keyframes slideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    }
+
+    keyframes slideInLeft {
+        from
+
+    {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    }
+
+    keyframes float {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    }
+
+    keyframes dreamFloat {
+        0%, 100%
+
+    {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(10px, -10px) rotate(5deg);
+    }
+
+    50% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    75% {
+        transform: translate(-10px, 10px) rotate(-5deg);
+    }
+
+    }
+
+    keyframes gradientShift {
+        0%
+
+    {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+
+    }
+
+    keyframes gradientFlow {
+        0%
+
+    {
+        background-position: 0% 0%;
+    }
+
+    50% {
+        background-position: 100% 100%;
+    }
+
+    100% {
+        background-position: 0% 0%;
+    }
+
+    }
 </style>
 
-<div class="order-container">
+<div class="order-container relative">
+    <!-- Enhanced Dream Elements for background effect -->
+    <div class="dream-element" style="width: 20rem; height: 20rem; background: #FFE4E1; top: -5rem; left: -5rem;"></div>
+    <div class="dream-element" style="width: 15rem; height: 15rem; background: #E6F0FA; bottom: -5rem; right: -5rem;"></div>
+    <div class="dream-overlay"></div>
+
     @foreach (var hoaDon in Model)
     {
         <h2>Mã đơn hàng: @hoaDon.BillID</h2>
 
-        
-            var trangThaiEnum = Enum.Parse<TrangThaiHoaDon>(hoaDon.TrangThai);
-            int activeIndex = 0;
-            for (int i = 0; i < steps.Length; i++)
+        var trangThaiEnum = Enum.Parse<TrangThaiHoaDon>(hoaDon.TrangThai);
+        int activeIndex = 0;
+        for (int i = 0; i < steps.Length; i++)
+        {
+            if (steps[i].Value.Equals(trangThaiEnum))
             {
-                if (steps[i].Value.Equals(trangThaiEnum))
-                {
-                    activeIndex = i;
-                    break;
-                }
+                activeIndex = i;
+                break;
             }
-            var progressPercent = (steps.Length > 1) ? (activeIndex * 100.0 / (steps.Length - 1)) : 0.0;
-        
+        }
+        var progressPercent = (steps.Length > 1) ? (activeIndex * 100.0 / (steps.Length - 1)) : 0.0;
 
-        <!-- progress bar and steps -->
+        <!-- Progress bar and steps -->
         <div class="order-steps">
-            <div class="progress-line" style="width:@progressPercent%;"></div>
+            <div class="progress-line" style="width: @progressPercent%;"></div>
 
             @for (int i = 0; i < steps.Length; i++)
             {
                 var step = steps[i];
                 var isActive = i <= activeIndex ? "active" : "";
                 <div class="step @isActive">
-                    <div class="icon">@step.Icon</div>
+                    <div class="icon" style="background: @(i <= activeIndex ? step.Color : "#D1D5DB");">@step.Icon</div>
                     <div class="name">@step.Name</div>
                 </div>
             }
@@ -177,13 +427,11 @@
             <p>@hoaDon.DiaChi</p>
         </div>
 
-        <h5>Chi tiết sản phẩm</h5>
+        <h5 class="text-xl font-serif font-semibold text-primary-900 mb-6">Chi tiết sản phẩm</h5>
         @foreach (var item in hoaDon.ChiTiet)
         {
             <div class="product">
-                
                 <img src="@Url.Content("~/AnhDoiGiay/" + item.HinhAnh)" alt="@item.TenSanPham" />
-                
                 <div class="product-info">
                     <div class="product-line">
                         <div class="product-name">@item.TenSanPham (@item.MauSac @item.Size)</div>
@@ -208,9 +456,10 @@
                 <span class="total-price">@hoaDon.TongTien.ToString("N0") VNĐ</span>
             </div>
             <div class="summary-item">
-                <span>Phương thức thanh toán</span>
+                <span>Phương thức thanh toán :</span>
                 <span>@hoaDon.PhuongThuc</span>
             </div>
         </div>
+
     }
 </div>

@@ -1,343 +1,478 @@
 ﻿<!DOCTYPE html>
-<html lang="zxx">
-
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Ogani Template">
-    <meta name="keywords" content="Ogani, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ogani | Template</title>
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
-
-    <!-- Css Styles -->
-    <link rel="stylesheet" href="../Layout/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="../Layout/css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="../Layout/css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="../Layout/css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="../Layout/css/jquery-ui.min.css" type="text/css">
-    <link rel="stylesheet" href="../Layout/css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="../Layout/css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="../Layout/css/style.css" type="text/css">
-    
+    <title>PATT SHOES | Cửa Hàng Giày Mộng Mơ</title>
+    <meta name="description" content="Khám phá bộ sưu tập giày thể thao mộng mơ của PATT SHOES">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0F0F0F',
+                        light: '#F8F8F8',
+                        primary: {
+                            DEFAULT: '#1A1A1A',
+                            50: '#FAFAFA',
+                            100: '#F5F5F5',
+                            200: '#EEEEEE',
+                            300: '#E0E0E0',
+                            400: '#BDBDBD',
+                            500: '#9E9E9E',
+                            600: '#757575',
+                            700: '#616161',
+                            800: '#424242',
+                            900: '#1A1A1A',
+                        },
+                        accent: {
+                            DEFAULT: '#FF6B6B',
+                            100: '#FFE8E8',
+                            200: '#FFD1D1',
+                            300: '#FFB9B9',
+                            400: '#FF9292',
+                            500: '#FF6B6B',
+                            600: '#FF3D3D',
+                            700: '#FF0F0F',
+                            800: '#D60000',
+                            900: '#A80000',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1.2s ease-out',
+                        'float': 'float 8s ease-in-out infinite',
+                        'dream-float': 'dreamFloat 12s ease-in-out infinite',
+                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 20s linear infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'touch-pulse': 'touchPulse 0.3s ease-out',
+                        'gradient-flow': 'gradientFlow 5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        dreamFloat: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '25%': { transform: 'translateY(-30px) rotate(5deg)' },
+                            '50%': { transform: 'translateY(-10px) rotate(-5deg)' },
+                            '75%': { transform: 'translateY(-20px) rotate(3deg)' },
+                        },
+                        touchPulse: {
+                            '0%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(255, 107, 107, 0.7)' },
+                            '70%': { transform: 'scale(1.05)', boxShadow: '0 0 0 10px rgba(255, 107, 107, 0)' },
+                            '100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(255, 107, 107, 0)' },
+                        },
+                        gradientFlow: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        li.active > a {
-            color: #7fad39 !important; /* Màu chữ cho trang đang truy cập */
-    font-weight: bold;
-}
+        body {
+            background-color: #F8F8F8;
+            color: #1A1A1A;
+            overflow-x: hidden;
+        }
+
+        .dream-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #FFE8E8 0%, #F8F8F8 50%, #E0F7FA 100%);
+            opacity: 0.3;
+        }
+
+        .dream-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: -4px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background-color: #FF6B6B;
+                transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            }
+
+            .nav-link:hover::after,
+            .nav-link.active::after {
+                width: 100%;
+            }
+
+        .product-card {
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+            .product-card:hover,
+            .product-card:active {
+                transform: translateY(-10px) scale(1.02);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+                animation: touchPulse 0.3s ease-out;
+            }
+
+        .category-card {
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-style: preserve-3d;
+        }
+
+            .category-card:hover,
+            .category-card:active {
+                transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.03);
+                animation: touchPulse 0.3s ease-out;
+            }
+
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .dream-shadow {
+            box-shadow: 0 10px 30px -10px rgba(255, 107, 107, 0.3);
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .dream-1 {
+            width: 300px;
+            height: 300px;
+            background: #FFC1C1;
+            top: 10%;
+            left: 5%;
+            animation: dreamFloat 15s ease-in-out infinite;
+        }
+
+        .dream-2 {
+            width: 200px;
+            height: 200px;
+            background: #C1E3FF;
+            bottom: 15%;
+            right: 10%;
+            animation: dreamFloat 18s ease-in-out infinite reverse;
+        }
+
+        .dream-3 {
+            width: 250px;
+            height: 250px;
+            background: #D1C1FF;
+            top: 40%;
+            right: 20%;
+            animation: dreamFloat 20s ease-in-out infinite 2s;
+        }
+
+        .dream-4 {
+            width: 180px;
+            height: 180px;
+            background: #FFE8C1;
+            bottom: 25%;
+            left: 15%;
+            animation: dreamFloat 16s ease-in-out infinite reverse 3s;
+        }
+
+        .floating-sneaker {
+            position: absolute;
+            animation: dreamFloat 15s ease-in-out infinite;
+            z-index: -1;
+            opacity: 0.2;
+            filter: blur(2px);
+        }
+
+        .dream-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 100%);
+            pointer-events: none;
+            z-index: 100;
+            mix-blend-mode: overlay;
+        }
+
+        .header-gradient {
+            background: linear-gradient(90deg, #FF6B6B, #FF9292, #FFE8E8, #FF9292, #FF6B6B);
+            background-size: 200% 200%;
+            animation: gradientFlow 5s ease-in-out infinite;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+        }
+
+        .header-shadow {
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
+        }
     </style>
 </head>
-
-
-<body>
-    <!-- Page Preloder -->
-    <div id="preloder">
-        <div class="loader"></div>
+<body class="font-sans antialiased relative overflow-x-hidden">
+    <!-- Dream background elements -->
+    <div class="dream-bg"></div>
+    <div class="dream-element dream-1"></div>
+    <div class="dream-element dream-2"></div>
+    <div class="dream-element dream-3"></div>
+    <div class="dream-element dream-4"></div>
+    <!-- Floating sneakers in background -->
+    <img src="https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+         alt="Giày Bay" class="floating-sneaker" style="top:15%; left:5%; animation-delay: 0s;">
+    <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+         alt="Giày Bay" class="floating-sneaker" style="top:25%; right:8%; animation-delay: 2s;">
+    <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+         alt="Giày Bay" class="floating-sneaker" style="bottom:20%; left:10%; animation-delay: 4s;">
+    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
+         alt="Giày Bay" class="floating-sneaker" style="bottom:30%; right:15%; animation-delay: 6s;">
+    <!-- Dream overlay effect -->
+    <div class="dream-overlay"></div>
+    <!-- Preloader -->
+    <div id="preloader" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center transition-opacity duration-1000">
+        <div class="animate-pulse mb-8">
+            <span class="text-4xl font-serif font-bold bg-gradient-to-r from-accent-600 to-accent-400 gradient-text">PATT SHOES</span>
+        </div>
+        <div class="w-48 h-1 bg-gray-200 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-accent-400 to-accent-600 animate-loading-bar"></div>
+        </div>
     </div>
-
-    <!-- Humberger Begin -->
-    <div class="humberger__menu__overlay"></div>
-  @*   <div class="humberger__menu__wrapper">
-        <div class="humberger__menu__logo">
-            <a href="#"><img src="../Layout/img/logo1.jpg" alt=""></a>
-        </div>
-        <div class="humberger__menu__cart">
-            <ul>
-                <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
-            </ul>
-            <div class="header__cart__price">item: <span>$150.00</span></div>
-        </div>
-        <div class="humberger__menu__widget">
-            <div class="header__top__right__language">
-                <img src="../Layout/img/language.png" alt="">
-                <div>English</div>
-                <span class="arrow_carrot-down"></span>
-                <ul>
-                    <li><a href="#">Spanis</a></li>
-                    <li><a href="#">English</a></li>
-                </ul>
-            </div>
-            <div class="header__top__right__auth">
-                <a href="#"><i class="fa fa-user"></i> Login</a>
-            </div>
-        </div>
-        <nav class="humberger__menu__nav mobile-menu">
-            <ul>
-                <li class="active"><a href="./index.html">Home</a></li>
-                <li><a href="./shop-grid.html">Shop</a></li>
-                <li>
-                    <a href="#">Pages</a>
-                    <ul class="header__menu__dropdown">
-                        <li><a href="./shop-details.html">Shop Details</a></li>
-                        <li><a href="./shoping-cart.html">Shoping Cart</a></li>
-                        <li><a href="./checkout.html">Check Out</a></li>
-                        <li><a href="./blog-details.html">Blog Details</a></li>
-                    </ul>
-                </li>
-                <li><a href="./blog.html">Blog</a></li>
-                <li><a href="./contact.html">Contact</a></li>
-            </ul>
-        </nav>
-        <div id="mobile-menu-wrap"></div>
-        <div class="header__top__right__social">
-            <a href="#"><i class="fa fa-facebook"></i></a>
-            <a href="#"><i class="fa fa-twitter"></i></a>
-            <a href="#"><i class="fa fa-linkedin"></i></a>
-            <a href="#"><i class="fa fa-pinterest-p"></i></a>
-        </div>
-        <div class="humberger__menu__contact">
-            <ul>
-                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
-                <li>Free Shipping for all Order of $99</li>
-            </ul>
-        </div>
-    </div> *@
-    <!-- Humberger End -->
-    <!-- Header Section Begin -->
-    <header class="header">
-        <div class="header__top">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6 col-md-6">
-                        <div class="header__top__left">
-                            @* <ul>
-                                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
-                                <li>Free Shipping for all Order of $99</li>
-                            </ul> *@
+    <!-- Enhanced Header -->
+    <header class="fixed w-full bg-white/95 backdrop-blur-lg z-40 header-shadow header-gradient">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between h-24">
+                <!-- Logo -->
+                <a href="/" class="flex items-center group">
+                    <span class="text-4xl md:text-5xl font-serif font-extrabold bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600 gradient-text transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-lg">PATT SHOES</span>
+                    <div class="absolute w-32 h-32 bg-accent-200/30 rounded-full blur-2xl -z-10 animate-pulse-slow group-hover:scale-110 transition-all duration-500"></div>
+                </a>
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center space-x-12">
+                    @{
+                        string currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                        string currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                    }
+                    <a asp-controller="Home" asp-action="Index"
+                       class="nav-link nav-item text-lg font-medium @(currentController == "Home" && currentAction == "Index" ? "active text-accent-600" : "hover:text-accent-600")">
+                        TRANG CHỦ
+                    </a>
+                    <a asp-controller="Shop" asp-action="Index"
+                       class="nav-link nav-item text-lg font-medium @(currentController == "Shop" && currentAction == "Index" ? "active text-accent-600" : "hover:text-accent-600")">
+                        CỬA HÀNG
+                    </a>
+                    <a asp-controller="HoaDon" asp-action="DonHang"
+                       class="nav-link nav-item text-lg font-medium @(currentController == "HoaDon" && currentAction == "DonHang" ? "active text-accent-600" : "hover:text-accent-600")">
+                        ĐƠN HÀNG
+                    </a>
+                    <a asp-controller="HoaDon" asp-action="CheckOut"
+                       class="nav-link nav-item text-lg font-medium @(currentController == "HoaDon" && currentAction == "CheckOut" ? "active text-accent-600" : "hover:text-accent-600")">
+                        LIÊN HỆ
+                    </a>
+                </nav>
+                <!-- Actions -->
+                <div class="flex items-center space-x-8">
+                    <div class="relative group">
+                        <button class="p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
+                            <i class="far fa-heart text-xl text-accent-600"></i>
+                        </button>
+                        <div class="absolute hidden group-hover:block right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 p-4 animate-fade-in border border-primary-100">
+                            <h4 class="font-medium text-primary-800 mb-2">Danh Sách Yêu Thích</h4>
+                            <p class="text-sm text-primary-500">Bộ sưu tập giày mơ ước của bạn</p>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6">
-                        <div class="header__top__right">
-                            @* <div class="header__top__right__social">
-                                <a href="#"><i class="fa fa-facebook"></i></a>
-                                <a href="#"><i class="fa fa-twitter"></i></a>
-                                <a href="#"><i class="fa fa-linkedin"></i></a>
-                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
-                            </div>
-                            <div class="header__top__right__language">
-                                <img src="../Layout/img/language.png" alt="">
-                                <div>English</div>
-                                <span class="arrow_carrot-down"></span>
-                                <ul>
-                                    <li><a href="#">Spanis</a></li>
-                                    <li><a href="#">English</a></li>
-                                </ul>
-                            </div> *@
-                            <div class="header__top__right__auth">
-                                <a href="@Url.Action("Login", "Account")"><i class="fa fa-user"></i> Đăng Nhập</a>
-                            </div>
+                    <div class="relative group">
+                        <button class="p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
+                            <li><a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-bag text-xl text-accent-600"></i></a></li>
+                        </button>
+                        <div class="absolute hidden group-hover:block right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 p-4 animate-fade-in border border-primary-100">
+                            <h4 class="font-medium text-primary-800 mb-2">Giỏ Hàng</h4>
+                            <p class="text-sm text-primary-500">Sản phẩm trong giỏ hàng của bạn</p>
                         </div>
                     </div>
+                    <a href="@Url.Action("Login", "Account")" class="hidden md:inline-flex items-center px-8 py-3 border border-accent-500 rounded-full text-sm font-medium bg-accent-100/50 hover:bg-accent-200 text-accent-700 transition-all duration-300 hover:shadow-md transform hover:scale-105">
+                        <i class="far fa-user mr-2"></i> Đăng Nhập
+                    </a>
+                    <button class="lg:hidden p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
+                        <i class="fas fa-bars text-xl text-accent-600"></i>
+                    </button>
                 </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="header__logo">
-                        <a href="./index.html"><img src="../Layout/img/logo1.jpg" alt=""></a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <nav class="header__menu">
-                        <ul>
-                            @{
-                                string currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-                                string currentAction = ViewContext.RouteData.Values["action"]?.ToString();
-                            }
-                            <li class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">
-                                <a asp-controller="Home" asp-action="Index">Trang chủ</a>
-                            </li>
-                            <li class="@(currentController == "Shop" && currentAction == "Index" ? "active" : "")">
-                                <a asp-controller="Shop" asp-action="Index">Cửa Hàng</a>
-                            </li>
-
-                            <li class="@(currentController == "HoaDon" && currentAction == "DonHang" ? "active" : "")">
-                                <a asp-controller="HoaDon" asp-action="DonHang">Đơn Hàng</a>
-                            </li>
-                            <li class="@(currentController == "HoaDon" && currentAction == "CheckOut" ? "active" : "")">
-                                <a asp-controller="HoaDon" asp-action="CheckOut">Liên Hệ</a>
-                            </li>
-
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-lg-3">
-                    <div class="header__cart">
-                        <ul>
-                     @*        <li><a asp-controller="Home" asp-action="SpYeuThich"><i class="fa fa-heart"></i> <span>1</span></a></li> *@
-                            <li><a asp-controller="Cart" asp-action="Index"><i class="fa fa-shopping-bag"></i> </a></li>
-                        </ul>
-                        <div class="header__cart__price">@* item: <span>$150.00</span> *@</div>
-                    </div>
-                </div>
-            </div>
-            <div class="humberger__open">
-                <i class="fa fa-bars"></i>
             </div>
         </div>
     </header>
-    <!-- Header Section End -->
-    <!-- Hero Section Begin -->
-    <section class="hero hero-normal">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3">
-                    @* <div class="hero__categories">
-                        <div class="hero__categories__all">
-                            <i class="fa fa-bars"></i>
-                            <span>All departments</span>
-                        </div>
-                        <ul>
-                            <li><a href="#">Fresh Meat</a></li>
-                            <li><a href="#">Vegetables</a></li>
-                            <li><a href="#">Fruit & Nut Gifts</a></li>
-                            <li><a href="#">Fresh Berries</a></li>
-                            <li><a href="#">Ocean Foods</a></li>
-                            <li><a href="#">Butter & Eggs</a></li>
-                            <li><a href="#">Fastfood</a></li>
-                            <li><a href="#">Fresh Onion</a></li>
-                            <li><a href="#">Papayaya & Crisps</a></li>
-                            <li><a href="#">Oatmeal</a></li>
-                            <li><a href="#">Fresh Bananas</a></li>
-                        </ul>
-                    </div> *@
-                </div>
-                <div class="col-lg-9">
-                    <div class="hero__search">
-                        <div class="hero__search__form">
-                            <form action="#">
-                                @* <div class="hero__search__categories">
-                                    All Categories
-                                    <span class="arrow_carrot-down"></span>
-                                </div> *@
-                                <input type="text" placeholder="What do yo u need?">
-                                <button type="submit" class="site-btn">Tìm kiếm</button>
-                            </form>
-                        </div>
-                        <div class="hero__search__phone">
-                           @*  <div class="hero__search__phone__icon">
-                                <i class="fa fa-phone"></i>
-                            </div> *@
-                            <div class="hero__search__phone__text">
-                                <h5>0987567544</h5>
-                                <span>Hotline hỗ trợ </span>
-                            </div>
-                        </div>
+
+    @RenderBody()
+
+
+
+
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-20 pb-12 relative overflow-hidden">
+        <div class="dream-element" style="width:350px; height:350px; background:#E8F4FF; bottom:-100px; right:-100px; animation:spin-slow 40s linear infinite;"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <!-- About -->
+                <div>
+                    <a href="/" class="flex items-center mb-8">
+                        <span class="text-3xl font-serif font-bold bg-gradient-to-r from-accent-400 to-accent-600 gradient-text">PATT SHOES</span>
+                    </a>
+                    <p class="text-primary-400 mb-8">Nơi giấc mơ trở thành nghệ thuật có thể mang trên chân. Những đôi giày được tuyển chọn cho tâm hồn giàu trí tưởng tượng.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
                     </div>
+                </div>
+                <!-- Useful Links -->
+                <div>
+                    <h4 class="text-lg font-bold mb-6 uppercase tracking-wider">Liên Kết Hữu Ích</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Về Chúng Tôi</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Về Cửa Hàng</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Mua Sắm An Toàn</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Thông Tin Giao Hàng</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Chính Sách Bảo Mật</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Sơ Đồ Trang Web</a></li>
+                    </ul>
+                </div>
+                <!-- More Links -->
+                <div>
+                    <h4 class="text-lg font-bold mb-6 uppercase tracking-wider">Thêm Thông Tin</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Chúng Tôi Là Ai</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Dịch Vụ Của Chúng Tôi</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Dự Án</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Liên Hệ</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Đổi Mới</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Nhận Xét</a></li>
+                    </ul>
+                </div>
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-lg font-bold mb-6 uppercase tracking-wider">Liên Hệ Với Chúng Tôi</h4>
+                    <address class="not-italic text-primary-400 space-y-3">
+                        <p>60-49 Road 11378 New York</p>
+                        <p>Phone: <a href="tel:+6511188888" class="hover:text-white transition">+65 11.188.888</a></p>
+                        <p>Hotline: <a href="tel:0987567544" class="hover:text-white transition">0987-567-544</a></p>
+                        <p>Email: <a href="mailto:hello@colorlib.com" class="hover:text-white transition">hello@colorlib.com</a></p>
+                    </address>
                 </div>
             </div>
-        </div>
-    </section>
-    <!-- Hero Section End -->
-    <!-- Breadcrumb Section Begin -->
-    <section class="breadcrumb-section set-bg" data-setbg="../Layout/img/anhbannergiay.jpg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <div class="breadcrumb__text">
-                        <h2>Thanh toán</h2>
-                        <div class="breadcrumb__option">
-                            
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Breadcrumb Section End -->
-    <!-- Checkout Section Begin -->
-    <section class="checkout spad">
-        @RenderBody()
-    </section>
-    <!-- Checkout Section End -->
-    <!-- Footer Section Begin -->
-    <footer class="footer spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="footer__about">
-                        <div class="footer__about__logo">
-                            <a href="./index.html"><img src="../Layout/img/logo.png" alt=""></a>
-                        </div>
-                        <ul>
-                            <li>Address: 60-49 Road 11378 New York</li>
-                            <li>Phone: +65 11.188.888</li>
-                            <li>Email: hello@colorlib.com</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
-                    <div class="footer__widget">
-                        <h6>Useful Links</h6>
-                        <ul>
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">About Our Shop</a></li>
-                            <li><a href="#">Secure Shopping</a></li>
-                            <li><a href="#">Delivery infomation</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Our Sitemap</a></li>
-                        </ul>
-                        <ul>
-                            <li><a href="#">Who We Are</a></li>
-                            <li><a href="#">Our Services</a></li>
-                            <li><a href="#">Projects</a></li>
-                            <li><a href="#">Contact</a></li>
-                            <li><a href="#">Innovation</a></li>
-                            <li><a href="#">Testimonials</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-12">
-                    <div class="footer__widget">
-                        <h6>Join Our Newsletter Now</h6>
-                        <p>Get E-mail updates about our latest shop and special offers.</p>
-                        <form action="#">
-                            <input type="text" placeholder="Enter your mail">
-                            <button type="submit" class="site-btn">Subscribe</button>
-                        </form>
-                        <div class="footer__widget__social">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-pinterest"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="footer__copyright">
-                        <div class="footer__copyright__text">
-                            <p>
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            </p>
-                        </div>
-                        <div class="footer__copyright__payment"><img src="../Layout/img/payment-item.png" alt=""></div>
+            <div class="border-t border-primary-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-primary-500 text-sm mb-4 md:mb-0">
+                        &copy; <span id="copyright-year">2025</span> PATT SHOES. Mọi giấc mơ được bảo lưu. | Tạo bởi <a href="https://colorlib.com" target="_blank" class="hover:text-white transition">Colorlib</a>
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <a href="#" class="text-primary-500 hover:text-white text-sm transition">Chính Sách Mộng Mơ</a>
+                        <a href="#" class="text-primary-500 hover:text-white text-sm transition">Điều Khoản Mộng Mơ</a>
+                        <a href="#" class="text-primary-500 hover:text-white text-sm transition">Bảo Mật Mộng Mơ</a>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
-    <!-- Footer Section End -->
-    <!-- Js Plugins -->
-    <script src="../Layout/js/jquery-3.3.1.min.js"></script>
-    <script src="../Layout/js/bootstrap.min.js"></script>
-    <script src="../Layout/js/jquery.nice-select.min.js"></script>
-    <script src="../Layout/js/jquery-ui.min.js"></script>
-    <script src="../Layout/js/jquery.slicknav.js"></script>
-    <script src="../Layout/js/mixitup.min.js"></script>
-    <script src="../Layout/js/owl.carousel.min.js"></script>
-    <script src="../Layout/js/main.js"></script>
-
-
-
+    <!-- Back to top -->
+    <a href="#" class="fixed bottom-8 right-8 w-12 h-12 bg-accent-600 hover:bg-accent-700 rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-300 opacity-0 invisible transform translate-y-4" id="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+    <!-- Scripts -->
+    @RenderSection("Scripts", required: false)
+    <script>
+        // Preloader
+        window.addEventListener('load', function () {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 1000);
+            }, 2000);
+        });
+        // Back to top button
+        const backToTopButton = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+                backToTopButton.classList.add('opacity-100', 'visible', 'translate-y-0');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible', 'translate-y-0');
+                backToTopButton.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        // Mobile menu toggle (placeholder)
+        document.querySelector('.lg\\:hidden').addEventListener('click', function () {
+            console.log('Mobile menu clicked');
+        });
+        // Update copyright year
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+        // Dream effect - create floating elements
+        function createDreamElements() {
+            const colors = ['#FFE8E8', '#E8F4FF', '#E8FFEE', '#F4E8FF'];
+            const container = document.body;
+            for (let i = 0; i < 8; i++) {
+                const element = document.createElement('div');
+                element.className = 'dream-element';
+                const size = Math.random() * 200 + 100;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.background = color;
+                element.style.top = `${Math.random() * 100}%`;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.animation = `dreamFloat ${Math.random() * 20 + 10}s ease-in-out infinite ${Math.random() * 5}s`;
+                container.appendChild(element);
+            }
+        }
+        createDreamElements();
+    </script>
 </body>
-
 </html>
