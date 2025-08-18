@@ -39,7 +39,8 @@ namespace AuthDemo.Controllers
                 var stock = item.ChiTietGiay.SoLuong;
                 if (stock == 0)
                 {
-                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã hết hàng.");
+                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã hết hàng, nên đã bị xóa khỏi giỏ hàng");
+                    _context.ChiTietGioHangs.Remove(item);
                 }
                 else if (item.SoLuong > stock)
                 {
