@@ -13,10 +13,17 @@ namespace AuthDemo.Areas.Admin.Controllers
             _chatLieuService = chatLieuService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = _chatLieuService.GetAll();
-            return View(list);
+            var response = await _chatLieuService.GetAll();
+            // nếu lấy thất bại thì trả về danh sách rỗng
+            if (!response.Success)
+            {
+                return View(new List<KichThuoc>());
+            }
+
+            // View nhận đúng IEnumerable<KichThuoc>
+            return View(response.Data);
         }
 
         [HttpGet]
@@ -60,4 +67,4 @@ namespace AuthDemo.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
     }
-} 
+}
