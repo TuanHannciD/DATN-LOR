@@ -10,6 +10,8 @@
         public DateTime ?NgayTao { get; set; }
         public decimal TongTien { get; set; }
         public string PhuongThuc { get; set; }
+
+        
         public List<ChiTietHoaDonKHVM> ChiTiet { get; set; }
         public List<HoaDon> HoaDon { get; set; }
     }
