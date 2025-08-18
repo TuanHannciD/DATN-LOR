@@ -392,7 +392,7 @@
 
     @foreach (var hoaDon in Model)
     {
-        <h2>Mã đơn hàng: @hoaDon.BillID</h2>
+        <h5>Mã đơn hàng: @hoaDon.BillID </h5>
 
         var trangThaiEnum = Enum.Parse<TrangThaiHoaDon>(hoaDon.TrangThai);
         int activeIndex = 0;
@@ -425,6 +425,11 @@
             <h3>Địa chỉ nhận hàng</h3>
             <p><strong>@hoaDon.HoTen</strong> | @hoaDon.SoDienThoai</p>
             <p>@hoaDon.DiaChi</p>
+            <p>
+                Ngày Đặt : @(hoaDon.NgayTao.HasValue
+            ? hoaDon.NgayTao.Value.ToString("dd/MM/yyyy HH:mm")
+            : "Chưa có")
+            </p>
         </div>
 
         <h5 class="text-xl font-serif font-semibold text-primary-900 mb-6">Chi tiết sản phẩm</h5>
@@ -449,7 +454,7 @@
             </div>
             <div class="summary-item">
                 <span>Phí vận chuyển</span>
-                <span>0 ₫</span>
+                <span>@ViewBag.Ship.ToString("N0") VNĐ</span>
             </div>
             <div class="summary-item total">
                 <span>Thành tiền</span>
