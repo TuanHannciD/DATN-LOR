@@ -202,6 +202,42 @@
             z-index: 100;
             mix-blend-mode: overlay;
         }
+
+        .user-menu {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #333;
+            padding: 5px 10px;
+            display: inline-block;
+        }
+
+        .dropdown {
+            display: none; /* Ẩn mặc định */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #ccc;
+            min-width: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+            .dropdown a {
+                display: block;
+                padding: 8px 12px;
+                text-decoration: none;
+                color: #333;
+            }
+
+                .dropdown a:hover {
+                    background: #f2f2f2;
+                }
     </style>
 </head>
 <body class="font-sans antialiased relative overflow-x-hidden">
@@ -283,9 +319,48 @@
                             <p class="text-sm text-primary-500">Sản phẩm trong giỏ hàng của bạn</p>
                         </div>
                     </div>
-                    <a href="@Url.Action("Login", "Account")" class="hidden md:inline-flex items-center px-8 py-3 border border-accent-500 rounded-full text-sm font-medium bg-accent-100/50 hover:bg-accent-200 text-accent-700 transition-all duration-300 hover:shadow-md transform hover:scale-105">
-                        <i class="far fa-user mr-2"></i> Đăng Nhập
-                    </a>
+                    <div>
+                        @{
+                            var tenDangNhap = Context.Session.GetString("TenDangNhap");
+                        }
+
+                        @if (!string.IsNullOrEmpty(tenDangNhap))
+                        {
+                            <!-- Đã đăng nhập -->
+                            <div class="user-menu" id="userMenu">
+                                <span class="user-name" id="userName">
+                                    <i class="fa fa-user"></i> @tenDangNhap
+                                </span>
+                                <div class="dropdown" id="dropdownMenu">
+                                    <a asp-controller="Account" asp-action="UserProfile">Thông tin người dùng</a>
+                                    <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                                </div>
+                            </div>
+
+                            <script>
+                                const userName = document.getElementById("userName");
+                                const dropdown = document.getElementById("dropdownMenu");
+
+                                userName.addEventListener("click", function (e) {
+                                    e.stopPropagation(); // chặn click lan ra ngoài
+                                    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+                                });
+
+                                // Click ra ngoài thì ẩn menu
+                                document.addEventListener("click", function () {
+                                    dropdown.style.display = "none";
+                                });
+                            </script>
+
+                        }
+                        else
+                        {
+                            <!-- Chưa đăng nhập -->
+                            <a href="@Url.Action("Login", "Account")" class="hidden md:inline-flex items-center px-8 py-3 border border-accent-500 rounded-full text-sm font-medium bg-accent-100/50 hover:bg-accent-200 text-accent-700 transition-all duration-300 hover:shadow-md transform hover:scale-105">
+                                <i class="far fa-user mr-2"></i> Đăng Nhập
+                            </a>
+                        }
+                    </div>
                     <button class="lg:hidden p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
                         <i class="fas fa-bars text-xl text-accent-600"></i>
                     </button>

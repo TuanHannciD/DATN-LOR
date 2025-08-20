@@ -61,7 +61,7 @@ namespace Controllers
                 if (stock == 0)
                 {
                     warnings.Add($"Sản phẩm '{item.ChiTietGiay.Giay.TenGiay}' đã hết hàng và sẽ không thể đặt hàng.");
-                    item.SoLuong = 0;
+                    
                     hasInvalid = true;
                 }
                 else if (requestedQty > stock)
@@ -120,9 +120,10 @@ namespace Controllers
                 var requestedQty = quantities[i];
                 var product = cartItems.FirstOrDefault(c => c.ShoeDetailID == id);
 
-                if (product == null || product.ChiTietGiay.SoLuong == 0)
+                if (product == null || product.ChiTietGiay.SoLuong == 0 || product.ChiTietGiay.IsDelete == true)
                 {
-                    warnings.Add($"Sản phẩm '{product?.ChiTietGiay?.Giay?.TenGiay}' đã hết hàng và không thể đặt.");
+                    warnings.Add($"Sản phẩm '{product?.ChiTietGiay?.Giay?.TenGiay}' đã hết hàng và không thể đặt hoặc đã ngừng kinh doanh.");
+                    
                     hasInvalid = true;
                     continue;
                 }
@@ -134,6 +135,7 @@ namespace Controllers
                     _context.SaveChanges(); // cập nhật lại số lượng trong giỏ
                     hasInvalid = true;
                 }
+                
                 if (requestedQty <= product.ChiTietGiay.SoLuong)
                 {
 

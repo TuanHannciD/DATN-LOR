@@ -77,6 +77,7 @@ namespace AuthDemo.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTrangThai(Guid HoaDonID)
         {
+
             var result = await _hoaDonService.UpdateTrangThai(HoaDonID);
             if (!result.Success)
             {

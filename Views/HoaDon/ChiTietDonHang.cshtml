@@ -440,7 +440,7 @@
                 <div class="product-info">
                     <div class="product-line">
                         <div class="product-name">@item.TenSanPham (@item.MauSac @item.Size)</div>
-                        <div class="product-price">@item.DonGia.ToString("N0") VNĐ</div>
+                        <div class="product-price">@item.DonGia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</div>
                     </div>
                     <div class="product-qty">x @item.SoLuong</div>
                 </div>
@@ -450,15 +450,15 @@
         <div class="order-summary">
             <div class="summary-item">
                 <span>Tổng tiền hàng</span>
-                <span>@hoaDon.TongTien.ToString("N0") VNĐ</span>
+                <span>@hoaDon.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</span>
             </div>
             <div class="summary-item">
                 <span>Phí vận chuyển</span>
-                <span>@ViewBag.Ship.ToString("N0") VNĐ</span>
+                <span>@ViewBag.Ship.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</span>>
             </div>
             <div class="summary-item total">
                 <span>Thành tiền</span>
-                <span class="total-price">@hoaDon.TongTien.ToString("N0") VNĐ</span>
+                <span class="total-price">@hoaDon.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</span>
             </div>
             <div class="summary-item">
                 <span>Phương thức thanh toán :</span>

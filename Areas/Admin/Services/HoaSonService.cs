@@ -47,6 +47,7 @@ namespace AuthDemo.Areas.Admin.Services
                 NguoiCapNhat = x.NguoiCapNhat ?? "",
                 NgayCapNhat = x.NgayCapNhat,
                 TenKhachHang = x.NguoiDung.HoTen,
+                DaThanhToan = x.DaThanhToan,
                 SoDienThoai = x.NguoiDung.SoDienThoai,
                 Email = x.NguoiDung.Email,
                 DiaChi = x.NguoiDung != null && x.NguoiDung.DiaChis != null && x.NguoiDung.DiaChis.Any()
@@ -247,12 +248,12 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 return Result<string>.Fail("Hóa đơn đã bị hủy, không thể cập nhật trạng thái thanh toán.");
             }
-            if (hoaDon.TrangThai == TrangThaiHoaDon.DaThanhToan)
-            {
-                return Result<string>.Fail("Hóa đơn đã được thanh toán trước đó.");
-            }
-            hoaDon.TrangThai = TrangThaiHoaDon.DaThanhToan;
-            hoaDon.DaThanhToan = true;
+            //if (hoaDon.TrangThai == TrangThaiHoaDon.DaThanhToan)
+            //{
+            //    return Result<string>.Fail("Hóa đơn đã được thanh toán trước đó.");
+            //}
+            //hoaDon.TrangThai = TrangThaiHoaDon.DaThanhToan;
+            //hoaDon.DaThanhToan = true;
             await _db.SaveChangesAsync();
 
             return Result<string>.Success("Cập nhật trạng thái thanh toán thành công.");
@@ -261,7 +262,8 @@ namespace AuthDemo.Areas.Admin.Services
         public async Task<ApiResponse<UpdateTrangThaiResponse>> UpdateTrangThai(Guid HoaDonID)
         {
             var hoaDon = _db.HoaDons.Find(HoaDonID);
-            if (hoaDon == null)
+            
+                if (hoaDon == null)
             {
                 return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Null", "Không tìm thấy hóa đơn");
             }
@@ -271,7 +273,34 @@ namespace AuthDemo.Areas.Admin.Services
 
             if (currentStatus == TrangThaiHoaDon.DaGiao || currentStatus == TrangThaiHoaDon.DaHuy)
             {
-                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn đã được thanh toán hoặc ở trạng thái cuối.");
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn đã được giao hoặc ở trạng thái cuối.");
+            }
+            if (currentStatus == TrangThaiHoaDon.DangGiaoHang)
+            {
+                hoaDon.DaThanhToan = true;
+                _db.SaveChanges();
+            }
+            var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == HoaDonID).ToList();
+            if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan)
+            {
+                foreach (var ct in hdct)
+                {
+                    // Lấy chi tiết giày trong kho theo ShoeDetailID
+                    var giay = _db.ChiTietGiays.FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
+
+                    if (giay != null)
+                    {
+                        // Trừ số lượng tồn kho
+                        giay.SoLuong -= ct.SoLuong;
+
+                        if (giay.SoLuong < 0)
+                        {
+                            giay.SoLuong = 0; // tránh âm
+                        }
+                    }
+                }
+
+                _db.SaveChanges();
             }
 
             hoaDon.TrangThai = (TrangThaiHoaDon)nextStatus;
@@ -317,6 +346,7 @@ namespace AuthDemo.Areas.Admin.Services
         {
             public Guid Id { get; set; }
             public TrangThaiHoaDon NewStatus { get; set; }
+             
             public string NewStatusDisplay { get; set; }
         }
 

@@ -46,7 +46,7 @@
             </a>
             <div class="p-6">
                 <h3 class="text-xl font-serif font-semibold mb-2">@product.TenGiay</h3>
-                <p class="text-primary-600 mb-4">@String.Format("{0:C}", product.GiaThapNhat)</p>
+                <p class="text-primary-600 mb-4"> @product.GiaThapNhat.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</p>
                 <div class="flex justify-between items-center">
                     <a href="@Url.Action("ShopDetails", "Home", new { id = product.ShoeID })" class="text-accent-600 hover:text-accent-700 font-medium">
                         Xem Chi Tiết <i class="fas fa-arrow-right ml-2"></i>
