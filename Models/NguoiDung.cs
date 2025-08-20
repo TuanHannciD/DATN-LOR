@@ -30,6 +30,6 @@ namespace AuthDemo.Models
         public ICollection<GioHang>? GioHangs { get; set; } // nullable
         public ICollection<HoaDon>? HoaDons { get; set; } // nullable
         public ICollection<LichSuHoaDon>? LichSuHoaDons { get; set; } // nullable
-        public ICollection<VaiTroNguoiDung>VaiTroNguoiDungs { get; set; } // nullable
+        public ICollection<VaiTroNguoiDung>? VaiTroNguoiDungs { get; set; } // nullable
     }
 } 

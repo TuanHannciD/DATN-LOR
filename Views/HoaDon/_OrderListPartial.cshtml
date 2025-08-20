@@ -13,7 +13,7 @@
 
     <div class="order-card">
         <div class="order-header d-flex justify-content-between">
-            <span>Mã đơn: @hoaDon.BillID |</span>
+            @* <span>Mã đơn: @hoaDon.BillID |</span> *@
             <span class="badge bg-info text-dark"> @hoaDon.TrangThai </span>
         </div>
 
@@ -54,11 +54,11 @@
 
                 <div style="width: 30%; text-align: right;">
 
-                    <div>@item.DonGia.ToString("N0") VNĐ</div>
+                    <div>@item.DonGia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</div>
                 </div>
             </div>
         }
-        <div class="text-end px-3 py-2"><strong>Tổng tiền:</strong> @hoaDon.TongTien.ToString("N0") VNĐ</div>
+        <div class="text-end px-3 py-2"><strong>Tổng tiền:</strong> @hoaDon.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</div>
     </div>
 }
 

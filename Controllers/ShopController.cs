@@ -25,6 +25,7 @@ namespace AuthDemo.Controllers
 
             var products = _context.Giays
                 .Where(g => g.ChiTietGiays.Any())
+                //.Where(g => g.TrangThai == 0)
                 .Select(g => new ProductViewModel
                 {
                     ShoeID = g.ShoeID,

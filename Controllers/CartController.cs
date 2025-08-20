@@ -37,11 +37,20 @@ namespace AuthDemo.Controllers
             foreach (var item in cartItems)
             {
                 var stock = item.ChiTietGiay.SoLuong;
+                var trangthai = item.ChiTietGiay.Giay.TrangThai;
+                //if (trangthai != 0)
+                //{
+                //    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay}  đã ngừng kinh doanh, nên đã bị xóa khỏi giỏ hàng");
+                //    _context.ChiTietGioHangs.Remove(item);
+                //}
+
                 if (stock == 0)
                 {
-                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã hết hàng, nên đã bị xóa khỏi giỏ hàng");
-                    _context.ChiTietGioHangs.Remove(item);
+                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã hết hàng");
+                    
+                    
                 }
+
                 else if (item.SoLuong > stock)
                 {
                     item.SoLuong = stock;

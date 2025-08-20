@@ -133,7 +133,7 @@
                     @Model.giay.TenGiay
                 </h3>
                 <div class="product__details__price text-2xl font-semibold text-accent-600 mb-6" id="giaSanPham">
-                    @ViewBag.Gia.ToString("N0") VNĐ
+                    @ViewBag.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ
                 </div>
                 <form id="addToCartForm"
                     class="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-primary-200 space-y-6">
@@ -292,7 +292,7 @@
                         .then(data => {
                             const giaEl = document.getElementById("giaSanPham");
                             giaEl.textContent = data.success ?
-                                data.gia.toLocaleString('vi-VN') + ' vnđ' : 'Không có giá';
+                                data.gia.toLocaleString('vi-VN') + ' Vnđ' : 'Không có giá';
                         });
                 }
 

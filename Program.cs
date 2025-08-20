@@ -3,37 +3,9 @@ using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Areas.Admin.Services;
 using AuthDemo.Models.ViewModels;
-using DotNetEnv;
-using AuthDemo.Models;
-using CloudinaryDotNet;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Load .env
-Env.Load();
-
-// Đọc biến từ ENV
-var cloudName = Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME");
-var apiKey = Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY");
-var apiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET");
-
-if (string.IsNullOrEmpty(cloudName) || string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
-{
-    throw new InvalidOperationException("Biến môi trường Cloudinary bị thiếu!");
-}
-
-var cloudinarySettings = new CloudinarySettings
-{
-    CloudName = cloudName,
-    ApiKey = apiKey,
-    ApiSecret = apiSecret
-};
-
-
-// Đăng ký Cloudinary
-builder.Services.AddSingleton(new Cloudinary(
-    new Account(cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret)
-));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -65,7 +37,10 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10485760; // Giới hạn 10MB cho upload file
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -75,6 +50,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

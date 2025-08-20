@@ -11,6 +11,7 @@ namespace AuthDemo.Models.ViewModels
         public string? NguoiTao { get; set; }
         public DateTime? NgayTao { get; set; }
         public string? NguoiCapNhat { get; set; }
+        public bool DaThanhToan { get; set; } // map với cột bit trong DB
         public DateTime? NgayCapNhat { get; set; }
         public string? TenKhachHang { get; set; }
         public string? SoDienThoai { get; set; }

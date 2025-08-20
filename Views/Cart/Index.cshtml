@@ -134,7 +134,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="p-4 text-primary-900">@item.ChiTietGiay.Gia.ToString("N0") VNĐ</td>
+                                    <td class="p-4 text-primary-900">@item.ChiTietGiay.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</td>
                                     <td class="p-4">
                                         <div class="flex items-center space-x-2">
                                             <button type="button"
@@ -159,7 +159,7 @@
                                             </button>
                                         </div>
                                     </td>
-                                    <td class="p-4 text-primary-900 shoping__cart__total">@tong.ToString("N0") VNĐ</td>
+                                    <td class="p-4 text-primary-900 shoping__cart__total">@tong.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ</td>
                                     <td class="p-4">
                                         <a asp-controller="Cart"
                                            asp-action="RemoveCart"
@@ -221,7 +221,7 @@
                 const qty = qtyInput ? parseInt(qtyInput.value) : 1;
                 total += price * qty;
             });
-            document.getElementById("tong-tien").textContent = total.toLocaleString('vi-VN') + " VNĐ";
+            document.getElementById("tong-tien").textContent = total.toLocaleString('vi-VN') + " Vnđ";
         }
 
         // 3. Prevent form submission if no products are selected
@@ -333,7 +333,7 @@
                         const totalCell = input?.closest('tr')?.querySelector('.shoping__cart__total');
 
                         if (totalCell) {
-                            totalCell.textContent = data.newItemTotal.toLocaleString('vi-VN') + " VNĐ";
+                            totalCell.textContent = data.newItemTotal.toLocaleString('vi-VN') + " Vnđ";
                         }
 
                         updateTotal();

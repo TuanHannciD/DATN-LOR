@@ -116,7 +116,7 @@ namespace AuthDemo.Areas.Admin.Controllers
                         CategoryID = model.CategoryID,
                         SoLuong = model.SoLuong,
                         Gia = model.Gia,
-                        AnhGiays = new List<AnhGiay>()
+                        //AnhGiays = new List<AnhGiay>()
 
                     };
 

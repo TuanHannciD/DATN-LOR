@@ -33,6 +33,7 @@ public class HomeController : Controller
         int pagenumber = page == null || page < 0 ? 1 : page.Value;
 
         var product = _context.Giays
+            //.Where(g => g.TrangThai ==0 )
             .Where(g => g.ChiTietGiays.Any())
     .Select(g => new ProductViewModel
     {
@@ -73,8 +74,7 @@ public class HomeController : Controller
 
 
         var gia = chiTietList.Select(x => x.Gia).ToList();
-        var gianhonhat = chiTietList.Min(x => x.Gia);
-        
+        var gianhonhat = chiTietList.Min(x => x.Gia);      
         var mauSacList = chiTietList.Select(x => x.MauSac).Distinct().ToList();
         var kichCoList = chiTietList.Select(x => x.KichThuoc).Distinct().ToList();
         var thuongHieuList = chiTietList.Select(x => x.ThuongHieu).Distinct().ToList();
