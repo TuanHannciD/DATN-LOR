@@ -27,6 +27,7 @@ import { updateCart } from "./modules/update-cart.js";
 let currentDiscountRow = null;
 
 $(document).ready(function () {
+  console.log("✅ Document ready");
   $("#search-input").on("input", function () {
     var keyword = $(this).val().trim();
     if (keyword.length === 0) {
@@ -55,6 +56,7 @@ $(document).ready(function () {
                         <div class="text-muted">Danh mục: ${sp.danhMuc}</div>
             </button>`;
           });
+
           $("#search-dropdown").html(html).addClass("show");
         } else {
           $("#search-dropdown")
@@ -66,6 +68,17 @@ $(document).ready(function () {
       }
     );
   });
+
+  // Khi click vào 1 sản phẩm trong dropdown
+  $(document).on("click", "button.dropdown-item", function (e) {
+    e.preventDefault(); // chặn link nhảy trang
+
+    let shoeDetailId = $(this).data("id");
+    console.log("Click vào sản phẩm có ID:", shoeDetailId);
+
+    updateCart(shoeDetailId, "add");
+  });
+
   $("#phuongthuc-thanh-toan").select2({
     width: "100%",
     templateResult: function (state) {
@@ -552,19 +565,16 @@ $(document).ready(function () {
           const confirmdone = confirm("Xác nhận là đã thanh toan tiền mặt");
           if (confirmdone) {
             try {
-              const response = await fetch(
-                "/Admin/HoaDon/XacnhanTienMat",
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                  },
-                  body: new URLSearchParams({
-                    confirmdone: confirmdone,
-                    orderId: orderId,
-                  }),
-                }
-              );
+              const response = await fetch("/Admin/HoaDon/XacnhanTienMat", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                  confirmdone: confirmdone,
+                  orderId: orderId,
+                }),
+              });
               const responseText = await response.json();
               showToast(
                 "[FE] ✅ Cập nhật trạng thái thanh toán:" + responseText,
