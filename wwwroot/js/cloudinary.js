@@ -1,35 +1,30 @@
-console.log("Js đang được load");
-document.addEventListener("DOMContentLoaded", () => {
-  const imageUpload = document.getElementById("imageUpload");
-  const imageUrlInput = document.getElementById("ImageUrl");
-  const preview = document.getElementById("previewImage");
+// cloudinaryUpload.js
+console.log("Cloudinary Upload JS loaded");
 
-  if (!imageUpload) return;
+/**
+ * Upload 1 file lên Cloudinary và trả về URL
+ * @param {File} file - File muốn upload
+ * @returns {Promise<string>} - URL ảnh trả về
+ */
+async function uploadToCloudinary(file) {
+  if (!file) throw new Error("File không hợp lệ");
 
-  imageUpload.addEventListener("change", async function () {
-    const file = this.files[0];
-    if (!file) return;
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", UPLOAD_PRESET);
 
-    let formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", UPLOAD_PRESET);
-
-    try {
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const data = await res.json();
-
-      imageUrlInput.value = data.secure_url;
-      preview.src = data.secure_url;
-      preview.classList.remove("d-none");
-    } catch (err) {
-      alert("Upload ảnh thất bại!");
-      console.error(err);
-    }
-  });
-});
+  try {
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    const data = await res.json();
+    return data.secure_url; // Trả về URL thực
+  } catch (err) {
+    console.error("Upload Cloudinary failed", err);
+    throw err;
+  }
+}

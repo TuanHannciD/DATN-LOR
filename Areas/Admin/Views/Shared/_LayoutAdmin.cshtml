@@ -69,6 +69,10 @@
             if (message) showToast(message, isSuccess);
         });
     </script>
+    <script>
+        const CLOUD_NAME = "@Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME")";
+        const UPLOAD_PRESET = "@Environment.GetEnvironmentVariable("CLOUDINARY_UPLOAD_PRESET")";
+    </script>
 
 </body>
 
