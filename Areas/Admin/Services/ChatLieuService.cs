@@ -42,6 +42,12 @@ namespace AuthDemo.Areas.Admin.Services
         }
         public async Task<ApiResponse<CreateChatLieu>> AddAsync(CreateChatLieu createChatLieu)
         {
+            var name = _db.ChatLieus.Any(c => c.TenChatLieu == createChatLieu.Ten);
+            if (name == true)
+            {
+                return ApiResponse<CreateChatLieu>.FailResponse("error", $"Tên chất liệu {createChatLieu.Ten} đã có rồi. Vui lòng tạo tên khác");
+
+            }
             if (string.IsNullOrWhiteSpace(createChatLieu.Ten))
                 return ApiResponse<CreateChatLieu>.FailResponse("error", "Tên chất liệu không được để trống");
 

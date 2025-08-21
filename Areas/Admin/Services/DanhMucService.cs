@@ -16,6 +16,12 @@ namespace AuthDemo.Areas.Admin.Services
         }
         public async Task<ApiResponse<CreateDanhMuc>> AddAsync(CreateDanhMuc createDanhMuc)
         {
+            var name = _db.DanhMucs.Any(c => c.TenDanhMuc == createDanhMuc.Ten);
+            if (name == true)
+            {
+                return ApiResponse<CreateDanhMuc>.FailResponse("error", $"Tên danh mục {createDanhMuc.Ten} đã có rồi. Vui lòng tạo tên khác");
+
+            }
             if (string.IsNullOrWhiteSpace(createDanhMuc.Ten))
                 return ApiResponse<CreateDanhMuc>.FailResponse("error", "Tên danh mục không được để trống");
 

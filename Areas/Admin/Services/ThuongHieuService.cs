@@ -42,6 +42,12 @@ namespace AuthDemo.Areas.Admin.Services
         }
         public async Task<ApiResponse<CreateHangSanXuat>> AddAsync(CreateHangSanXuat create)
         {
+            var name = _db.ThuongHieus.Any(c => c.TenThuongHieu == create.Ten);
+            if (name == true)
+            {
+                return ApiResponse<CreateHangSanXuat>.FailResponse("error", $"Tên thương hiệu {create.Ten} đã có rồi. Vui lòng tạo tên khác");
+
+            }
             if (string.IsNullOrWhiteSpace(create.Ten))
                 return ApiResponse<CreateHangSanXuat>.FailResponse("error", "Lỗi khi thêm hãng không được bỏ trống");
             // Sinh mã giày từ tên

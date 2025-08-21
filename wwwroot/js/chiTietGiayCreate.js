@@ -56,9 +56,9 @@ $(document).ready(function () {
               $(input).val("");
               $(panel).addClass("d-none");
 
-              alert(res.message); // hoặc dùng toastr
+              showToast(res.message, true); // hoặc dùng toastr
             } else {
-              alert(res.message);
+              showToast(res.message, false);
             }
           },
           error: function (xhr, status, error) {
@@ -91,7 +91,7 @@ $(document).ready(function () {
     "#newMaterial",
     "#MaterialID",
     "/Admin/ChiTietGiay/QuickAdd",
-    (val) => ({TenChatLieu: val})
+    (val) => ({ TenChatLieu: val })
   );
   quickAdd(
     "#btnAddBrand",
@@ -99,7 +99,7 @@ $(document).ready(function () {
     "#newBrand",
     "#BrandID",
     "/Admin/ChiTietGiay/QuickAdd",
-    (val) => ({TenHang: val})
+    (val) => ({ TenHang: val })
   );
   quickAdd(
     "#btnAddCategory",
@@ -107,7 +107,7 @@ $(document).ready(function () {
     "#newCategory",
     "#CategoryID",
     "/Admin/ChiTietGiay/QuickAdd",
-    (val => ({TenDanhMuc: val}))
+    (val) => ({ TenDanhMuc: val })
   );
 
   // =========================

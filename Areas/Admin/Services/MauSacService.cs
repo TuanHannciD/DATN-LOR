@@ -42,6 +42,12 @@ namespace AuthDemo.Areas.Admin.Services
         }
         public async Task<ApiResponse<CreateMauSac>> AddAsync(CreateMauSac create)
         {
+            var name = _db.MauSacs.Any(c => c.TenMau == create.Ten);
+            if (name == true)
+            {
+                return ApiResponse<CreateMauSac>.FailResponse("error", $"Tên màu sắc {create.Ten} đã có rồi. Vui lòng tạo tên khác");
+
+            }
             if (string.IsNullOrWhiteSpace(create.Ten))
                 return ApiResponse<CreateMauSac>.FailResponse("EmptyName", "Tên màu sắc không được để trống");
 
