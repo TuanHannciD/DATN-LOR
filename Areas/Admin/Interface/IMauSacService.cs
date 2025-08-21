@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AuthDemo.Common;
 using AuthDemo.Models;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
 
 namespace AuthDemo.Areas.Admin.Interface
 {
@@ -9,7 +10,7 @@ namespace AuthDemo.Areas.Admin.Interface
     {
         Task<ApiResponse<IEnumerable<MauSac>>> GetAll();
         MauSac? GetById(Guid id);
-        void Add(MauSac entity);
+        Task<ApiResponse<CreateMauSac>> AddAsync(CreateMauSac create);
         void Update(MauSac entity);
         Task<ApiResponse<string>> Delete(Guid id);
     }

@@ -1,91 +1,173 @@
-@model AuthDemo.Models.ViewModels.ChiTietGiayVM.EditVM
+@model AuthDemo.Models.ViewModels.ChiTietGiayVM.CreateVM
+
 @{
     ViewData["Title"] = "Thêm sản phẩm chi tiết";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="mdi mdi-plus"></i> Thêm sản phẩm chi tiết</h4>
-            </div>
-            <div class="card-body">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <form asp-action="Create" asp-controller="ChiTietGiay" asp-area="Admin" method="post">
-                    <div class="form-group">
-                        <label asp-for="ShoeID" class="form-label fw-bold">Sản phẩm</label>
-                        <select asp-for="ShoeID" class="form-control rounded-3" asp-items="ViewBag.GiayList"></select>
-                        <span asp-validation-for="ShoeID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="SizeID" class="form-label fw-bold">Kích thước</label>
-                        <select asp-for="SizeID" class="form-control rounded-3" asp-items="ViewBag.SizeList"></select>
-                        <span asp-validation-for="SizeID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="ColorID" class="form-label fw-bold">Màu sắc</label>
-                        <select asp-for="ColorID" class="form-control rounded-3" asp-items="ViewBag.ColorList"></select>
-                        <span asp-validation-for="ColorID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="MaterialID" class="form-label fw-bold">Chất liệu</label>
-                        <select asp-for="MaterialID" class="form-control rounded-3"
-                            asp-items="ViewBag.MaterialList"></select>
-                        <span asp-validation-for="MaterialID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="BrandID" class="form-label fw-bold">Thương hiệu</label>
-                        <select asp-for="BrandID" class="form-control rounded-3" asp-items="ViewBag.BrandList"></select>
-                        <span asp-validation-for="BrandID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="CategoryID" class="form-label fw-bold">Danh mục</label>
-                        <select asp-for="CategoryID" class="form-control rounded-3"
-                            asp-items="ViewBag.CategoryList"></select>
-                        <span asp-validation-for="CategoryID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="SoLuong" class="form-label fw-bold">Số lượng</label>
-                        <input asp-for="SoLuong" class="form-control rounded-3" type="number" data-validate="required"
-                            data-label="Số lượng" />
-                        <span asp-validation-for="SoLuong" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Gia" class="form-label fw-bold">Giá</label>
-                        <input asp-for="Gia" class="form-control rounded-3" type="number"
-                            data-validate="required|minValue:3" data-label="Giá">
-                        <span asp-validation-for="Gia" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Image" for="" class="form-label fw-bold">Ảnh sản phẩm chi tiết</label>
-                        <input type="file" id="imageUpload" class="form-control rounded-3" accept="image/*" />
-                        <input type="hidden" asp-for="Image" id="ImageUrl" />
-                        <div class="mt-2">
-                            <img id="previewImage" src="" class="img-fluid rounded shadow-sm d-none"
-                                style="max-height: 200px;" />
-                        </div>
-                        <span asp-validation-for="Image" class="text-danger"></span>
 
-                    </div>
-                    <div>
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-success px-4">
-                                <i class="mdi mdi-content-save"></i> Lưu
-                            </button>
-                            <a class="btn btn-secondary px-4"
-                                href="@Url.Action("Index", "ChiTietGiay", new { area = "Admin" })">
-                                <i class="mdi mdi-arrow-left"></i> Quay lại
-                            </a>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-12 col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="mdi mdi-plus"></i> Thêm sản phẩm chi tiết</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-area="Admin">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <div class="row g-3">
+                            <!-- sản phẩm-->
+                            <div class="col-md-6">
+                                <label asp-for="ShoeID" class="form-label fw-bold">Sản phẩm</label>
+                                <div class="d-flex gap-2">
+                                    <select asp-for="ShoeID" class="form-select" asp-items="ViewBag.GiayList"></select>
+                                    <button type="button" id="btnAddShoe" class="btn btn-success mt-2">
+                                        <i class="mdi mdi-plus"></i>
+                                    </button>
+                                </div>
+                                <div id="quickAddShoe" class="mt-2 d-none">
+                                    <input type="text" id="newShoe" class="form-control mb-2"
+                                        placeholder="Nhập sản phẩm mới ...">
+                                    <div class="d-plex gap-2">
+                                        <button type="button" id="saveShoe" class="btn btn-primary btn-sm">Lưu</button>
+                                        <button type="button" id="cancelShoe" class="btn btn-danger btn-sm">Hủy</button>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="ShoeID" class="text-danger"></span>
+                            </div>
+                            <!--Chất liệu-->
+                            <div class="col-md-6">
+                                <label asp-for="MaterialID" class="form-label fw-bold">Chất liệu</label>
+                                <div class="d-flex gap-2">
+                                    <select asp-for="MaterialID" class="form-select "
+                                        asp-items="ViewBag.MaterialList"></select>
+                                    <button type="button" id="btnAddMaterial" class=" btn btn-success mt-2">
+                                        <i class="mdi mdi-plus"></i>
+                                    </button>
+                                </div>
+                                <div id="quickAddMaterial" class="mt-2 d-none">
+                                    <input type="text" id="newMaterial" class="form-control mb-2"
+                                        placeholder="Nhập chất liệu mới ...">
+                                    <div class="d-flex gap-2">
+                                        <button type="button" id="saveMaterial"
+                                            class="btn btn-primary btn-sm">Lưu</button>
+                                        <button type="button" id="cancelMaterial"
+                                            class="btn btn-danger btn-sm">Hủy</button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Thương hiệu -->
+                            <div class="col-md-6">
+                                <label asp-for="BrandID" class="form-label fw-bold">Thương hiệu</label>
+                                <div class="d-flex gap-2">
+                                    <select asp-for="BrandID" class="form-select"
+                                        asp-items="ViewBag.BrandList"></select>
+                                    <button type="button" id="btnAddBrand" class="btn btn-success"><i
+                                            class="mdi mdi-plus"></i></button>
+                                </div>
+                                <div id="quickAddBrand" class="mt-2 d-none">
+                                    <input type="text" id="newBrand" class="form-control mb-2"
+                                        placeholder="Nhập thương hiệu mới" />
+                                    <div class="d-flex gap-2">
+                                        <button type="button" id="saveBrand" class="btn btn-primary btn-sm">Lưu</button>
+                                        <button type="button" id="cancelBrand"
+                                            class="btn btn-danger btn-sm">Hủy</button>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="BrandID" class="text-danger"></span>
+                            </div>
+                            <!-- Danh mục -->
+                            <div class="col-md-6">
+                                <label asp-for="CategoryID" class="form-label fw-bold">Danh mục</label>
+                                <div class="d-flex gap-2">
+                                    <select asp-for="CategoryID" class="form-select"
+                                        asp-items="ViewBag.CategoryList"></select>
+                                    <button type="button" id="btnAddCategory" class="btn btn-success"><i
+                                            class="mdi mdi-plus"></i></button>
+                                </div>
+                                <div id="quickAddCategory" class="mt-2 d-none">
+                                    <input type="text" id="newCategory" class="form-control mb-2"
+                                        placeholder="Nhập danh mục mới" />
+                                    <div class="d-flex gap-2">
+                                        <button type="button" id="saveCategory"
+                                            class="btn btn-primary btn-sm">Lưu</button>
+                                        <button type="button" id="cancelCategory"
+                                            class="btn btn-danger btn-sm">Hủy</button>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="CategoryID" class="text-danger"></span>
+                            </div>
+                            <!-- Số lượng -->
+                            <div class="col-md-6">
+                                <label asp-for="SoLuong" class="form-label fw-bold">Số lượng</label>
+                                <input asp-for="SoLuong" type="number" class="form-control" min="0" />
+                                <span asp-validation-for="SoLuong" class="text-danger"></span>
+                            </div>
+
+                            <!-- Giá -->
+                            <div class="col-md-6">
+                                <label asp-for="Gia" class="form-label fw-bold">Giá</label>
+                                <input asp-for="Gia" type="number" class="form-control" min="0" step="1000" />
+                                <span asp-validation-for="Gia" class="text-danger"></span>
+                            </div>
+
+                            <hr />
+
+                            <!-- Chi tiết giày: Size + Color + Ảnh -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Chi tiết giày (Size + Color + Ảnh)</label>
+                                <div id="chiTietContainer">
+                                    <div class="chiTietRow row g-2 align-items-center mb-2">
+                                        <div class="col-2">
+                                            <select class="form-select sizeSelect " name="SizeID"
+                                                asp-items="ViewBag.SizeList"></select>
+                                        </div>
+                                        <div class="col-2">
+                                            <select class="form-select colorSelect" name="ColorID"
+                                                asp-items="ViewBag.ColorList"></select>
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="file" class="form-control imageInput" accept="image/*" />
+                                            <input type="hidden" class="imageUrls" />
+                                            <div class="previewDiv d-flex gap-2 flex-wrap mt-2"></div>
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="button" class="btn btn-danger removeRow"><i
+                                                    class="mdi mdi-delete"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary mt-2" id="addChiTiet"><i
+                                        class="mdi mdi-plus"></i> Thêm chi tiết</button>
+                            </div>
+
+                            <input type="hidden" name="ChiTietImagesJson" id="ChiTietImagesJson" />
+
+                            <!-- Buttons -->
+                            <div class="d-flex justify-content-center gap-3 mt-4">
+                                <button type="submit" id="saveProduct" class="btn btn-success px-4"><i
+                                        class="mdi mdi-content-save"></i>
+                                    Lưu</button>
+                                <a asp-action="Index" asp-controller="ChiTietGiay" asp-area="Admin"
+                                    class="btn btn-secondary px-4"><i class="mdi mdi-arrow-left"></i> Quay lại</a>
+                            </div>
                         </div>
-                </form>
+                    </form>
+
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Cloudinary -->
 <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
 
-<script>
-    const CLOUD_NAME = "@Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME")";
-    const UPLOAD_PRESET = "@Environment.GetEnvironmentVariable("CLOUDINARY_UPLOAD_PRESET")";
-</script>
 <script src="~/js/cloudinary.js"></script>
+<script src="~/js/chiTietGiayCreate.js"></script>
+
+<!-- Select2 CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

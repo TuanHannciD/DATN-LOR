@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -19,7 +20,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             // nếu lấy thất bại thì trả về danh sách rỗng
             if (!response.Success)
             {
-                return View(new List<KichThuoc>());
+                return View(new List<ChatLieu>());
             }
 
             // View nhận đúng IEnumerable<KichThuoc>
@@ -31,13 +32,13 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ChatLieu model)
+        public async Task<IActionResult> Create(CreateChatLieu model)
         {
-            if (ModelState.IsValid)
-            {
-                _chatLieuService.Add(model);
-                return RedirectToAction("Index");
-            }
+            var response = await _chatLieuService.AddAsync(model);
+            // Lưu message vào TempData
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
+
             return View(model);
         }
 
@@ -61,9 +62,12 @@ namespace AuthDemo.Areas.Admin.Controllers
             return View(model);
         }
 
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            _chatLieuService.Delete(id);
+            var response = await _chatLieuService.Delete(id);
+            // Lưu message vào TempData
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
             return RedirectToAction("Index");
         }
     }

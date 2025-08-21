@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AuthDemo.Common;
 using AuthDemo.Models;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
 
 namespace AuthDemo.Areas.Admin.Interface
 {
@@ -9,7 +10,7 @@ namespace AuthDemo.Areas.Admin.Interface
     {
         Task<ApiResponse<IEnumerable<KichThuoc>>> GetAll();
         KichThuoc? GetById(Guid id);
-        void Add(KichThuoc entity);
+        Task<ApiResponse<CreateKichThuoc>> AddAsync(CreateKichThuoc create);
         void Update(KichThuoc entity);
         Task<ApiResponse<string>> Delete(Guid id);
     }

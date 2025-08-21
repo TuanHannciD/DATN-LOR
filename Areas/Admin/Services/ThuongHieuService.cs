@@ -3,6 +3,7 @@ using AuthDemo.Common;
 using AuthDemo.Data;
 using AuthDemo.Models;
 using Microsoft.EntityFrameworkCore;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -39,17 +40,45 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi lấy thương hiệu theo ID: " + ex.Message, ex);
             }
         }
-        public void Add(ThuongHieu entity)
+        public async Task<ApiResponse<CreateHangSanXuat>> AddAsync(CreateHangSanXuat create)
         {
+            if (string.IsNullOrWhiteSpace(create.Ten))
+                return ApiResponse<CreateHangSanXuat>.FailResponse("error", "Lỗi khi thêm hãng không được bỏ trống");
+            // Sinh mã giày từ tên
+            string[] words = create.Ten.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string baseCode = string.Concat(words.Select(w => char.ToUpper(w[0])));
+            string finalCode = baseCode;
+            int counter = 1;
+
+            while (await _db.ThuongHieus.AnyAsync(g => g.MaThuongHieuCode == finalCode))
+            {
+                counter++;
+                finalCode = baseCode + counter;
+            }
+
+            var entity = new ThuongHieu
+            {
+                TenThuongHieu = create.Ten,
+                MaThuongHieuCode = finalCode,
+            };
+
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
-                _db.ThuongHieus.Add(entity);
-                _db.SaveChanges();
+                await _db.ThuongHieus.AddAsync(entity);
+                await _db.SaveChangesAsync();
+
+                // Trả về thông tin giày mới dưới dạng GiayCreate
+                var result = new CreateHangSanXuat
+                {
+                    Ten = entity.TenThuongHieu
+                    // Nếu muốn, thêm các trường khác mà GiayCreate có
+                };
+
+                return ApiResponse<CreateHangSanXuat>.SuccessResponse(result, "Thêm giày thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi thêm thương hiệu: " + ex.Message, ex);
+                return ApiResponse<CreateHangSanXuat>.FailResponse("AddError", $"Lỗi khi thêm sản phẩm: {ex.Message}");
             }
         }
         public void Update(ThuongHieu entity)

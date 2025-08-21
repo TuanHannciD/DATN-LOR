@@ -4,6 +4,8 @@ using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using AuthDemo.Common;
+using static AuthDemo.Models.ViewModels.GiayVM;
+using AuthDemo.Models.Enums;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -37,19 +39,48 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi lấy sản phẩm theo ID: " + ex.Message, ex);
             }
         }
-        public void Add(Giay entity)
+        public async Task<ApiResponse<GiayCreate>> AddAsync(GiayCreate model)
         {
+            if (string.IsNullOrWhiteSpace(model.TenGiay))
+                return ApiResponse<GiayCreate>.FailResponse("AddError", "Tên Giày không được để trống");
+
+            // Sinh mã giày từ tên
+            string[] words = model.TenGiay.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string baseCode = string.Concat(words.Select(w => char.ToUpper(w[0])));
+            string finalCode = baseCode;
+            int counter = 1;
+
+            // Kiểm tra trùng trong DB và tăng số nếu cần
+            while (await _db.Giays.AnyAsync(g => g.MaGiayCode == finalCode))
+            {
+                counter++;
+                finalCode = baseCode + counter;
+            }
+
+            var entity = new Giay
+            {
+                TenGiay = model.TenGiay,
+                MaGiayCode = finalCode,
+                TrangThai = model.TrangThai ? TrangThai.Conhang : TrangThai.HetHang,
+                MoTa = model.MoTa
+            };
+
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
-                _db.Giays.Add(entity);
-                _db.SaveChanges();
+                await _db.Giays.AddAsync(entity);
+                await _db.SaveChangesAsync();
+                var result = new GiayCreate
+                {
+                    TenGiay = entity.TenGiay
+                };
+                return ApiResponse<GiayCreate>.SuccessResponse(result, "Thêm giày thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi thêm sản phẩm: " + ex.Message, ex);
+                return ApiResponse<GiayCreate>.FailResponse("AddError", $"Lỗi khi thêm sản phẩm: {ex.Message}");
             }
         }
+
         public void Update(Giay entity)
         {
             try

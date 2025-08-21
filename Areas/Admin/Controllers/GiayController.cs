@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using AuthDemo.Helpers;
 using AuthDemo.Models.Enums;
 using System.Threading.Tasks;
+using static AuthDemo.Models.ViewModels.GiayVM;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -67,14 +68,13 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Giay model)
+        public async Task<IActionResult> Create(GiayCreate model)
         {
-            if (ModelState.IsValid)
-            {
-                _sanPhamService.Add(model);
-                return RedirectToAction("Index");
-            }
-            return View(model);
+            var response = await _sanPhamService.AddAsync(model);
+            // Lưu message vào TempData
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
+            return RedirectToAction("Index");
         }
 
         [HttpGet]

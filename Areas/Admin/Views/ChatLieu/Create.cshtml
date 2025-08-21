@@ -1,4 +1,4 @@
-@model AuthDemo.Models.ChatLieu
+@model AuthDemo.Models.ViewModels.VMCHUNG.CreateChatLieu
 @{
     ViewData["Title"] = "Thêm chất liệu";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -9,27 +9,30 @@
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0"><i class="mdi mdi-plus"></i> Thêm chất liệu</h4>
             </div>
-        <div class="card-body"> 
-        <form id="createChatLieuForm" asp-action="Create" asp-controller="ChatLieu" asp-area="Admin" method="post">
-            <div class="form-group">
-                <label asp-for="TenChatLieu" class="form-label fw-bold">Tên chất liệu</label>
-                <!-- data-validate="required" là rule validate -->
-                <input asp-for="TenChatLieu" class="form-control" id="tenChatLieu" data-validate="required|min:3" data-label="Tên chất liệu" placeholder="Nhập tên chất liệu ..."/>
-                <span asp-validation-for="TenChatLieu" class="text-danger"></span>
-                <label asp-for="MaChatLieuCode" class="form-label fw-bold">Mã chất liệu</label>
-                <input asp-for="MaChatLieuCode" class="form-control" id="maChatLieu"data-validate="required|min:3" data-label="Mã chất liệu" placeholder="Nhập mã chất liệu ..."/>
-                <span asp-validation-for="TenChatLieu" class="text-danger"></span>
+            <div class="card-body">
+                <form id="createChatLieuForm" asp-action="Create" asp-controller="ChatLieu" asp-area="Admin"
+                    method="post">
+                    <div class="form-group">
+                        <label asp-for="Ten" class="form-label fw-bold">Tên chất liệu</label>
+                        <!-- data-validate="required" là rule validate -->
+                        <input asp-for="Ten" class="form-control" id="tenChatLieu" data-validate="required|min:3"
+                            data-label="Tên chất liệu" placeholder="Nhập tên chất liệu ..." />
+                        <span asp-validation-for="Ten" class="text-danger"></span>
+                        
+
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="mdi mdi-content-save"></i> Lưu
+                        </button>
+                        <a class="btn btn-secondary px-4"
+                            href="@Url.Action("Index", "ChatLieu", new { area = "Admin" })">
+                            <i class="mdi mdi-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </form>
+
             </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-success px-4">
-                    <i class="mdi mdi-content-save"></i> Lưu
-                </button>
-                <a class="btn btn-secondary px-4" href="@Url.Action("Index", "ChatLieu", new { area = "Admin" })">
-                    <i class="mdi mdi-arrow-left"></i> Quay lại
-                </a>
-            </div>
-        </form>
-        
+        </div>
     </div>
 </div>
-
