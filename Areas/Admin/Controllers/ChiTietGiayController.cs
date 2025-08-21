@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using AuthDemo.Areas.Admin.Services;
 using static AuthDemo.Models.ViewModels.ChiTietGiayVM;
 using System.Threading.Tasks;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
+using static AuthDemo.Models.ViewModels.GiayVM;
+using AuthDemo.Models.Enums;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -15,13 +18,26 @@ namespace AuthDemo.Areas.Admin.Controllers
     public class ChiTietGiayController : Controller
     {
         private readonly IChiTietGiayService _chiTietGiayService;
+        private readonly IGiayService _giayService;
+        private readonly IChatLieuService _chatLieuService;
+        private readonly IThuongHieuService _thuongHieuService;
+        private readonly IDanhMucService _danhMucService;
         private readonly ApplicationDbContext _context;
 
-        public ChiTietGiayController(ApplicationDbContext context, IChiTietGiayService chiTietGiayService)
+        public ChiTietGiayController(ApplicationDbContext context
+        , IChiTietGiayService chiTietGiayService
+        , IGiayService giayService
+        , IChatLieuService chatLieuService
+        , IDanhMucService danhMucService
+        , IThuongHieuService thuongHieuService)
 
         {
             _context = context;
             _chiTietGiayService = chiTietGiayService;
+            _giayService = giayService;
+            _chatLieuService = chatLieuService;
+            _danhMucService = danhMucService;
+            _thuongHieuService = thuongHieuService;
         }
         [HttpGet]
         [Route("Admin/ChiTietGiay/GetSelectLists")]
@@ -95,50 +111,40 @@ namespace AuthDemo.Areas.Admin.Controllers
             ViewBag.CategoryList = new SelectList(_context.DanhMucs, "CategoryID", "TenDanhMuc");
             return View();
         }
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(EditVM model)
+        public async Task<IActionResult> Create([FromBody] CreateVM model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    // Tạo mới đối tượng ChiTietGiay từ EditVM
-                    var entity = new ChiTietGiay
-                    {
-                        ShoeDetailID = Guid.NewGuid(),
-                        ShoeID = model.ShoeID,
-                        SizeID = model.SizeID,
-                        ColorID = model.ColorID,
-                        MaterialID = model.MaterialID,
-                        BrandID = model.BrandID,
-                        CategoryID = model.CategoryID,
-                        SoLuong = model.SoLuong,
-                        Gia = model.Gia,
-                        AnhGiays = new List<AnhGiay>()
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
 
-                    };
-
-
-                    _context.ChiTietGiays.Add(entity);
-                    _context.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi thêm chi tiết giày: " + ex.Message);
-                }
+                return Json(new { success = false, errors });
             }
-            // Nạp lại các ViewBag để tránh lỗi khi reload form
+
+            var response = await _chiTietGiayService.Add(model);
+
+            if (!response.Success)
+            {
+                return Json(new { success = false, message = response.Message });
+            }
+
+            return Json(new { success = true, message = response.Message });
+        }
+
+        // Tách hàm load SelectList cho gọn
+        private void LoadSelectLists(CreateVM model)
+        {
             ViewBag.GiayList = new SelectList(_context.Giays, "ShoeID", "TenGiay", model.ShoeID);
-            ViewBag.SizeList = new SelectList(_context.KichThuocs, "SizeID", "TenKichThuoc", model.SizeID);
-            ViewBag.ColorList = new SelectList(_context.MauSacs, "ColorID", "TenMau", model.ColorID);
+            ViewBag.SizeList = new SelectList(_context.KichThuocs, "SizeID", "TenKichThuoc", model.SizeIDs);
+            ViewBag.ColorList = new SelectList(_context.MauSacs, "ColorID", "TenMau", model.ColorIDs);
             ViewBag.MaterialList = new SelectList(_context.ChatLieus, "MaterialID", "TenChatLieu", model.MaterialID);
             ViewBag.BrandList = new SelectList(_context.ThuongHieus, "BrandID", "TenThuongHieu", model.BrandID);
             ViewBag.CategoryList = new SelectList(_context.DanhMucs, "CategoryID", "TenDanhMuc", model.CategoryID);
-            return View(model);
         }
+
 
         [HttpGet]
         public IActionResult GetById(Guid id)
@@ -202,6 +208,71 @@ namespace AuthDemo.Areas.Admin.Controllers
 
             return RedirectToAction("Index"); // hoặc về trang hiện tại
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> QuickAdd([FromBody] QuickAddVM quick)
+        {
+            if (quick.TenChatLieu == null && quick.TenDanhMuc == null && quick.TenGiay == null && quick.TenHang == null)
+                return Json(new { success = false, message = "Vui lòng nhập thông tin cần thêm" });
+
+            //  Thêm chất liệu
+            if (!string.IsNullOrEmpty(quick.TenChatLieu))
+            {
+                var createVM = new CreateChatLieu { Ten = quick.TenChatLieu };
+                var result = await _chatLieuService.AddAsync(createVM);
+
+                return Json(new
+                {
+                    success = result.Success,
+                    message = result.Message,
+                    data = result.Data
+                });
+            }
+            // Thêm danh mục
+            if (!string.IsNullOrEmpty(quick.TenDanhMuc))
+            {
+                var createVM = new CreateDanhMuc { Ten = quick.TenDanhMuc, MoTa = "Tạo nhanh" };
+                var result = await _danhMucService.AddAsync(createVM);
+
+                return Json(new
+                {
+                    success = result.Success,
+                    message = result.Message,
+                    data = result.Data
+                });
+            }
+            //  Thêm hãng
+            if (!string.IsNullOrEmpty(quick.TenHang))
+            {
+                var createVM = new CreateHangSanXuat { Ten = quick.TenHang };
+                var result = await _thuongHieuService.AddAsync(createVM);
+
+                return Json(new
+                {
+                    success = result.Success,
+                    message = result.Message,
+                    data = result.Data
+                });
+            }
+            // Thêm giày
+            if (!string.IsNullOrEmpty(quick.TenGiay))
+            {
+                var createVM = new GiayCreate { TenGiay = quick.TenGiay, MoTa = "Thêm nhanh", TrangThai = true };
+                var result = await _giayService.AddAsync(createVM);
+
+                return Json(new
+                {
+                    success = result.Success,
+                    message = result.Message,
+                    data = result.Data
+                });
+            }
+
+
+            // TODO: Tương tự cho Giày, Hãng, DanhMục
+            return Json(new { success = false, message = "Loại dữ liệu chưa được hỗ trợ" });
+        }
+
     }
 
 }
