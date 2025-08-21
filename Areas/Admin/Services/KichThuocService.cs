@@ -3,6 +3,7 @@ using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Common;
 using Microsoft.EntityFrameworkCore;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -39,17 +40,45 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi lấy kích thước theo ID: " + ex.Message, ex);
             }
         }
-        public void Add(KichThuoc entity)
+        public async Task<ApiResponse<CreateKichThuoc>> AddAsync(CreateKichThuoc create)
         {
+            if (string.IsNullOrWhiteSpace(create.Ten))
+                return ApiResponse<CreateKichThuoc>.FailResponse("EmptyName", "Tên kích thước không được để trống");
+
+            // Sinh mã giày từ tên
+            string[] words = create.Ten.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string baseCode = string.Concat(words.Select(w => char.ToUpper(w[0])));
+            string finalCode = baseCode;
+            int counter = 1;
+
+            while (await _db.KichThuocs.AnyAsync(g => g.MaKichThuocCode == finalCode))
+            {
+                counter++;
+                finalCode = baseCode + counter;
+            }
+
+            var entity = new KichThuoc
+            {
+                TenKichThuoc = create.Ten,
+                MaKichThuocCode = finalCode,
+            };
+
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
-                _db.KichThuocs.Add(entity);
-                _db.SaveChanges();
+                await _db.KichThuocs.AddAsync(entity);
+                await _db.SaveChangesAsync();
+
+
+                var result = new CreateKichThuoc
+                {
+                    Ten = entity.TenKichThuoc
+                };
+
+                return ApiResponse<CreateKichThuoc>.SuccessResponse(result, "Thêm kích thước thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi thêm kích thước: " + ex.Message, ex);
+                return ApiResponse<CreateKichThuoc>.FailResponse("AddError", $"Lỗi khi thêm kích thước: {ex.Message}");
             }
         }
         public void Update(KichThuoc entity)

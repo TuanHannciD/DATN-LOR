@@ -5,6 +5,7 @@ using AuthDemo.Models.ViewModels;
 using static AuthDemo.Models.ViewModels.ChiTietGiayVM;
 using AuthDemo.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -117,30 +118,113 @@ namespace AuthDemo.Areas.Admin.Services
             }
         }
 
-        public ApiResponse<EditVM> Add(EditVM editVM)
+        public async Task<ApiResponse<CreateVM>> Add([FromBody] CreateVM createVM)
         {
-            throw new NotImplementedException();
-            // if (editVM == null)
-            // {
-            //     return ApiResponse<EditVM>.FailResponse("Entity_null", "Lỗi dữ liệu gửi đến server null");
-            // }
-            // if (editVM.SoLuong < 0)
-            // {
-            //     return ApiResponse<EditVM>.FailResponse("Quantity_Exceeded", "Số lượng không được bé hơn 0");
-            // }
-            // if (editVM.Gia < 1000)
-            // {
-            //     return ApiResponse<EditVM>.FailResponse("Price_Fail", "Giá phải lớn hơn 100");
-            // }
-            // var entity = new EditVM
-            // {
-            //     ShoeDetailID = editVM.ShoeDetailID,
-            //     BrandID = editVM.BrandID,
-            //     CategoryID = editVM.CategoryID,
-            //     ColorID = editVM.ColorID,
-            //     Gia = editVM.Gia,
+            // Validation cơ bản
+            if (createVM == null)
+                return ApiResponse<CreateVM>.FailResponse("Entity_Null", "Dữ liệu gửi đến server null");
 
-            // };
+            if (createVM.ShoeID == Guid.Empty)
+                return ApiResponse<CreateVM>.FailResponse("ShoeID_Invalid", "ShoeID không hợp lệ");
+
+            if (createVM.MaterialID == Guid.Empty)
+                return ApiResponse<CreateVM>.FailResponse("MaterialID_Invalid", "Chất liệu không hợp lệ");
+
+            if (createVM.BrandID == Guid.Empty)
+                return ApiResponse<CreateVM>.FailResponse("BrandID_Invalid", "Thương hiệu không hợp lệ");
+
+            if (createVM.CategoryID == Guid.Empty)
+                return ApiResponse<CreateVM>.FailResponse("CategoryID_Invalid", "Danh mục không hợp lệ");
+
+            if (createVM.ChiTietImages == null || !createVM.ChiTietImages.Any())
+                return ApiResponse<CreateVM>.FailResponse("ChiTietImages_Empty", "Chưa chọn size-color hoặc ảnh");
+
+            if (createVM.SoLuong <= 0)
+                return ApiResponse<CreateVM>.FailResponse("Quantity_Invalid", "Số lượng phải lớn hơn 0");
+
+            if (createVM.Gia < 1000)
+                return ApiResponse<CreateVM>.FailResponse("Price_Invalid", "Giá phải lớn hơn 1000");
+
+            //Lấy chi tiết giày đã tồn tại
+            var existingDetails = await _db.ChiTietGiays
+                .Include(d => d.ThuongHieu)  // để lấy tên thương hiệu
+                .Include(d => d.DanhMuc)     // để lấy tên danh mục
+                .Include(d => d.ChatLieu)    // để lấy tên chất liệu
+                .Where(ct => ct.ShoeID == createVM.ShoeID)
+                .ToListAsync();
+
+            foreach (var detail in existingDetails)
+            {
+                if (detail.BrandID != createVM.BrandID)
+                    return ApiResponse<CreateVM>.FailResponse(
+                        "Brand_Mismatch",
+                        $"Thương hiệu không khớp với chi tiết giày đã tồn tại (Thương hiệu hiện tại: {detail.ThuongHieu?.TenThuongHieu ?? "Không rõ"})"
+                    );
+
+                if (detail.CategoryID != createVM.CategoryID)
+                    return ApiResponse<CreateVM>.FailResponse(
+                        "Category_Mismatch",
+                        $"Danh mục không khớp với chi tiết giày đã tồn tại (Danh mục hiện tại: {detail.DanhMuc?.TenDanhMuc ?? "Không rõ"})"
+                    );
+
+                if (detail.MaterialID != createVM.MaterialID)
+                    return ApiResponse<CreateVM>.FailResponse(
+                        "Material_Mismatch",
+                        $"Chất liệu không khớp với chi tiết giày đã tồn tại (Chất liệu hiện tại: {detail.ChatLieu?.TenChatLieu ?? "Không rõ"})"
+                    );
+            }
+
+            // Tạo danh sách chi tiết và ảnh
+            var chiTietList = new List<ChiTietGiay>();
+            var anhGiayList = new List<AnhGiay>();
+
+            foreach (var ct in createVM.ChiTietImages)
+            {
+                var chiTiet = new ChiTietGiay
+                {
+                    ShoeDetailID = Guid.NewGuid(),
+                    ShoeID = createVM.ShoeID,
+                    SizeID = ct.SizeID,
+                    ColorID = ct.ColorID,
+                    SoLuong = createVM.SoLuong,
+                    Gia = createVM.Gia,
+                    MaterialID = createVM.MaterialID,
+                    BrandID = createVM.BrandID,
+                    CategoryID = createVM.CategoryID
+                };
+
+                chiTietList.Add(chiTiet);
+
+                if (ct.Images != null && ct.Images.Any())
+                {
+                    anhGiayList.AddRange(ct.Images.Select(url => new AnhGiay
+                    {
+                        ImageShoeID = Guid.NewGuid(),
+                        ShoeDetailID = chiTiet.ShoeDetailID,
+                        DuongDanAnh = url
+                    }));
+                }
+            }
+
+            //Transaction + SaveChanges
+            using var transaction = await _db.Database.BeginTransactionAsync();
+            try
+            {
+                _db.ChiTietGiays.AddRange(chiTietList);
+                _db.AnhGiays.AddRange(anhGiayList);
+
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ApiResponse<CreateVM>.SuccessResponse(createVM, "Thêm/Cập nhật chi tiết giày và ảnh thành công");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return ApiResponse<CreateVM>.FailResponse("Exception", $"Có lỗi khi thêm/cập nhật chi tiết giày: {ex.Message}");
+            }
         }
+
     }
 }
+

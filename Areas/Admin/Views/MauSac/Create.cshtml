@@ -1,4 +1,4 @@
-@model AuthDemo.Models.MauSac
+@model AuthDemo.Models.ViewModels.VMCHUNG.CreateMauSac
 @{
     ViewData["Title"] = "Thêm màu sắc";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -12,12 +12,10 @@
             <div class="card-body">
                 <form asp-action="Create" asp-controller="MauSac" asp-area="Admin" method="post">
                     <div class="form-group">
-                        <label asp-for="TenMau" class="form-label fw-bold">Tên màu sắc</label>
-                        <input asp-for="TenMau" class="form-control rounded-3" data-validate="required|min:2" data-label="Tên màu sắc" placeholder="Nhập tên màu sắc..." />
-                        <span asp-validation-for="TenMau" class="text-danger"></span>
-                        <label asp-for="MaMau" class="form-label fw-bold">Mã màu sắc</label>
-                        <input asp-for="MaMau" class="form-control rounded-3" data-validate="required|min:2" data-label="Mã màu sắc" placeholder="Nhập mã màu sắc..." />
-                        <span asp-validation-for="TenMau" class="text-danger"></span>
+                        <label asp-for="Ten" class="form-label fw-bold">Tên màu sắc</label>
+                        <input asp-for="Ten" class="form-control rounded-3" data-validate="required|min:2"
+                            data-label="Tên màu sắc" placeholder="Nhập tên màu sắc..." />
+                        <span asp-validation-for="Ten" class="text-danger"></span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-success px-4">

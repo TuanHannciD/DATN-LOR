@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -31,13 +32,11 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ThuongHieu model)
+        public async Task<IActionResult> Create(CreateHangSanXuat model)
         {
-            if (ModelState.IsValid)
-            {
-                _thuongHieuService.Add(model);
-                return RedirectToAction("Index");
-            }
+            var response = await _thuongHieuService.AddAsync(model);
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
             return View(model);
         }
 

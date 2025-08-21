@@ -3,6 +3,7 @@ using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Common;
 using Microsoft.EntityFrameworkCore;
+using static AuthDemo.Models.ViewModels.VMCHUNG;
 
 namespace AuthDemo.Areas.Admin.Services
 {
@@ -39,17 +40,43 @@ namespace AuthDemo.Areas.Admin.Services
                 throw new Exception("Lỗi khi lấy màu sắc theo ID: " + ex.Message, ex);
             }
         }
-        public void Add(MauSac entity)
+        public async Task<ApiResponse<CreateMauSac>> AddAsync(CreateMauSac create)
         {
+            if (string.IsNullOrWhiteSpace(create.Ten))
+                return ApiResponse<CreateMauSac>.FailResponse("EmptyName", "Tên màu sắc không được để trống");
+
+            string[] words = create.Ten.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string baseCode = string.Concat(words.Select(w => char.ToUpper(w[0])));
+            string finalCode = baseCode;
+            int counter = 1;
+
+            while (await _db.MauSacs.AnyAsync(g => g.MaMau == finalCode))
+            {
+                counter++;
+                finalCode = baseCode + counter;
+            }
+
+            var entity = new MauSac
+            {
+                TenMau = create.Ten,
+                MaMau = finalCode,
+            };
+
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
-                _db.MauSacs.Add(entity);
-                _db.SaveChanges();
+                await _db.MauSacs.AddAsync(entity);
+                await _db.SaveChangesAsync();
+
+                var result = new CreateMauSac
+                {
+                    Ten = entity.TenMau
+                };
+
+                return ApiResponse<CreateMauSac>.SuccessResponse(result, "Thêm màu sắc thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi thêm màu sắc: " + ex.Message, ex);
+                return ApiResponse<CreateMauSac>.FailResponse("AddError", $"Lỗi khi thêm màu sắc: {ex.Message}");
             }
         }
         public void Update(MauSac entity)
@@ -83,5 +110,9 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
             }
         }
+    }
+
+    internal class CreteMauSac
+    {
     }
 }

@@ -1,4 +1,4 @@
-@model AuthDemo.Models.ThuongHieu
+@model AuthDemo.Models.ViewModels.VMCHUNG.CreateHangSanXuat
 @{
     ViewData["Title"] = "Thêm hãng sản xuất";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -12,20 +12,17 @@
             <div class="card-body">
                 <form asp-action="Create" asp-controller="ThuongHieu" asp-area="Admin" method="post">
                     <div class="form-group">
-                        <label asp-for="MaThuongHieuCode" class="form-label fw-bold">Mã hãng sản xuất</label>
-                        <input asp-for="MaThuongHieuCode" class="form-control" placeholder="Nhập mã hãng..." data-validate="required" data-label="Mã hãng sản xuất" />
-                        <span asp-validation-for="MaThuongHieuCode" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="TenThuongHieu" class="form-label fw-bold">Tên hãng sản xuất</label>
-                        <input asp-for="TenThuongHieu" class="form-control"placeholder="Nhập tên hãng..." data-validate="required"  data-label="Tên hãng sản xuất" />
-                        <span asp-validation-for="TenThuongHieu" class="text-danger"></span>
+                        <label asp-for="Ten" class="form-label fw-bold">Tên hãng sản xuất</label>
+                        <input asp-for="Ten" class="form-control" placeholder="Nhập tên hãng..."
+                            data-validate="required" data-label="Tên hãng sản xuất" />
+                        <span asp-validation-for="Ten" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-success px-4">
                             <i class="mdi mdi-content-save"></i> Lưu
                         </button>
-                        <a class="btn btn-secondary px-4" href="@Url.Action("Index", "ThuongHieu", new { area = "Admin" })">
+                        <a class="btn btn-secondary px-4"
+                            href="@Url.Action("Index", "ThuongHieu", new { area = "Admin" })">
                             <i class="mdi mdi-arrow-left"></i> Quay lại
                         </a>
                     </div>

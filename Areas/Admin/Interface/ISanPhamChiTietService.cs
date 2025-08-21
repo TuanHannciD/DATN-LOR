@@ -12,7 +12,7 @@ namespace AuthDemo.Areas.Admin.Interface
         List<ChiTietGiay> GetAll();
         Task<ApiResponse<IEnumerable<IndexVM>>> GetAllIndexVMAsync();
         ChiTietGiay? GetById(Guid id);
-        ApiResponse<EditVM> Add(EditVM editVM);
+        Task<ApiResponse<CreateVM>> Add(CreateVM editVM);
 
         ApiResponse<string> Update(EditVM entity);
         ApiResponse<string> Delete(Guid id);
