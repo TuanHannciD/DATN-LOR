@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const hoaDonID = this.getAttribute("data-id");
       const badgeEl = this;
       try {
+        if (!confirm("Bạn có chắc muốn cập nhật trạng thái hóa đơn?")) return;
         const res = await fetch(
           `/Admin/HoaDon/UpdateTrangThai?HoaDonID=${hoaDonID}`,
           { method: "POST" }
