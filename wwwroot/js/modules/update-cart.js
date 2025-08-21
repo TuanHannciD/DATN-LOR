@@ -20,7 +20,7 @@ export function updateCart(shoeDetailId, actionType, clickedBtn) {
       console.log("updateCart: response từ server", data);
 
       if (!data.success) {
-        console.error("updateCart lỗi:", data.message || "Có lỗi xảy ra");
+        showToast(data.message, "error", "Lỗi");
         return;
       }
       showToast(
