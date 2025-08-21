@@ -42,6 +42,12 @@ namespace AuthDemo.Areas.Admin.Services
         }
         public async Task<ApiResponse<CreateKichThuoc>> AddAsync(CreateKichThuoc create)
         {
+            var name = _db.KichThuocs.Any(c => c.TenKichThuoc == create.Ten);
+            if (name == true)
+            {
+                return ApiResponse<CreateKichThuoc>.FailResponse("error", $"Tên kích thước {create.Ten} đã có rồi. Vui lòng tạo tên khác");
+
+            }
             if (string.IsNullOrWhiteSpace(create.Ten))
                 return ApiResponse<CreateKichThuoc>.FailResponse("EmptyName", "Tên kích thước không được để trống");
 

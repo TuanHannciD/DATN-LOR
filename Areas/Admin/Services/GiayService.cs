@@ -41,6 +41,12 @@ namespace AuthDemo.Areas.Admin.Services
         }
         public async Task<ApiResponse<GiayCreate>> AddAsync(GiayCreate model)
         {
+            var name = _db.Giays.Any(c => c.TenGiay == model.TenGiay);
+            if (name == true)
+            {
+                return ApiResponse<GiayCreate>.FailResponse("error", $"Tên giày {model.TenGiay} đã có rồi. Vui lòng tạo tên khác");
+
+            }
             if (string.IsNullOrWhiteSpace(model.TenGiay))
                 return ApiResponse<GiayCreate>.FailResponse("AddError", "Tên Giày không được để trống");
 
