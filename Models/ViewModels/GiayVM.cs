@@ -22,11 +22,18 @@ namespace AuthDemo.Models.ViewModels
 
         // Thông tin cập nhật
         [StringLength(50)]
-        public string ?NguoiCapNhat { get; set; }
+        public string? NguoiCapNhat { get; set; }
 
         public DateTime? NgayCapNhat { get; set; }
 
         // // Danh sách chi tiết giày (nếu cần)
         // public List<ChiTietGiay> ChiTietGiays { get; set; } = new List<ChiTietGiay>();
+
+        public class GiayCreate
+        {
+            public string TenGiay { get; set; }
+            public string MoTa { get; set; }
+            public bool TrangThai { get; set; } = true; // Mặc định hoạt động
+        }
     }
 }
