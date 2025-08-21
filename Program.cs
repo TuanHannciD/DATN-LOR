@@ -54,6 +54,7 @@ builder.Services.AddScoped<IChiTietGiayService, ChiTietGiayService>();
 builder.Services.AddScoped<IBanHangTaiQuayService, BanHangTaiQuayService>();
 builder.Services.AddScoped<IHoaDonService, HoaDonService>();
 builder.Services.AddScoped<IVNPayService, VNPayService>();
+builder.Services.AddScoped<IDanhMucService, DanhMucService>();
 
 
 
