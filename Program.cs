@@ -4,12 +4,43 @@ using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Areas.Admin.Services;
 using AuthDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Http.Features;
+using DotNetEnv;
+using AuthDemo.Models;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<GhnService>();
+
+// Load .env
+Env.Load();
+// Load .env
+Env.Load(); Env.Load();
+
+// Đọc biến từ ENV// Đọc biến từ ENV
+var cloudName = Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME");
+var apiKey = Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY");
+var apiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET");
+
+if (string.IsNullOrEmpty(cloudName) || string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
+{
+    throw new InvalidOperationException("Biến môi trường Cloudinary bị thiếu!");
+}
+
+var cloudinarySettings = new CloudinarySettings
+{
+    CloudName = cloudName,
+    ApiKey = apiKey,
+    ApiSecret = apiSecret
+};
+
+
+// Đăng ký Cloudinary
+builder.Services.AddSingleton(new Cloudinary(
+    new Account(cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret)
+));
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
