@@ -59,6 +59,49 @@ namespace AuthDemo.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public IActionResult GetAllDelete()
+        {
+            try
+            {
+                var list = _sanPhamService.GetAllDelete().ToList();
+
+                var tongSoLuongDict = _db.ChiTietGiays
+                    .Where(ct => !ct.IsDelete) // chỉ tính các chi tiết chưa xóa
+                    .GroupBy(ct => ct.ShoeID)
+                    .ToDictionary(g => g.Key, g => g.Sum(ct => ct.SoLuong));
+
+                var giayEntities = _db.Giays.AsNoTracking().ToList();
+
+                var viewModel = list.Select(g =>
+                {
+                    var giayDb = giayEntities.FirstOrDefault(x => x.ShoeID == g.ShoeID);
+                    var trangThai = giayDb?.TrangThai.GetDisplayName() ?? "Chưa xác định";
+
+                    tongSoLuongDict.TryGetValue(g.ShoeID, out var tongSoLuong);
+
+                    return new GiayWithSoLuongVM
+                    {
+                        Giay = g,
+                        TrangThai = trangThai,
+                        TongSoLuong = tongSoLuong,
+                        NguoiCapNhat = giayDb?.NguoiCapNhat,
+                        NgayCapNhat = giayDb?.NgayCapNhat,
+                        NguoiTao = giayDb?.NguoiTao,
+                        NgayTao = giayDb?.NgayTao
+                    };
+                }).ToList();
+
+                //Trả về JSON cho AJAX
+                return Json(new { success = true, data = viewModel });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
+        [HttpGet]
         public IActionResult Create()
         {
             ViewBag.TrangThai = EnumHelper.GetEnumSelectList<TrangThai>();
@@ -128,6 +171,18 @@ namespace AuthDemo.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            if (id == Guid.Empty)
+                return Json(new { success = false, message = "Lỗi ID trống hoặc lỗi khác" });
+            var response = await _sanPhamService.Restore(id);
+            return Json(new
+            {
+                success = response.Success,
+                message = response.Message
+            });
+        }
         public IActionResult Details(Guid id)
         {
             var giay = _db.Giays.Find(id);

@@ -6,9 +6,14 @@
 <div class="card mt-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0"><i class="mdi mdi-cube-outline"></i> Danh sách danh mục</h4>
-        <a class="btn btn-primary" href="@Url.Action("Create", "DanhMuc", new { area = "Admin" })">
-            <i class="mdi mdi-plus"></i> Thêm danh mục
-        </a>
+        <div>
+            <a class="btn btn-danger" id="openModalRemoveBtn" data-entity="DanhMuc">
+                <i class="mdi mdi-trash-can-outline"></i> Danh mục đã xóa
+            </a>
+            <a class="btn btn-primary" href="@Url.Action("Create", "DanhMuc", new { area = "Admin" })">
+                <i class="mdi mdi-plus"></i> Thêm danh mục
+            </a>
+        </div>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -51,3 +56,39 @@
             </table>
         </div>
     </div>
+    <!-- Modal Danh sách Thuong hiệu đã xóa -->
+    <div class="modal fade" id="isRemoveModal" tabindex="-1" aria-labelledby="isRemoveLabel">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="isRemoveLabel">
+                        <i class="mdi mdi-trash-can"></i> Danh sách danh mục đã xóa
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã danh mục</th>
+                                    <th>Tên danh mục</th>
+                                    <th>Ngày xóa</th>
+                                    <th>Người xóa</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deletedProductsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="mdi mdi-close"></i> Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

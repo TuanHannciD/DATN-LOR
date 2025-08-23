@@ -87,7 +87,7 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var response = await _chiTietGiayService.GetAllIndexVMAsync(); // giả sử sync và trả về ApiResponse
+            var response = await _chiTietGiayService.GetAllIndexVMAsync();
             if (!response.Success)
             {
                 // Lưu message vào TempData
@@ -97,6 +97,20 @@ namespace AuthDemo.Areas.Admin.Controllers
             }
 
             return View(response.Data); // Data là IEnumerable<ChiTietGiayVM.IndexVM>
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllDelete()
+        {
+            try
+            {
+                var list = await _chiTietGiayService.GetAllDelete();
+                return Json(list);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
 
@@ -208,6 +222,20 @@ namespace AuthDemo.Areas.Admin.Controllers
 
             return RedirectToAction("Index"); // hoặc về trang hiện tại
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            if (id == Guid.Empty)
+                return Json(new { success = false, message = "Lỗi ID trống hoặc lỗi khác" });
+            var response = await _chiTietGiayService.Restore(id);
+            return Json(new
+            {
+                success = response.Success,
+                message = response.Message
+            });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> QuickAdd([FromBody] QuickAddVM quick)

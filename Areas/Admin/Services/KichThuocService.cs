@@ -28,6 +28,21 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<IEnumerable<KichThuoc>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
             }
         }
+
+        public async Task<ApiResponse<IEnumerable<KichThuoc>>> GetAllDelete()
+        {
+            try
+            {
+                var data = await _db.KichThuocs
+                    .Where(ct => ct.IsDelete)
+                    .ToListAsync();
+                return ApiResponse<IEnumerable<KichThuoc>>.SuccessResponse(data, "Lấy danh sách thành công");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<KichThuoc>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
+            }
+        }
         public KichThuoc? GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("ID không hợp lệ!");
@@ -113,12 +128,37 @@ namespace AuthDemo.Areas.Admin.Services
                 var obj = _db.KichThuocs.Find(id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy kích thước đang xóa");
                 obj.IsDelete = true;
+                // Xóa tất cả chi tiết giày liên quan
+                if (obj.ChiTietGiays != null && obj.ChiTietGiays.Count > 0)
+                {
+                    foreach (var ct in obj.ChiTietGiays)
+                    {
+                        ct.IsDelete = true;
+                    }
+                }
                 await _db.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("Success", "Xóa kích thước thành công");
             }
             catch (Exception ex)
             {
                 return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
+            }
+        }
+        public async Task<ApiResponse<string>> Restore(Guid id)
+        {
+            try
+            {
+                var obj = await _db.KichThuocs.FindAsync(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy kích thước đang khôi phục");
+                obj.IsDelete = false;
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã khôi phục kích thước thành công");
+
+
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi khôi phục:" + ex.Message);
             }
         }
     }

@@ -6,13 +6,18 @@
 <div class="card mt-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0"><i class="mdi mdi-cube-outline"></i> Danh sách sản phẩm chi tiết</h4>
-        <a class="btn btn-primary" href="@Url.Action("Create", "ChiTietGiay", new { area = "Admin" })">
-            <i class="mdi mdi-plus"></i> Thêm sản phẩm chi tiết
-        </a>
+        <div>
+            <a class="btn btn-primary" href="@Url.Action("Create", "ChiTietGiay", new { area = "Admin" })">
+                <i class="mdi mdi-plus"></i> Thêm sản phẩm chi tiết
+            </a>
+            <a class="btn btn-danger " id="openModalRemoveBtn" data-entity="ChiTietGiay">
+                <i class="mdi mdi-trash-can-outline"></i> Sản phẩm đã ngưng bán
+            </a>
+        </div>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0" style="table-layout: auto;">
                 <thead class="table-light">
                     <tr>
                         <th>Tên sản phẩm</th>
@@ -120,6 +125,40 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Danh sách ngưng bán-->
+    <div class="modal fade" id="isRemoveModal" tabindex="-1" aria-labelledby="isRemoveModal">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="isRemoveModal">
+                        <i class="mdi mdi-trash-can"></i>Danh sách chi tiết sản phẩm đã ngưng bán
+                    </h5>
+                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thread class="table-light">
+                                <tr>
+                                    <th>Tên giày</th>
+                                    <th>Tên kích thước</th>
+                                    <th>Tên màu</th>
+                                    <th>Tên chất liệu</th>
+                                    <th>Tên thương hiệu</th>
+                                    <th>Tên danh mục</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thread>
+                            <tbody id="deletedProductsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

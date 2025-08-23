@@ -28,6 +28,22 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<IEnumerable<ChatLieu>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
             }
         }
+
+        public async Task<ApiResponse<IEnumerable<ChatLieu>>> GetAllDelete()
+        {
+            try
+            {
+                var data = await _db.ChatLieus
+                    .Where(ct => ct.IsDelete)
+                    .ToListAsync();
+                return ApiResponse<IEnumerable<ChatLieu>>.SuccessResponse(data, "Lấy danh sách thành công");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<ChatLieu>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
+            }
+        }
+
         public ChatLieu? GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("ID không hợp lệ!");
@@ -102,12 +118,37 @@ namespace AuthDemo.Areas.Admin.Services
                 var obj = _db.ChatLieus.Find(id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
+                // Xóa tất cả chi tiết giày liên quan
+                if (obj.ChiTietGiays != null && obj.ChiTietGiays.Count > 0)
+                {
+                    foreach (var ct in obj.ChiTietGiays)
+                    {
+                        ct.IsDelete = true;
+                    }
+                }
                 await _db.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chất liệu");
             }
             catch (Exception ex)
             {
                 return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
+            }
+        }
+        public async Task<ApiResponse<string>> Restore(Guid id)
+        {
+            try
+            {
+                var obj = await _db.ChatLieus.FindAsync(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy chất liệu đang khôi phục");
+                obj.IsDelete = false;
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã khôi phục chất liệu thành công");
+
+
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi khôi phục:" + ex.Message);
             }
         }
     }
