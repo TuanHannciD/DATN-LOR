@@ -115,7 +115,9 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                var obj = _db.ChatLieus.Find(id);
+                var obj = await _db.ChatLieus
+                   .Include(th => th.ChiTietGiays)
+                   .FirstOrDefaultAsync(th => th.MaterialID == id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
                 // Xóa tất cả chi tiết giày liên quan

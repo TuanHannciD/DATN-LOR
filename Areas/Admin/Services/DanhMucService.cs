@@ -60,7 +60,9 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                var obj = _db.DanhMucs.Find(id);
+                var obj = await _db.DanhMucs
+                   .Include(th => th.ChiTietGiays)
+                   .FirstOrDefaultAsync(th => th.CategoryID == id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy danh mục đang xóa");
                 obj.IsDelete = true;
                 // Xóa tất cả chi tiết giày liên quan
