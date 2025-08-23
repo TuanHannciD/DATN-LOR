@@ -158,11 +158,11 @@ namespace AuthDemo.Areas.Admin.Services
             if (createVM.Gia < 1000)
                 return ApiResponse<CreateVM>.FailResponse("Price_Invalid", "Giá phải lớn hơn 1000");
 
-            //Lấy chi tiết giày đã tồn tại
+            // Check mismatch Brand / Category / Material
             var existingDetails = await _db.ChiTietGiays
-                .Include(d => d.ThuongHieu)  // để lấy tên thương hiệu
-                .Include(d => d.DanhMuc)     // để lấy tên danh mục
-                .Include(d => d.ChatLieu)    // để lấy tên chất liệu
+                .Include(d => d.ThuongHieu)
+                .Include(d => d.DanhMuc)
+                .Include(d => d.ChatLieu)
                 .Where(ct => ct.ShoeID == createVM.ShoeID)
                 .ToListAsync();
 
@@ -171,60 +171,94 @@ namespace AuthDemo.Areas.Admin.Services
                 if (detail.BrandID != createVM.BrandID)
                     return ApiResponse<CreateVM>.FailResponse(
                         "Brand_Mismatch",
-                        $"Thương hiệu không khớp với chi tiết giày đã tồn tại (Thương hiệu hiện tại: {detail.ThuongHieu?.TenThuongHieu ?? "Không rõ"})"
-                    );
+                        $"Thương hiệu không khớp (Hiện tại: {detail.ThuongHieu?.TenThuongHieu ?? "Không rõ"})");
 
                 if (detail.CategoryID != createVM.CategoryID)
                     return ApiResponse<CreateVM>.FailResponse(
                         "Category_Mismatch",
-                        $"Danh mục không khớp với chi tiết giày đã tồn tại (Danh mục hiện tại: {detail.DanhMuc?.TenDanhMuc ?? "Không rõ"})"
-                    );
+                        $"Danh mục không khớp (Hiện tại: {detail.DanhMuc?.TenDanhMuc ?? "Không rõ"})");
 
                 if (detail.MaterialID != createVM.MaterialID)
                     return ApiResponse<CreateVM>.FailResponse(
                         "Material_Mismatch",
-                        $"Chất liệu không khớp với chi tiết giày đã tồn tại (Chất liệu hiện tại: {detail.ChatLieu?.TenChatLieu ?? "Không rõ"})"
-                    );
+                        $"Chất liệu không khớp (Hiện tại: {detail.ChatLieu?.TenChatLieu ?? "Không rõ"})");
             }
 
-            // Tạo danh sách chi tiết và ảnh
             var chiTietList = new List<ChiTietGiay>();
             var anhGiayList = new List<AnhGiay>();
 
             foreach (var ct in createVM.ChiTietImages)
             {
-                var chiTiet = new ChiTietGiay
-                {
-                    ShoeDetailID = Guid.NewGuid(),
-                    ShoeID = createVM.ShoeID,
-                    SizeID = ct.SizeID,
-                    ColorID = ct.ColorID,
-                    SoLuong = createVM.SoLuong,
-                    Gia = createVM.Gia,
-                    MaterialID = createVM.MaterialID,
-                    BrandID = createVM.BrandID,
-                    CategoryID = createVM.CategoryID
-                };
+                var existingDetail = await _db.ChiTietGiays
+                    .FirstOrDefaultAsync(d =>
+                        d.ShoeID == createVM.ShoeID &&
+                        d.BrandID == createVM.BrandID &&
+                        d.CategoryID == createVM.CategoryID &&
+                        d.MaterialID == createVM.MaterialID &&
+                        d.SizeID == ct.SizeID &&
+                        d.ColorID == ct.ColorID);
 
-                chiTietList.Add(chiTiet);
-
-                if (ct.Images != null && ct.Images.Any())
+                if (existingDetail != null)
                 {
-                    anhGiayList.AddRange(ct.Images.Select(url => new AnhGiay
+                    // Check bị xóa
+                    if (existingDetail.IsDelete)
                     {
-                        ImageShoeID = Guid.NewGuid(),
-                        ShoeDetailID = chiTiet.ShoeDetailID,
-                        DuongDanAnh = url
-                    }));
+                        return ApiResponse<CreateVM>.FailResponse(
+                            "Deleted_Detail_Exists",
+                            $"Chi tiết giày (SizeID: {ct.SizeID}, ColorID: {ct.ColorID}) đã bị xóa trước đó."
+                        );
+                    }
+
+                    // Nếu chưa bị xóa -> cộng số lượng
+                    existingDetail.SoLuong += createVM.SoLuong;
+                    existingDetail.Gia = createVM.Gia;
+                    _db.ChiTietGiays.Update(existingDetail);
+
+                    if (ct.Images != null && ct.Images.Any())
+                    {
+                        anhGiayList.AddRange(ct.Images.Select(url => new AnhGiay
+                        {
+                            ImageShoeID = Guid.NewGuid(),
+                            ShoeDetailID = existingDetail.ShoeDetailID,
+                            DuongDanAnh = url
+                        }));
+                    }
+                }
+                else
+                {
+                    var chiTiet = new ChiTietGiay
+                    {
+                        ShoeDetailID = Guid.NewGuid(),
+                        ShoeID = createVM.ShoeID,
+                        SizeID = ct.SizeID,
+                        ColorID = ct.ColorID,
+                        SoLuong = createVM.SoLuong,
+                        Gia = createVM.Gia,
+                        MaterialID = createVM.MaterialID,
+                        BrandID = createVM.BrandID,
+                        CategoryID = createVM.CategoryID
+                    };
+
+                    chiTietList.Add(chiTiet);
+
+                    if (ct.Images != null && ct.Images.Any())
+                    {
+                        anhGiayList.AddRange(ct.Images.Select(url => new AnhGiay
+                        {
+                            ImageShoeID = Guid.NewGuid(),
+                            ShoeDetailID = chiTiet.ShoeDetailID,
+                            DuongDanAnh = url
+                        }));
+                    }
                 }
             }
 
-            //Transaction + SaveChanges
+            // Transaction ở ngoài vòng lặp
             using var transaction = await _db.Database.BeginTransactionAsync();
             try
             {
-                _db.ChiTietGiays.AddRange(chiTietList);
-                _db.AnhGiays.AddRange(anhGiayList);
+                if (chiTietList.Any()) _db.ChiTietGiays.AddRange(chiTietList);
+                if (anhGiayList.Any()) _db.AnhGiays.AddRange(anhGiayList);
 
                 await _db.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -237,6 +271,7 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<CreateVM>.FailResponse("Exception", $"Có lỗi khi thêm/cập nhật chi tiết giày: {ex.Message}");
             }
         }
+
         public ApiResponse<string> Delete(Guid id)
         {
             try
