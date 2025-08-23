@@ -1,0 +1,352 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Thống Kê Doanh Thu";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="mdi mdi-chart-bar"></i> Thống Kê Doanh Thu</h4>
+    </div>
+    <div class="card-body">
+        <!-- Filter Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Bộ lọc thời gian</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="btn-group" role="group">
+                                    @*  <button type="button" class="btn btn-outline-primary active" data-filter="all">
+                                    Tất cả
+                                    </button> *@
+                                    <button type="button" class="btn btn-outline-primary" data-filter="today">
+                                        Hôm nay
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" data-filter="week">
+                                        Tuần này
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" data-filter="month">
+                                        Tháng này
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" data-filter="year">
+                                        Năm nay
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="customDate">
+                                    <button class="btn btn-primary" id="applyCustomDate">Áp dụng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Tổng doanh thu</h6>
+                                <h3 class="card-text" id="totalRevenue">0 VNĐ</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="mdi mdi-currency-usd mdi-24px"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Số sản phẩm bán ra</h6>
+                                <h3 class="card-text" id="totalProductsSold">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="mdi mdi-cube-send mdi-24px"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Tổng đơn hàng</h6>
+                                <h3 class="card-text" id="totalOrders">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="mdi mdi-cart mdi-24px"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Thống Kê Trạng Thái Đơn Hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Chi Tiết Trạng Thái</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="statusDetails">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Chart -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Doanh Thu Theo Thời Gian</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentFilter = 'all';
+            let orderStatusChart = null;
+            let salesChart = null;
+
+            // Initialize charts
+            initializeCharts();
+
+            // Filter buttons event listeners
+            document.querySelectorAll('[data-filter]').forEach(button => {
+                button.addEventListener('click', function () {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('[data-filter]').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    currentFilter = this.getAttribute('data-filter');
+                    loadData(currentFilter);
+                });
+            });
+
+            // Custom date filter
+            document.getElementById('applyCustomDate').addEventListener('click', function () {
+                const customDate = document.getElementById('customDate').value;
+                if (customDate) {
+                    loadData('custom', customDate);
+                } else {
+                    alert('Vui lòng chọn ngày');
+                }
+            });
+
+            // Load initial data
+            loadData(currentFilter);
+
+            function initializeCharts() {
+                const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+                orderStatusChart = new Chart(orderStatusCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)',
+                                'rgba(255, 159, 64, 0.7)',
+                                'rgba(201, 203, 207, 0.7)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.label + ': ' + context.raw + ' đơn hàng';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                const salesCtx = document.getElementById('salesChart').getContext('2d');
+                salesChart = new Chart(salesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Doanh thu',
+                            data: [],
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return 'Doanh thu: ' + context.raw.toLocaleString('vi-VN') + ' VNĐ';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return value.toLocaleString('vi-VN') + ' VNĐ';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function loadData(filterType, customDate = null) {
+                const params = new URLSearchParams();
+                params.append('filterType', filterType);
+                if (customDate) {
+                    params.append('customDate', customDate);
+                }
+
+                // Hiển thị loading
+                document.getElementById('totalRevenue').textContent = 'Đang tải...';
+                document.getElementById('totalProductsSold').textContent = 'Đang tải...';
+                document.getElementById('totalOrders').textContent = 'Đang tải...';
+
+                axios.get(`/Admin/ThongKe/GetStatistics?${params}`)
+                    .then(response => {
+                        const data = response.data;
+
+                        // Update summary cards
+                        document.getElementById('totalRevenue').textContent =
+                            data.totalRevenue.toLocaleString('vi-VN') + ' VNĐ';
+                        document.getElementById('totalProductsSold').textContent =
+                            data.totalProductsSold.toLocaleString('vi-VN');
+                        document.getElementById('totalOrders').textContent =
+                            data.totalOrders.toLocaleString('vi-VN');
+
+                        // Update order status chart
+                        updateOrderStatusChart(data.orderStatusStats);
+
+                        // Update sales chart
+                        updateSalesChart(data.salesData);
+
+                        // Update status details
+                        updateStatusDetails(data.orderStatusStats);
+                    })
+                    .catch(error => {
+                        console.error('Error loading data:', error);
+
+                        // Hiển thị dữ liệu mặc định thay vì alert
+                        document.getElementById('totalRevenue').textContent = '0 VNĐ';
+                        document.getElementById('totalProductsSold').textContent = '0';
+                        document.getElementById('totalOrders').textContent = '0';
+
+                        updateOrderStatusChart({
+                            labels: ['Không có dữ liệu'],
+                            data: [0]
+                        });
+
+                        updateSalesChart({
+                            labels: ['Không có dữ liệu'],
+                            data: [0]
+                        });
+
+                        updateStatusDetails({
+                            labels: ['Không có dữ liệu'],
+                            data: [0]
+                        });
+                    });
+            }
+
+            function updateOrderStatusChart(stats) {
+                orderStatusChart.data.labels = stats.labels;
+                orderStatusChart.data.datasets[0].data = stats.data;
+                orderStatusChart.update();
+            }
+
+            function updateSalesChart(salesData) {
+                salesChart.data.labels = salesData.labels;
+                salesChart.data.datasets[0].data = salesData.data;
+                salesChart.update();
+            }
+
+            function updateStatusDetails(stats) {
+                const detailsContainer = document.getElementById('statusDetails');
+                let html = '<ul class="list-group">';
+
+                stats.labels.forEach((label, index) => {
+                    html += `
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            ${label}
+                                            <span class="badge bg-primary rounded-pill">${stats.data[index]}</span>
+                                        </li>
+                                    `;
+                });
+
+                html += '</ul>';
+                detailsContainer.innerHTML = html;
+            }
+        });
+    </script>
+}

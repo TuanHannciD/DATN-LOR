@@ -1,4 +1,5 @@
 ﻿@using AuthDemo.Models.Enums
+@using AuthDemo.Helpers
 @model List<AuthDemo.Models.ViewModels.HoaDonKHVM>
 
 @{
@@ -24,6 +25,7 @@
         position: relative;
         overflow: hidden;
         animation: fadeIn 1s ease-in-out;
+        margin-top: 8rem;
     }
 
         .order-container h2 {
@@ -394,7 +396,7 @@
     {
         <h5>Mã đơn hàng: @hoaDon.BillID </h5>
 
-        var trangThaiEnum = Enum.Parse<TrangThaiHoaDon>(hoaDon.TrangThai);
+        var trangThaiEnum = hoaDon.TrangThai;
         int activeIndex = 0;
         for (int i = 0; i < steps.Length; i++)
         {
@@ -423,12 +425,14 @@
 
         <div class="shipping-info">
             <h3>Địa chỉ nhận hàng</h3>
-            <p><strong>@hoaDon.HoTen</strong> | @hoaDon.SoDienThoai</p>
-            <p>@hoaDon.DiaChi</p>
+            <p><strong>@hoaDon.HoTen</strong> | <strong>@hoaDon.SoDienThoai</strong></p>
+            <p><strong> @hoaDon.DiaChi</strong></p>
             <p>
+                <strong>
                 Ngày Đặt : @(hoaDon.NgayTao.HasValue
             ? hoaDon.NgayTao.Value.ToString("dd/MM/yyyy HH:mm")
             : "Chưa có")
+                </strong>
             </p>
         </div>
 
@@ -440,7 +444,7 @@
                 <div class="product-info">
                     <div class="product-line">
                         <div class="product-name">@item.TenSanPham (@item.MauSac @item.Size)</div>
-                        <div class="product-price">@item.DonGia.ToString("N0") VNĐ</div>
+                        <div class="product-price">@item.DonGia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</div>
                     </div>
                     <div class="product-qty">x @item.SoLuong</div>
                 </div>
@@ -450,19 +454,19 @@
         <div class="order-summary">
             <div class="summary-item">
                 <span>Tổng tiền hàng</span>
-                <span>@hoaDon.TongTien.ToString("N0") VNĐ</span>
+                <span>@ViewBag.ThanhTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
             </div>
             <div class="summary-item">
                 <span>Phí vận chuyển</span>
-                <span>@ViewBag.Ship.ToString("N0") VNĐ</span>
+                <span>@ViewBag.Ship.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
             </div>
             <div class="summary-item total">
                 <span>Thành tiền</span>
-                <span class="total-price">@hoaDon.TongTien.ToString("N0") VNĐ</span>
+                <span class="total-price">@hoaDon.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
             </div>
             <div class="summary-item">
                 <span>Phương thức thanh toán :</span>
-                <span>@hoaDon.PhuongThuc</span>
+                <span>@hoaDon.PhuongThuc.GetDisplayName()</span>
             </div>
         </div>
 

@@ -33,7 +33,7 @@ namespace AuthDemo.Models.Configurations
                     SoDienThoai = "0123456789",
                     DiaChi = "Hà Nội",
                     TongTien = 5000000,
-                    TrangThai = TrangThaiHoaDon.DaThanhToan,
+                    TrangThai = TrangThaiHoaDon.DaGiao,
                     DaThanhToan = true,
                     PhuongThucThanhToan = PhuongThucThanhToan.TienMat,
                     DaHuy = false,

@@ -4,5 +4,7 @@
     {
         public Giay Giay { get; set; }
         public decimal GiaMin { get; set; }
+
+        public string AnhDaiDien { get; set; }
     }
 }

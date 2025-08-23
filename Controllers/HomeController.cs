@@ -2,9 +2,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Models;
 using Microsoft.AspNetCore.Http;
-
-//using AuthDemo.Migrations;
-
 using AuthDemo.Data;
 using Microsoft.EntityFrameworkCore;
 using AuthDemo.Models.ViewModels;
@@ -29,19 +26,29 @@ public class HomeController : Controller
     
     public IActionResult Index(int ? page)
     {
-        int pagesize = 8;
+        int pagesize = 6;
         int pagenumber = page == null || page < 0 ? 1 : page.Value;
 
+
+
         var product = _context.Giays
-            .Where(g => g.ChiTietGiays.Any())
-    .Select(g => new ProductViewModel
-    {
-        ShoeID = g.ShoeID,
-        TenGiay = g.TenGiay,
-        AnhDaiDien = g.AnhDaiDien,
-        GiaThapNhat = g.ChiTietGiays.Min(ct => ct.Gia)
-    })
-        .ToList();
+     .Where(g => g.ChiTietGiays.Any())
+     .Select(g => new ProductViewModel
+     {
+         ShoeID = g.ShoeID,
+         TenGiay = g.TenGiay,
+         AnhDaiDien = g.ChiTietGiays
+                         .OrderBy(ct => ct.ShoeDetailID)          
+                         .Select(ct => ct.AnhGiays
+                             .OrderBy(a => a.ShoeDetailID)           
+                             .Select(a => a.DuongDanAnh)           
+                             .FirstOrDefault())
+                         .FirstOrDefault(path => path != null),    
+         GiaThapNhat = g.ChiTietGiays.Min(ct => ct.Gia)
+     })
+     .ToList();
+
+
 
 
         PagedList<ProductViewModel> list = new PagedList<ProductViewModel>(product, pagenumber, pagesize);
@@ -70,11 +77,10 @@ public class HomeController : Controller
        .SelectMany(ct => ct.AnhGiays)
        .Select(img => img.DuongDanAnh)
        .ToList();
-
+        string anhDaiDien = allImagePaths.FirstOrDefault();
 
         var gia = chiTietList.Select(x => x.Gia).ToList();
-        var gianhonhat = chiTietList.Min(x => x.Gia);
-        
+        var gianhonhat = chiTietList.Min(x => x.Gia);      
         var mauSacList = chiTietList.Select(x => x.MauSac).Distinct().ToList();
         var kichCoList = chiTietList.Select(x => x.KichThuoc).Distinct().ToList();
         var thuongHieuList = chiTietList.Select(x => x.ThuongHieu).Distinct().ToList();
@@ -83,12 +89,16 @@ public class HomeController : Controller
         var sanPhamLienQuan = _context.ChiTietGiays
      .Include(c => c.Giay)
      .Include(c => c.DanhMuc)
+     .Include(c => c.AnhGiays)
      .Where(c => danhmuclist.Contains(c.DanhMuc) && c.ShoeID != sanPham.ShoeID)
      .GroupBy(c => c.ShoeID)
      .Select(g => new SanPhamLqVM
      {
          Giay = g.First().Giay,
-         GiaMin = g.Min(x => x.Gia)
+         GiaMin = g.Min(x => x.Gia),
+         AnhDaiDien = g.SelectMany(x => x.AnhGiays)
+                      .Select(img => img.DuongDanAnh)
+                      .FirstOrDefault()
      })
      .ToList();
 
@@ -99,7 +109,8 @@ public class HomeController : Controller
             KichCoOptions = kichCoList,
             ThuongHieuOptions = thuongHieuList,
             DanhSachAnh = allImagePaths,
-            SanPhamLienQuan = sanPhamLienQuan
+            SanPhamLienQuan = sanPhamLienQuan,
+            AnhDaiDien = anhDaiDien
         };
 
 
@@ -160,13 +171,26 @@ public class HomeController : Controller
 
         return Json(new { success = false, gia = 0 });
     }
-   
+    [HttpGet]
+    public IActionResult GetAnhChiTiet(Guid shoeId, Guid colorId, Guid sizeId)
+    {
+        var chiTiet = _context.ChiTietGiays
+            .Include(c => c.AnhGiays)
+            .FirstOrDefault(c => c.ShoeID == shoeId && c.ColorID == colorId && c.SizeID == sizeId);
+
+        if (chiTiet == null)
+            return Json(new { success = false, images = new List<string>() });
+
+        var images = chiTiet.AnhGiays.Select(a => a.DuongDanAnh).ToList();
+
+        return Json(new { success = true, images });
+    }
+
 
     [HttpPost]
     public JsonResult Cart(Guid id, Guid MauSacId, Guid KichCoId, int quantity)
     {
-        // Bước 1: Lấy thông tin UserID (tạm gọi là CartID — thường là theo phiên đăng nhập)
-        /*Guid cartId = GetCurrentUserId();*/ // bạn có thể thay bằng HttpContext.User.Identity nếu dùng Identity
+        
 
         var check = HttpContext.Session.GetString("TenDangNhap");
 
