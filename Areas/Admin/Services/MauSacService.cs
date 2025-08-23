@@ -118,7 +118,9 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                var obj = _db.MauSacs.Find(id);
+                var obj = await _db.MauSacs
+                   .Include(th => th.ChiTietGiays)
+                   .FirstOrDefaultAsync(th => th.ColorID == id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
                 // Xóa tất cả chi tiết giày liên quan

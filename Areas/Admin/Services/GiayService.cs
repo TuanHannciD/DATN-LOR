@@ -124,7 +124,9 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                var obj = await _db.Giays.FindAsync(id);
+                var obj = await _db.Giays
+                   .Include(th => th.ChiTietGiays)
+                   .FirstOrDefaultAsync(th => th.ShoeID == id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
 

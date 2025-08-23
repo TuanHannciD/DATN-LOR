@@ -124,7 +124,9 @@ namespace AuthDemo.Areas.Admin.Services
                 {
                     return ApiResponse<string>.FailResponse("ID_Invalid", "ID không hợp lệ!");
                 }
-                var obj = _db.ThuongHieus.Find(id);
+                var obj = await _db.ThuongHieus
+                   .Include(th => th.ChiTietGiays)
+                   .FirstOrDefaultAsync(th => th.BrandID == id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy thương hiệu đang xóa");
                 obj.IsDelete = true;
 
@@ -163,6 +165,6 @@ namespace AuthDemo.Areas.Admin.Services
             }
         }
 
-        
+
     }
 }
