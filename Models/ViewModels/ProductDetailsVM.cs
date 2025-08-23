@@ -8,6 +8,7 @@ namespace AuthDemo.Models.ViewModels
         public ChiTietGiay ctgiay   { get; set; }
         public List<MauSac> MauSacOptions { get; set; }
         public List<string> DanhSachAnh { get; set; }
+        public string AnhDaiDien { get; set; }
         public List<AnhGiay> anhgiay { get; set; }
         public List<KichThuoc> KichCoOptions { get; set; }
         public List<ThuongHieu> ThuongHieuOptions { get; set; }

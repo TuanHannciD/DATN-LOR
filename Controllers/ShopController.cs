@@ -18,24 +18,35 @@ namespace AuthDemo.Controllers
         }
 
         // show sp 
-        public IActionResult Index(int? page)
+        public IActionResult Index(int? page, string searchString)
         {
-            int pageSize = 8;
-            int pageNumber = page ?? 1;
+            int pageSize = 9;
+            int pagenumber = page == null || page < 0 ? 1 : page.Value;
+            var query = _context.Giays
+        .Where(g => g.ChiTietGiays.Any());
 
-            var products = _context.Giays
-                .Where(g => g.ChiTietGiays.Any())
-                //.Where(g => g.TrangThai == 0)
-                .Select(g => new ProductViewModel
-                {
-                    ShoeID = g.ShoeID,
-                    TenGiay = g.TenGiay,
-                    AnhDaiDien = g.AnhDaiDien,
-                    GiaThapNhat = g.ChiTietGiays.Min(ct => ct.Gia)
-                })
-                .ToList();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(g => g.TenGiay.ToLower().Contains(searchString.ToLower()));
+            }
 
-            var pagedProducts = new PagedList<ProductViewModel>(products, pageNumber, pageSize);
+            var product = query
+    .Select(g => new ProductViewModel
+    {
+        ShoeID = g.ShoeID,
+        TenGiay = g.TenGiay,
+        AnhDaiDien = g.ChiTietGiays
+                        .OrderBy(ct => ct.ShoeDetailID)
+                        .Select(ct => ct.AnhGiays
+                            .OrderBy(a => a.ShoeDetailID)
+                            .Select(a => a.DuongDanAnh)
+                            .FirstOrDefault())
+                        .FirstOrDefault(path => path != null),
+        GiaThapNhat = g.ChiTietGiays.Min(ct => ct.Gia)
+    })
+    .ToList();
+
+            var pagedProducts = new PagedList<ProductViewModel>(product, pagenumber, pageSize);
 
             // Truy vấn danh sách bộ lọc từ DB
             ViewBag.DanhMucs = _context.DanhMucs.ToList();
@@ -43,17 +54,29 @@ namespace AuthDemo.Controllers
             ViewBag.KichThuocs = _context.KichThuocs.ToList();
 
             ViewBag.MinPrice = _context.ChiTietGiays.Any() ? _context.ChiTietGiays.Min(c => c.Gia) : 0;
-            ViewBag.MaxPrice = _context.ChiTietGiays.Any() ? _context.ChiTietGiays.Max(c => c.Gia) : 1000000;
-
+            ViewBag.MaxPrice = _context.ChiTietGiays.Any() ? _context.ChiTietGiays.Max(c => c.Gia) : 10000000;
+            ViewBag.SearchString = searchString;
             return View(pagedProducts);
         }
+        [HttpGet]
+        public JsonResult GetSearchSuggestions(string term)
+        {
+            var suggestions = _context.Giays
+                .Where(g => g.TenGiay.ToLower().Contains(term.ToLower()))
+                .Where(g => g.ChiTietGiays.Any())
+                .Select(g => new { label = g.TenGiay, value = g.TenGiay })
+                .Take(5) // Giới hạn 5 gợi ý
+                .ToList();
 
+            return Json(suggestions);
+        }
 
         [HttpPost]
         public IActionResult FilterProducts(List<Guid> danhMucIds, List<Guid> mauSacIds, List<Guid> kichThuocIds, int? minPrice, int? maxPrice)
         {
             var filtered = _context.ChiTietGiays
                 .Include(ct => ct.Giay)
+                .Include(ct => ct.AnhGiays)
                 .Where(ct => ct.SoLuong > 0);
 
             if (danhMucIds != null && danhMucIds.Any())
@@ -77,7 +100,10 @@ namespace AuthDemo.Controllers
                 {
                     ShoeID = g.First().ShoeID,
                     TenGiay = g.First().Giay.TenGiay,
-                    AnhDaiDien = g.First().Giay.AnhDaiDien,
+                    AnhDaiDien = g.SelectMany(ct => ct.AnhGiays)
+                          .Select(a => a.DuongDanAnh)
+                          .FirstOrDefault(path => path != null)
+                          ?? g.First().Giay.AnhDaiDien,
                     GiaThapNhat = g.Min(x => x.Gia)
                 })
                 .ToList();

@@ -20,18 +20,20 @@ namespace AuthDemo.Helpers
                 })
                 .ToList();
         }
-        public static string GetDisplayName<T>(T enumValue) where T : Enum
+        public static string GetDisplayName<TEnum>(TEnum enumValue) where TEnum : Enum
         {
-            var member = enumValue.GetType().GetMember(enumValue.ToString()).FirstOrDefault();
-            if (member != null)
+            var memberInfo = enumValue.GetType().GetMember(enumValue.ToString()).FirstOrDefault();
+
+            if (memberInfo != null)
             {
-                var displayAttr = member.GetCustomAttribute<DisplayAttribute>();
+                var displayAttr = memberInfo.GetCustomAttribute<DisplayAttribute>();
                 if (displayAttr != null)
                 {
                     return displayAttr.Name;
                 }
             }
-            return enumValue.ToString();
+
+            return enumValue.ToString(); // fallback
         }
     }
 }

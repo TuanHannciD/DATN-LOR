@@ -1,114 +1,10 @@
 ﻿@{
     ViewData["Title"] = "CheckOut";
     Layout = "~/Views/Shared/_LayoutCheckOut.cshtml";
+    var provinces = ViewBag.Provinces;
 }
 @model List<ChiTietGioHang>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<div class="container mx-auto px-6 py-12 relative overflow-hidden pt-36">
-    <div class="row">
-        <div class="col-lg-12 text-center mb-8">
-            <h6 class="text-2xl font-serif font-semibold text-gray-700 animate-pulse-slow">
-                <span class="inline-block mr-3 text-accent-500 animate-bounce">🎟️</span>
-                Có mã giảm giá? <a href="#" class="relative text-accent-600 hover:text-accent-800 transition-colors duration-300 underline-hover group">
-                    Nhấn vào đây
-                    <span class="absolute bottom-0 left-0 w-0 h-1 bg-accent-500 transition-all duration-300 group-hover:w-full"></span>
-                </a> để nhập mã của bạn
-            </h6>
-        </div>
-    </div>
-    <div class="checkout__form bg-white/95 rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 transform transition-all duration-700 hover:shadow-3xl hover:-translate-y-3 backdrop-blur-md relative z-10 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-accent-100/30 to-primary-100/30 opacity-50 animate-gradient-flow"></div>
-        <h4 class="text-4xl font-serif font-extrabold text-gray-900 mb-8 text-center bg-gradient-to-r from-accent-600 via-primary-600 to-accent-400 bg-clip-text text-transparent animate-gradient-flow relative z-10">
-            Thông Tin Đặt Hàng
-        </h4>
-        <form action="@Url.Action("DatHang", "HoaDon")" method="post" class="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
-            <div class="lg:col-span-1 space-y-6">
-                <div class="checkout__input animate-fade-in-up">
-                    <label for="hoten" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Họ Tên <span class="text-accent-500">*</span></label>
-                    <input type="text" id="hoten" name="hoten" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md">
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="checkout__input animate-fade-in-up delay-100">
-                        <label for="sdt" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Số điện thoại <span class="text-accent-500">*</span></label>
-                        <input type="text" id="sdt" name="sdt" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md">
-                    </div>
-                    <div class="checkout__input animate-fade-in-up delay-200">
-                        <label for="email" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Email <span class="text-accent-500">*</span></label>
-                        <input type="text" id="email" name="email" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md">
-                    </div>
-                </div>
-                <div class="checkout__input animate-fade-in-up delay-300">
-                    <label for="diachi" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Địa chỉ <span class="text-accent-500">*</span></label>
-                    <input type="text" placeholder="Nhập địa chỉ giao hàng" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md" id="diachi" name="diachi">
-                </div>
-                <div class="checkout__input animate-fade-in-up delay-400">
-                    <label for="ghichu" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Ghi chú <span class="text-accent-500">*</span></label>
-                    <textarea placeholder="Ghi chú cho đơn hàng" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md resize-none h-32" id="ghichu" name="ghichu"></textarea>
-                </div>
-            </div>
-            <div class="lg:col-span-1">
-                <div class="checkout__order bg-gradient-to-br from-white to-primary-50 rounded-2xl p-8 shadow-inner animate-fade-in-right relative overflow-hidden">
-                    <div class="absolute inset-0 bg-accent-100/20 animate-pulse-slow"></div>
-                    <h4 class="text-3xl font-serif font-extrabold text-gray-900 mb-6 text-center bg-gradient-to-r from-accent-600 via-primary-600 to-accent-400 bg-clip-text text-transparent animate-gradient-flow relative z-10">
-                        Đơn Hàng Của Bạn
-                    </h4>
-                    <div class="checkout__order__products text-xl font-bold text-gray-800 mb-5 relative z-10">Sản Phẩm <span class="text-primary-900 font-extrabold">Tổng</span></div>
-                    <ul class="space-y-5 mb-8 relative z-10">
-                        @foreach (var item in Model)
-                        {
-                            <input type="hidden" name="selectedIds" value="@item.ShoeDetailID">
-                            <input type="hidden" name="quantities" value="@item.SoLuong">
-                            decimal tong = item.SoLuong * item.ChiTietGiay.Gia;
-                            <li class="flex justify-between items-center text-lg font-semibold text-gray-800 animate-slide-in border-b border-gray-100 pb-3 hover:bg-accent-50/50 transition-all duration-300 rounded-lg px-3">
-                                <span class="flex-1 truncate">@item.ChiTietGiay.Giay.TenGiay (@item.ChiTietGiay.MauSac.TenMau, @item.ChiTietGiay.KichThuoc.TenKichThuoc) x @item.SoLuong</span>
-                                <span class="text-primary-900 font-extrabold">@item.ChiTietGiay.Gia.ToString("N0") VNĐ</span>
-                            </li>
-                        }
-                    </ul>
-                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
-                        Tổng tiền hàng <span  class="text-accent-600">@ViewBag.TongTien1.ToString("N0") VNĐ</span>
-                    </div>
-                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
-                        Phí vận chuyển  <span  class="text-accent-600">@ViewBag.Ship.ToString("N0") VNĐ</span>
-                    </div>
-                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
-                        Tổng <span id="tongtien" name="tongtien" class="text-accent-600">@ViewBag.TongTien.ToString("N0") VNĐ</span>
-                    </div>
-                    <div class="checkout__input__checkbox mb-6 relative z-10">
-                        <label for="payment" class="flex items-center text-lg font-semibold text-gray-800 cursor-pointer group">
-                            Thanh toán khi nhận
-                            <input type="radio" name="phuongthuc" id="payment" value="0"
-                                   class="ml-4 w-6 h-6 border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-accent-500 transition-all duration-200 cursor-pointer checked:bg-accent-500 checked:border-accent-500">
-                        </label>
-                    </div>
-
-                    <div class="checkout__input__checkbox mb-8 relative z-10">
-                        <label for="paypal" class="flex items-center text-lg font-semibold text-gray-800 cursor-pointer group">
-                            Thanh toán VnPay
-                            <input type="radio" name="phuongthuc" id="paypal" value="3"
-                                   class="ml-4 w-6 h-6 border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-accent-500 transition-all duration-200 cursor-pointer checked:bg-accent-500 checked:border-accent-500">
-                        </label>
-                    </div>
-
-                    <!-- Hidden input để truyền lên server -->
-                    <input type="hidden" id="selectedMethod" name="selectedMethod" value="">
-                    <input type="hidden" id="selectedMethod" name="PhuongThuc" />
-                    <button type="submit" id="submit-order" class="site-btn w-full py-4 bg-gradient-to-r from-accent-600 to-primary-600 text-white font-extrabold rounded-2xl hover:from-accent-700 hover:to-primary-700 transition-all duration-500 transform hover:scale-105 hover:shadow-xl animate-pulse-slow text-xl relative z-10 overflow-hidden">
-                        <span class="relative z-10">Đặt Hàng</span>
-                        <span class="absolute inset-0 bg-accent-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
-                    </button>
-                </div>
-            </div>
-        </form>
-        <!-- Enhanced Dream Elements -->
-        <div class="dream-element w-96 h-96 bg-accent-200/30 top-[-120px] left-[-120px] animate-dream-float"></div>
-        <div class="dream-element w-80 h-80 bg-primary-100/30 bottom-[-100px] right-[-100px] animate-dream-float reverse"></div>
-        <div class="dream-element w-64 h-64 bg-accent-100/30 top-[40%] left-[5%] animate-dream-float delay-200"></div>
-        <div class="dream-element w-56 h-56 bg-primary-200/30 bottom-[15%] right-[5%] animate-dream-float reverse delay-300"></div>
-    </div>
-</div>
-
 <style>
     .checkout__form {
         position: relative;
@@ -290,9 +186,160 @@
     .group:hover .underline-hover {
         text-decoration: none;
     }
+
+    .error-message {
+        transition: all 0.3s;
+        min-height: 1rem; /* đảm bảo div luôn chiếm không gian */
+    }
 </style>
 
+<div class="container mx-auto px-6 py-12 relative overflow-hidden pt-36">
+    <div class="row">
+        <div class="col-lg-12 text-center mb-8">
+            <h6 class="text-2xl font-serif font-semibold text-gray-700 animate-pulse-slow">
+                <span class="inline-block mr-3 text-accent-500 animate-bounce">🎟️</span>
+                Có mã giảm giá? <a href="#" class="relative text-accent-600 hover:text-accent-800 transition-colors duration-300 underline-hover group">
+                    Nhấn vào đây
+                    <span class="absolute bottom-0 left-0 w-0 h-1 bg-accent-500 transition-all duration-300 group-hover:w-full"></span>
+                </a> để nhập mã của bạn
+            </h6>
+        </div>
+    </div>
+    <div class="checkout__form bg-white/95 rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 transform transition-all duration-700 hover:shadow-3xl hover:-translate-y-3 backdrop-blur-md relative z-10 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-accent-100/30 to-primary-100/30 opacity-50 animate-gradient-flow"></div>
+        <h4 class="text-4xl font-serif font-extrabold text-gray-900 mb-8 text-center bg-gradient-to-r from-accent-600 via-primary-600 to-accent-400 bg-clip-text text-transparent animate-gradient-flow relative z-10">
+            Thông Tin Đặt Hàng
+        </h4>
+        <div id="checkout-errors" class="bg-red-100 text-red-800 p-4 rounded mb-4 hidden"></div>
+        <form action="@Url.Action("DatHang", "HoaDon")" method="post" class="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="checkout__input animate-fade-in-up">
+                    <label for="hoten" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Họ Tên <span class="text-accent-500">*</span></label>
+                    
+                    <input type="text" id="hoten" name="hoten" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md">
+                    <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-hoten"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="checkout__input animate-fade-in-up delay-100">
+                        <label for="sdt" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Số điện thoại <span class="text-accent-500">*</span></label>
+                        <input type="text" id="sdt" name="sdt" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md">
+                        <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-sdt"></div>
+                    </div>
+
+                    <div class="checkout__input animate-fade-in-up delay-200">
+                        <label for="email" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Email <span class="text-accent-500">*</span></label>
+                        <input type="text" id="email" name="email" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md">
+                        <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-email"></div>
+                    </div>
+                </div>
+                <div class="checkout__input animate-fade-in-up delay-300">
+                    <label for="diachi" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Địa chỉ <span class="text-accent-500">*</span></label>
+                    <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-province"></div>
+                    <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-district"></div>
+                    <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-ward"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <label>Tỉnh/Thành phố</label>
+                        
+                        <select id="province">
+
+                            <option value="">-- Chọn tỉnh --</option>
+
+                            @foreach (var p in ViewBag.Provinces)
+                            {
+                                <option value="@((int)p["ProvinceID"])">@p["ProvinceName"]</option>
+                            }
+                        </select>
+
+                        <label>Quận/Huyện</label>
+                        
+                        <select id="district">
+                            <option value="">-- Chọn quận/huyện --</option>
+                        </select>
+
+                        <label>Xã/Phường</label>
+                       
+                        <select id="ward" name="wardCode">
+                            <option value="">-- Chọn xã/phường --</option>
+                        </select>
+                    </div>
+                    <input type="text" placeholder="Nhập địa chỉ giao hàng" name="diachi" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md" id="diachi">
+                    <input type="hidden" name="diachi_full" id="diachi_full">
+                    <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-diachi"></div>
+                </div>
+                <div class="checkout__input animate-fade-in-up delay-400">
+                    <label for="ghichu" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Ghi chú <span class="text-accent-500">*</span></label>
+                    <textarea placeholder="Ghi chú cho đơn hàng" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md resize-none h-32" id="ghichu" name="ghichu"></textarea>
+                </div>
+
+            </div>
+            <div class="lg:col-span-1">
+                <div class="checkout__order bg-gradient-to-br from-white to-primary-50 rounded-2xl p-8 shadow-inner animate-fade-in-right relative overflow-hidden">
+                    <div class="absolute inset-0 bg-accent-100/20 animate-pulse-slow"></div>
+                    <h4 class="text-3xl font-serif font-extrabold text-gray-900 mb-6 text-center bg-gradient-to-r from-accent-600 via-primary-600 to-accent-400 bg-clip-text text-transparent animate-gradient-flow relative z-10">
+                        Đơn Hàng Của Bạn
+                    </h4>
+                    <div class="checkout__order__products text-xl font-bold text-gray-800 mb-5 relative z-10">Sản Phẩm <span class="text-primary-900 font-extrabold"></span></div>
+                    <ul class="space-y-5 mb-8 relative z-10">
+                        @foreach (var item in Model)
+                        {
+                            <input type="hidden" name="selectedIds" value="@item.ShoeDetailID">
+                            <input type="hidden" name="quantities" value="@item.SoLuong">
+                            decimal tong = item.SoLuong * item.ChiTietGiay.Gia;
+                            <li class="flex justify-between items-center text-lg font-semibold text-gray-800 animate-slide-in border-b border-gray-100 pb-3 hover:bg-accent-50/50 transition-all duration-300 rounded-lg px-3">
+                                <span class="flex-1 truncate">@item.ChiTietGiay.Giay.TenGiay (@item.ChiTietGiay.MauSac.TenMau, @item.ChiTietGiay.KichThuoc.TenKichThuoc) x @item.SoLuong</span>
+                                <span class="text-primary-900 font-extrabold">@item.ChiTietGiay.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
+                            </li>
+                        }
+                    </ul>
+                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
+                        Tổng tiền hàng <span class="text-accent-600">@ViewBag.TongTien1.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
+                    </div>
+                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
+                        Phí vận chuyển  <span id="ship" class="text-accent-600"> 0 Vnđ</span>
+                        <input type="hidden" id="shipInput" name="ship" />
+                    </div>
+                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
+                        Tổng <span id="tongtien" name="tongtien" class="text-accent-600">@ViewBag.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
+                    </div>
+                    <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-phuongthuc"></div>
+                    <div class="checkout__input__checkbox mb-6 relative z-10">
+                        <label for="payment" class="flex items-center text-lg font-semibold text-gray-800 cursor-pointer group">
+                            Thanh toán khi nhận
+                            <input type="radio" name="phuongthuc" id="payment" value="0"
+                                   class="ml-4 w-6 h-6 border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-accent-500 transition-all duration-200 cursor-pointer checked:bg-accent-500 checked:border-accent-500">
+                        </label>
+                    </div>
+
+                    <div class="checkout__input__checkbox mb-8 relative z-10">
+                        <label for="paypal" class="flex items-center text-lg font-semibold text-gray-800 cursor-pointer group">
+                            Thanh toán VnPay
+                            <input type="radio" name="phuongthuc" id="paypal" value="3"
+                                   class="ml-4 w-6 h-6 border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-accent-500 transition-all duration-200 cursor-pointer checked:bg-accent-500 checked:border-accent-500">
+                        </label>
+                    </div>
+
+                    <!-- Hidden input để truyền lên server -->
+                    <input type="hidden" id="selectedMethod" name="selectedMethod" value="">
+                    <input type="hidden" id="selectedMethod" name="PhuongThuc" />
+                    <button type="submit" id="submit-order" class="site-btn w-full py-4 bg-gradient-to-r from-accent-600 to-primary-600 text-white font-extrabold rounded-2xl hover:from-accent-700 hover:to-primary-700 transition-all duration-500 transform hover:scale-105 hover:shadow-xl animate-pulse-slow text-xl relative z-10 overflow-hidden">
+                        <span class="relative z-10">Đặt Hàng</span>
+                        <span class="absolute inset-0 bg-accent-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <!-- Enhanced Dream Elements -->
+        <div class="dream-element w-96 h-96 bg-accent-200/30 top-[-120px] left-[-120px] animate-dream-float"></div>
+        <div class="dream-element w-80 h-80 bg-primary-100/30 bottom-[-100px] right-[-100px] animate-dream-float reverse"></div>
+        <div class="dream-element w-64 h-64 bg-accent-100/30 top-[40%] left-[5%] animate-dream-float delay-200"></div>
+        <div class="dream-element w-56 h-56 bg-primary-200/30 bottom-[15%] right-[5%] animate-dream-float reverse delay-300"></div>
+    </div>
+</div>
+
+
 <script>
+    
+
     document.addEventListener('DOMContentLoaded', function () {
         const radios = document.querySelectorAll('input[name="phuongthuc"]');
         const hiddenInput = document.getElementById('selectedMethod');
@@ -303,11 +350,148 @@
             });
         });
 
-        document.getElementById('submit-order').addEventListener('click', function (e) {
-            if (!document.querySelector('input[name="phuongthuc"]:checked')) {
-                alert('Vui lòng chọn phương thức thanh toán');
-                e.preventDefault();
+        // document.getElementById('submit-order').addEventListener('click', function (e) {
+        //     if (!document.querySelector('input[name="phuongthuc"]:checked')) {
+        //         alert('Vui lòng chọn phương thức thanh toán');
+        //         e.preventDefault();
+        //     }
+        // });
+        // Chọn tỉnh -> load quận
+        $("#province").change(function () {
+            var provinceId = parseInt($(this).val());
+            if (!provinceId) {
+                $("#district").html('<option value="">-- Chọn quận/huyện --</option>');
+                $("#ward").html('<option value="">-- Chọn xã/phường --</option>');
+                return;
             }
+
+            $.post("/HoaDon/GetDistricts", { provinceId: provinceId }, function (data) {
+                $("#district").html('<option value="">-- Chọn quận/huyện --</option>');
+                $("#ward").html('<option value="">-- Chọn xã/phường --</option>');
+                $.each(data, function (i, d) {
+                    $("#district").append(`<option value="${d.id}">${d.name}</option>`);
+                });
+            });
+        });
+
+        // Chọn quận -> load xã
+        $("#district").change(function () {
+            var districtId = parseInt($(this).val());
+            if (!districtId) {
+                $("#ward").html('<option value="">-- Chọn xã/phường --</option>');
+                return;
+            }
+
+            $.post("/HoaDon/GetWards", { districtId: districtId }, function (data) {
+                $("#ward").html('<option value="">-- Chọn xã/phường --</option>');
+                $.each(data, function (i, w) {
+                    $("#ward").append(`<option value="${w.id}">${w.name}</option>`);
+                });
+            });
+        });
+        // tiền hàng chưa ship
+        let tongHang = parseInt("@ViewBag.TongTien");
+
+        // Chọn xã -> tính phí
+        $("#ward").change(function () {
+            var districtId = parseInt($("#district").val()); // parseInt
+            var wardCode = $(this).val();
+            if (!districtId || !wardCode) return;
+
+            $.post("/HoaDon/TinhPhi", { districtId: districtId, wardCode: wardCode }, function (res) {
+                if (res.success) {
+                    $("#ship").text(res.ship.toLocaleString('vi-VN') + " ₫");
+                    $("#shipInput").val(res.ship);
+
+                    let tongMoi = tongHang + res.ship;
+                    $("#tongtien").text(tongMoi.toLocaleString('vi-VN') + " ₫");
+                } else {
+                    $("#ship").text("0 VNĐ");
+                    $("#shipInput").val(0);
+
+                    // ❌ Nếu lỗi thì reset về tổng gốc
+                    $("#tongtien").text(tongHang.toLocaleString('vi-VN') + " ₫");
+                    console.error("TinhPhi error:", res.error);
+                }
+            });
+        });
+        function updateDiaChiFull() {
+            var province = document.getElementById('province');
+            var district = document.getElementById('district');
+            var ward = document.getElementById('ward');
+            var diachiInput = document.getElementById('diachi');
+            var diachiFull = document.getElementById('diachi_full');
+
+            var text = '';
+            if (province.selectedOptions.length > 0) text += province.selectedOptions[0].text + ', ';
+            if (district.selectedOptions.length > 0) text += district.selectedOptions[0].text + ', ';
+            if (ward.selectedOptions.length > 0) text += ward.selectedOptions[0].text + ', ';
+            text += diachiInput.value; // địa chỉ chi tiết
+            diachiFull.value = text;
+        }
+        document.getElementById('province').addEventListener('change', updateDiaChiFull);
+        document.getElementById('district').addEventListener('change', updateDiaChiFull);
+        document.getElementById('ward').addEventListener('change', updateDiaChiFull);
+        document.getElementById('diachi').addEventListener('input', updateDiaChiFull);
+        //
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault(); // Ngăn form submit tạm thời
+
+            let hoten = document.getElementById('hoten').value.trim();
+            let sdt = document.getElementById('sdt').value.trim();
+            let email = document.getElementById('email').value.trim();
+            let province = document.getElementById('province').value;
+            let district = document.getElementById('district').value;
+            let ward = document.getElementById('ward').value;
+            let diachi = document.getElementById('diachi').value.trim();
+            let phuongthuc = document.querySelector('input[name="phuongthuc"]:checked');
+            // Regex kiểm tra email
+            let emailRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            // Regex kiểm tra số điện thoại 10 số
+            let sdtRegex = /^0\d{9}$/;
+           
+
+            // reset lỗi
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.innerText = '';
+                el.classList.add('hidden');
+            });
+
+            // object lưu lỗi
+            let errors = {};
+
+
+            if (hoten === '') errors.hoten = 'Họ tên không được để trống.';
+            if (sdt === '') errors.sdt = 'Số điện thoại không được để trống.';
+            else if (!sdtRegex.test(sdt)) errors.sdt = 'Số điện thoại phải bắt đầu bằng 0 và đúng 10 số.';
+            if (email === '') errors.email = 'Email không được để trống.';
+            else if (!emailRegex.test(email)) errors.email = 'Email không hợp lệ.';
+            if (province === '') errors.province = 'Vui lòng chọn tỉnh/thành phố.';
+            if (district === '') errors.district = 'Vui lòng chọn quận/huyện.';
+            if (ward === '') errors.ward = 'Vui lòng chọn xã/phường.';
+            if (diachi === '') errors.diachi = 'Địa chỉ chi tiết không được để trống.';
+            if (!phuongthuc) errors.phuongthuc = 'Vui lòng chọn phương thức thanh toán.';
+
+
+
+            // Hiển thị lỗi từng input
+            Object.keys(errors).forEach(function (key) {
+                const el = document.getElementById('error-' + key);
+                if (el) {
+                    el.innerText = errors[key];
+                    el.classList.remove('hidden'); // hiện div lỗi
+                }
+            });
+
+            // Nếu còn lỗi, dừng submit
+            if (Object.keys(errors).length > 0) {
+                return false;
+            }
+
+            // Nếu không có lỗi, submit form
+            form.submit();
+
         });
     });
+
 </script>

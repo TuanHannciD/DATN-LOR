@@ -5,6 +5,9 @@ using AuthDemo.Data;
 using AuthDemo.Models.ViewModels;
 using AuthDemo.Models.Enums;
 using AuthDemo.Helpers;
+using AuthDemo.Areas.Admin.Services;
+using Newtonsoft.Json.Linq;
+using System.Drawing.Drawing2D;
 
 
 namespace Controllers
@@ -12,23 +15,94 @@ namespace Controllers
     public class HoaDonController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public HoaDonController(ApplicationDbContext context)
+        private readonly GhnService _ghn;
+        public HoaDonController(ApplicationDbContext context, GhnService ghn)
         {
+            _ghn = ghn;
             _context = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var provincesJson = await _ghn.GetProvinces();
+            var provinces = JObject.Parse(provincesJson)["data"];
+            ViewBag.Provinces = provinces;
             return View();
         }
-        // public IActionResult DanhSach()
-        // {
-        //     var lstDH= db.Don_Hang_Thanh_Toans.ToList();
-        //     return View(lstDH); 
-        // }
+
+        [HttpPost]
+        public async Task<JsonResult> GetDistricts(int provinceId)
+        {
+            if (provinceId <= 0) return Json(new object[0]);
+
+            var districtsJson = await _ghn.GetDistricts(provinceId);
+            var districts = JObject.Parse(districtsJson)["data"];
+
+            // Trả về JS đúng dạng { id, name }
+            var result = districts.Select(d => new
+            {
+                id = (int)d["DistrictID"],
+                name = (string)d["DistrictName"]
+            }).ToList();
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetWards(int districtId)
+        {
+            if (districtId <= 0) return Json(new object[0]);
+
+            var wardsJson = await _ghn.GetWards(districtId);
+            var wards = JObject.Parse(wardsJson)["data"];
+
+            var result = wards.Select(w => new
+            {
+                id = (string)w["WardCode"],
+                name = (string)w["WardName"]
+            }).ToList();
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> TinhPhi(int districtId, string wardCode)
+        {
+
+            if (districtId <= 0 || string.IsNullOrEmpty(wardCode))
+                return Json(new { success = false, ship = 0 });
+
+            try
+            {
+                var feeJson = await _ghn.TinhPhi(districtId, wardCode);
+                var obj = JObject.Parse(feeJson);
+
+                // Nếu GHN trả lỗi, data sẽ null
+                var total = obj["data"]?["total"]?.Value<int>() ?? 0;
+
+                return Json(new { success = total > 0, ship = total });
+            }
+            catch (Exception ex)
+            {
+                // log lỗi để debug
+                Console.WriteLine(ex.Message);
+                return Json(new { success = false, ship = 0, error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult PlaceOrder(string name, string phone, string address, int provinceId, int districtId, string wardCode, int shippingFee)
+        {
+            // TODO: lưu vào bảng HoaDon
+            // HoaDon.DiaChi = address + " - " + wardCode + " - " + districtId + " - " + provinceId
+            // HoaDon.PhiShip = shippingFee
+            // HoaDon.TongTien = TienHang + shippingFee
+            return RedirectToAction("Success");
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CheckOut(List<Guid> selectedIds, List<int> quantities)
+        public async Task<IActionResult> CheckOut(List<Guid> selectedIds, List<int> quantities)
         {
             var username = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(username))
@@ -57,16 +131,22 @@ namespace Controllers
 
                 int stock = item.ChiTietGiay.SoLuong;
                 int requestedQty = quantities[i];
+                var trangthai = item.ChiTietGiay.IsDelete;
+                if (trangthai == true)
+                {
+                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã ngừng kinh doanh và sẽ không thể đặt hàng.");
+                    hasInvalid = true;
 
+                }
                 if (stock == 0)
                 {
-                    warnings.Add($"Sản phẩm '{item.ChiTietGiay.Giay.TenGiay}' đã hết hàng và sẽ không thể đặt hàng.");
-                    
+                    warnings.Add($"Sản phẩm '{item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc})' đã hết hàng và sẽ không thể đặt hàng.");
+
                     hasInvalid = true;
                 }
                 else if (requestedQty > stock)
                 {
-                    warnings.Add($"Sản phẩm '{item.ChiTietGiay.Giay.TenGiay}' chỉ còn {stock} sản phẩm. Số lượng đã được cập nhật.");
+                    warnings.Add($"Sản phẩm '{item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc})' chỉ còn {stock} sản phẩm. Số lượng đã được cập nhật.");
                     item.SoLuong = stock;
                     hasInvalid = true;
                 }
@@ -78,18 +158,24 @@ namespace Controllers
                 TempData["CartWarnings"] = string.Join("<br/>", warnings);
                 return RedirectToAction("Index", "Cart");
             }
+            //  Gọi GHN API để lấy danh sách tỉnh/quận/xã
+            var provincesJson = await _ghn.GetProvinces();
+            var provinces = JObject.Parse(provincesJson)["data"];
+            ViewBag.Provinces = provinces;
 
+            //decimal ship = 0;
+            //var phiResult = await _ghn.TinhPhi(districtId, wardCode);
             // Nếu mọi thứ hợp lệ → sang trang thanh toán
-            decimal ship = 30000;
-            ViewBag.Ship = ship;
+
+
             ViewBag.TongTien1 = cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia);
-            ViewBag.TongTien = (cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia)) + ship;
+            ViewBag.TongTien = (cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia));
             return View(cartItems); // view: Views/HoaDon/CheckOut.cshtml
         }
 
         [HttpPost]
-        public IActionResult DatHang(string hoten, string email, string sdt, string diachi, string ghichu, string phuongthuc, List<Guid> selectedIds,
-    List<int> quantities)
+        public IActionResult DatHang(string hoten, string email, string sdt, string diachi_full, string ghichu, string phuongthuc, List<Guid> selectedIds,
+    List<int> quantities, decimal ship)
         {
             var check = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(check))
@@ -123,7 +209,7 @@ namespace Controllers
                 if (product == null || product.ChiTietGiay.SoLuong == 0 || product.ChiTietGiay.IsDelete == true)
                 {
                     warnings.Add($"Sản phẩm '{product?.ChiTietGiay?.Giay?.TenGiay}' đã hết hàng và không thể đặt hoặc đã ngừng kinh doanh.");
-                    
+
                     hasInvalid = true;
                     continue;
                 }
@@ -135,7 +221,7 @@ namespace Controllers
                     _context.SaveChanges(); // cập nhật lại số lượng trong giỏ
                     hasInvalid = true;
                 }
-                
+
                 if (requestedQty <= product.ChiTietGiay.SoLuong)
                 {
 
@@ -149,7 +235,7 @@ namespace Controllers
             }
 
             decimal tongTien = 0;
-            decimal ship = 30000;
+
             for (int i = 0; i < selectedIds.Count; i++)
             {
                 tongTien += (cartItems[i].ChiTietGiay.Gia * quantities[i]) + ship;
@@ -162,7 +248,7 @@ namespace Controllers
                 HoTen = hoten,
                 Email = email,
                 SoDienThoai = sdt,
-                DiaChi = diachi,
+                DiaChi = diachi_full,
                 TongTien = tongTien,
                 TrangThai = TrangThaiHoaDon.ChoXacNhan,
                 DaThanhToan = false,
@@ -197,12 +283,11 @@ namespace Controllers
                 };
                 _context.ChiTietHoaDons.Add(hdct);
 
-                
+
             }
 
             _context.ChiTietGioHangs.RemoveRange(cartItems);
             _context.SaveChanges();
-
             return RedirectToAction("DonHang", "HoaDon");
         }
 
@@ -214,74 +299,55 @@ namespace Controllers
 
             if (string.IsNullOrEmpty(check))
             {
-
                 return RedirectToAction("Login", "Account");
             }
 
-            //lấy iduser
-            var users = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check).UserID;
+            // Lấy id user
+            var user = _context.NguoiDungs.FirstOrDefault(a => a.TenDangNhap == check);
+            if (user == null) return RedirectToAction("Login", "Account");
+            var userId = user.UserID;
 
+            // Load tất cả hóa đơn của user cùng chi tiết
+            var hoaDonsEntities = _context.HoaDons
+                .Where(h => h.UserID == userId)
+                .OrderByDescending(h => h.NgayTao)
+                .Include(h => h.ChiTietHoaDons)
+                    .ThenInclude(c => c.ChiTietGiay)
+                        .ThenInclude(ctg => ctg.Giay)
+                .Include(h => h.ChiTietHoaDons)
+                    .ThenInclude(c => c.ChiTietGiay)
+                        .ThenInclude(ctg => ctg.MauSac)
+                .Include(h => h.ChiTietHoaDons)
+                    .ThenInclude(c => c.ChiTietGiay)
+                        .ThenInclude(ctg => ctg.KichThuoc)
+                .Include(h => h.ChiTietHoaDons)
+                    .ThenInclude(c => c.ChiTietGiay)
+                        .ThenInclude(ctg => ctg.AnhGiays)
+                .ToList(); // load toàn bộ entity
 
-
-
-            var hoaDonsRaw = _context.HoaDons
-    .Where(h => h.UserID == users)
-    .OrderByDescending(h => h.NgayTao)
-    .Select(h => new
-    {
-        h.BillID,
-        h.HoTen,
-        h.SoDienThoai,
-        h.DiaChi,
-        h.TrangThai,
-        h.NgayTao,
-        h.TongTien,
-        h.PhuongThucThanhToan,
-        ChiTiet = _context.ChiTietHoaDons
-            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.Giay)
-            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.MauSac)
-            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.KichThuoc)
-            .Where(c => c.BillID == h.BillID)
-            .Select(c => new
-            {
-                TenSanPham = c.ChiTietGiay.Giay.TenGiay,
-                HinhAnh = c.ChiTietGiay.Giay.AnhDaiDien,
-                Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
-                MauSac = c.ChiTietGiay.MauSac.TenMau,
-                c.SoLuong,
-                c.DonGia
-            }).ToList()
-    })
-    .ToList();
-
-            // Map sang ViewModel và xử lý Enum
-            var hoaDons = hoaDonsRaw.Select(h => new HoaDonKHVM
-
+            // Map sang ViewModel
+            var hoaDons = hoaDonsEntities.Select(h => new HoaDonKHVM
             {
                 BillID = h.BillID,
                 HoTen = h.HoTen,
                 SoDienThoai = h.SoDienThoai,
                 DiaChi = h.DiaChi,
-                TrangThai = EnumHelper.GetDisplayName((TrangThaiHoaDon)h.TrangThai),
+                TrangThai = (TrangThaiHoaDon)h.TrangThai,
                 NgayTao = h.NgayTao,
                 TongTien = h.TongTien,
-
-                PhuongThuc = Enum.GetName(typeof(PhuongThucThanhToan), h.PhuongThucThanhToan) ?? "Chưa xác định",
-                ChiTiet = h.ChiTiet.Select(c => new ChiTietHoaDonKHVM
+                PhuongThuc = (PhuongThucThanhToan)h.PhuongThucThanhToan,
+                ChiTiet = h.ChiTietHoaDons.Select(c => new ChiTietHoaDonKHVM
                 {
-                    TenSanPham = c.TenSanPham,
-                    HinhAnh = c.HinhAnh,
-                    Size = c.Size,
-                    MauSac = c.MauSac,
+                    TenSanPham = c.ChiTietGiay.Giay.TenGiay,
+                    HinhAnh = c.ChiTietGiay.AnhGiays.FirstOrDefault()?.DuongDanAnh ?? "/images/default.png",
+                    Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
+                    MauSac = c.ChiTietGiay.MauSac.TenMau,
                     SoLuong = c.SoLuong,
                     DonGia = c.DonGia
                 }).ToList()
             }).ToList();
 
-
             return View(hoaDons);
-
-
         }
         [HttpGet]
         public IActionResult ChiTietDonHang(Guid HoaDonId)
@@ -300,59 +366,71 @@ namespace Controllers
 
 
             var hoaDonsRaw = _context.HoaDons
-    .Where(h => h.BillID == HoaDonId)
-    .OrderByDescending(h => h.NgayTao)
-    .Select(h => new
-    {
-        h.BillID,
-        h.HoTen,
-        h.SoDienThoai,
-        h.DiaChi,
-        h.TrangThai,
-        h.NgayTao,
-        h.TongTien,
-        h.PhuongThucThanhToan,
-        ChiTiet = _context.ChiTietHoaDons
-            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.Giay)
-            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.MauSac)
-            .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.KichThuoc)
-            .Where(c => c.BillID == h.BillID)
-            .Select(c => new
-            {
+               .Where(h => h.BillID == HoaDonId)
+               .OrderByDescending(h => h.NgayTao)
+               .Select(h => new
+               {
+                   h.BillID,
+                   h.HoTen,
+                   h.SoDienThoai,
+                   h.DiaChi,
+                   h.TrangThai,
+                   h.NgayTao,
+                   h.TongTien,
+                   h.PhuongThucThanhToan,
+                   ChiTiet = _context.ChiTietHoaDons
+               .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.Giay)
+               .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.MauSac)
+               .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.KichThuoc)
+               .Where(c => c.BillID == h.BillID)
+               .Select(c => new
+               {
                 TenSanPham = c.ChiTietGiay.Giay.TenGiay,
                 HinhAnh = c.ChiTietGiay.Giay.AnhDaiDien,
                 Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
                 MauSac = c.ChiTietGiay.MauSac.TenMau,
                 c.SoLuong,
                 c.DonGia
-            }).ToList()
-    })
-    .ToList();
+               }).ToList()
+               })
+          .ToList();
 
             // Map sang ViewModel và xử lý Enum
-            var hoaDons = hoaDonsRaw.Select(h => new HoaDonKHVM
+            var hoaDons = hoaDonsRaw.Select(h =>
             {
-                BillID = h.BillID,
-                HoTen = h.HoTen,
-                SoDienThoai = h.SoDienThoai,
-                DiaChi = h.DiaChi,
-                TrangThai = Enum.GetName(typeof(TrangThaiHoaDon), h.TrangThai) ?? "Chưa xác định",
-                NgayTao = h.NgayTao,
-                TongTien = h.TongTien,
-                PhuongThuc = Enum.GetName(typeof(PhuongThucThanhToan), h.PhuongThucThanhToan) ?? "Chưa xác định",
-                ChiTiet = h.ChiTiet.Select(c => new ChiTietHoaDonKHVM
+                var chiTietList = h.ChiTiet.Select(c => new ChiTietHoaDonKHVM
                 {
                     TenSanPham = c.TenSanPham,
                     HinhAnh = c.HinhAnh,
                     Size = c.Size,
                     MauSac = c.MauSac,
                     SoLuong = c.SoLuong,
-                    DonGia = c.DonGia
-                }).ToList()
+                    DonGia = c.DonGia,
+                    ThanhTien = c.DonGia * c.SoLuong
+                }).ToList();
 
-            }).ToList();
-            decimal ship = 30000;
-            ViewBag.Ship = ship;
+                // Tính tổng tiền sản phẩm
+                decimal tongSanPham = chiTietList.Sum(c => c.ThanhTien);
+
+                // Tính phí ship (TongTien - Tổng tiền sản phẩm)
+                decimal phiShip = h.TongTien - tongSanPham;
+
+                ViewBag.ThanhTien = tongSanPham;
+                ViewBag.Ship = phiShip;
+
+                return new HoaDonKHVM
+                {
+                    BillID = h.BillID,
+                    HoTen = h.HoTen,
+                    SoDienThoai = h.SoDienThoai,
+                    DiaChi = h.DiaChi,
+                    TrangThai = (TrangThaiHoaDon)h.TrangThai,
+                    NgayTao = h.NgayTao,
+                    TongTien = h.TongTien,
+                    PhuongThuc = (PhuongThucThanhToan)h.PhuongThucThanhToan,
+                    ChiTiet = chiTietList
+                };
+            }).ToList();          
             return View(hoaDons);
 
 
@@ -393,9 +471,9 @@ namespace Controllers
                     HoTen = h.HoTen,
                     SoDienThoai = h.SoDienThoai,
                     DiaChi = h.DiaChi,
-                    TrangThai = Enum.GetName(enumType, h.TrangThai) ?? "Chưa xác định",
+                    TrangThai = (TrangThaiHoaDon)h.TrangThai,
 
-                    NgayTao = h.NgayTao ,
+                    NgayTao = h.NgayTao,
                     TongTien = h.TongTien,
                     ChiTiet = _context.ChiTietHoaDons
                         .Where(c => c.BillID == h.BillID)
