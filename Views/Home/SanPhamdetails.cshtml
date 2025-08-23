@@ -220,12 +220,13 @@
             </h2>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+           
             @foreach (var item in Model.SanPhamLienQuan)
             {
                 <div class="product__item transform hover:-translate-y-2 transition-all duration-300 hover:shadow-xl rounded-lg overflow-hidden">
                     <a asp-controller="Home" asp-action="SanPhamdetails" asp-route-id="@item.Giay.ShoeID">
                         <div class="w-full h-64 bg-gray-200 overflow-hidden">
-                            <img src="@Url.Content("~/AnhDoiGiay/" + item.Giay.AnhDaiDien)" alt="@item.Giay.TenGiay"
+                            <img src="@item.AnhDaiDien" alt="@item.Giay.TenGiay"
                                  class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300">
                         </div>
                         <div class="p-4 text-center">
