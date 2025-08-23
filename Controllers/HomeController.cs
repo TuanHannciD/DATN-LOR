@@ -89,12 +89,16 @@ public class HomeController : Controller
         var sanPhamLienQuan = _context.ChiTietGiays
      .Include(c => c.Giay)
      .Include(c => c.DanhMuc)
+     .Include(c => c.AnhGiays)
      .Where(c => danhmuclist.Contains(c.DanhMuc) && c.ShoeID != sanPham.ShoeID)
      .GroupBy(c => c.ShoeID)
      .Select(g => new SanPhamLqVM
      {
          Giay = g.First().Giay,
-         GiaMin = g.Min(x => x.Gia)
+         GiaMin = g.Min(x => x.Gia),
+         AnhDaiDien = g.SelectMany(x => x.AnhGiays)
+                      .Select(img => img.DuongDanAnh)
+                      .FirstOrDefault()
      })
      .ToList();
 
