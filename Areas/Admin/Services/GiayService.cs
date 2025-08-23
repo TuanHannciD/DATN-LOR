@@ -20,7 +20,25 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                return [.. _db.Giays];
+                return _db.Giays
+                    .Where(g => !g.IsDelete)   // chỉ lấy chưa xóa
+                    .AsNoTracking()            // tối ưu khi chỉ đọc
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Lỗi khi lấy danh sách sản phẩm: " + ex.Message, ex);
+            }
+        }
+
+        public IEnumerable<Giay> GetAllDelete()
+        {
+            try
+            {
+                return _db.Giays
+                    .Where(g => g.IsDelete)   // chỉ lấy chưa xóa
+                    .AsNoTracking()            // tối ưu khi chỉ đọc
+                    .ToList();
             }
             catch (Exception ex)
             {
@@ -109,6 +127,15 @@ namespace AuthDemo.Areas.Admin.Services
                 var obj = await _db.Giays.FindAsync(id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
+
+                // Xóa tất cả chi tiết giày liên quan
+                if (obj.ChiTietGiays != null && obj.ChiTietGiays.Count > 0)
+                {
+                    foreach (var ct in obj.ChiTietGiays)
+                    {
+                        ct.IsDelete = true;
+                    }
+                }
                 await _db.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chi tiết giày");
 
@@ -159,6 +186,24 @@ namespace AuthDemo.Areas.Admin.Services
                         .FirstOrDefault() ?? "Chưa có"
                 }).ToList();
             return giayList;
+        }
+
+        public async Task<ApiResponse<string>> Restore(Guid id)
+        {
+            try
+            {
+                var obj = await _db.Giays.FindAsync(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang khôi phục");
+                obj.IsDelete = false;
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã khôi phục giày thành công");
+
+
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi khôi phục:" + ex.Message);
+            }
         }
     }
 }

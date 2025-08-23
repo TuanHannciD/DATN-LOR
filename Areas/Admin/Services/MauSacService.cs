@@ -28,6 +28,20 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<IEnumerable<MauSac>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
             }
         }
+        public async Task<ApiResponse<IEnumerable<MauSac>>> GetAllDelete()
+        {
+            try
+            {
+                var data = await _db.MauSacs
+                    .Where(ct => ct.IsDelete)
+                    .ToListAsync();
+                return ApiResponse<IEnumerable<MauSac>>.SuccessResponse(data, "Lấy danh sách thành công");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<MauSac>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
+            }
+        }
         public MauSac? GetById(Guid id)
         {
             if (id == Guid.Empty) throw new ArgumentException("ID không hợp lệ!");
@@ -107,6 +121,14 @@ namespace AuthDemo.Areas.Admin.Services
                 var obj = _db.MauSacs.Find(id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
                 obj.IsDelete = true;
+                // Xóa tất cả chi tiết giày liên quan
+                if (obj.ChiTietGiays != null && obj.ChiTietGiays.Count > 0)
+                {
+                    foreach (var ct in obj.ChiTietGiays)
+                    {
+                        ct.IsDelete = true;
+                    }
+                }
                 await _db.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chất liệu");
 
@@ -116,9 +138,25 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
             }
         }
+
+        public async Task<ApiResponse<string>> Restore(Guid id)
+        {
+            try
+            {
+                var obj = await _db.MauSacs.FindAsync(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy màu sắc đang khôi phục");
+                obj.IsDelete = false;
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã khôi phục màu sắc thành công");
+
+
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi khôi phục:" + ex.Message);
+            }
+        }
     }
 
-    internal class CreteMauSac
-    {
-    }
+
 }

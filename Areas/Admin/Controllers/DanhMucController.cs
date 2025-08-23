@@ -28,6 +28,19 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         [HttpGet]
         public IActionResult Create() => View();
+        [HttpGet]
+        public async Task<IActionResult> GetAllDelete()
+        {
+            try
+            {
+                var list = await _danhmucSV.GetAllDelete();
+                return Json(list);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -78,6 +91,19 @@ namespace AuthDemo.Areas.Admin.Controllers
             TempData["ToastMessage"] = response.Message;
             TempData["ToastType"] = response.Success;
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            if (id == Guid.Empty)
+                return Json(new { success = false, message = "Lỗi ID trống hoặc lỗi khác" });
+            var response = await _danhmucSV.Restore(id);
+            return Json(new
+            {
+                success = response.Success,
+                message = response.Message
+            });
         }
     }
 }

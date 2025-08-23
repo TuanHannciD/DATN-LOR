@@ -63,12 +63,38 @@ namespace AuthDemo.Areas.Admin.Services
                 var obj = _db.DanhMucs.Find(id);
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy danh mục đang xóa");
                 obj.IsDelete = true;
+                // Xóa tất cả chi tiết giày liên quan
+                if (obj.ChiTietGiays != null && obj.ChiTietGiays.Count > 0)
+                {
+                    foreach (var ct in obj.ChiTietGiays)
+                    {
+                        ct.IsDelete = true;
+                    }
+                }
                 await _db.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("Success", "Đã xóa danh mục");
             }
             catch (Exception ex)
             {
                 return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
+            }
+        }
+
+        public async Task<ApiResponse<string>> Restore(Guid id)
+        {
+            try
+            {
+                var obj = await _db.DanhMucs.FindAsync(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy danh mục đang khôi phục");
+                obj.IsDelete = false;
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã khôi phục danh mục thành công");
+
+
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi khôi phục:" + ex.Message);
             }
         }
 
@@ -84,6 +110,20 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<IEnumerable<DanhMuc>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
             }
 
+        }
+        public async Task<ApiResponse<IEnumerable<DanhMuc>>> GetAllDelete()
+        {
+            try
+            {
+                var data = await _db.DanhMucs
+                    .Where(ct => ct.IsDelete)
+                    .ToListAsync();
+                return ApiResponse<IEnumerable<DanhMuc>>.SuccessResponse(data, "Lấy danh sách thành công");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<DanhMuc>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
+            }
         }
 
         public DanhMuc? GetById(Guid id)

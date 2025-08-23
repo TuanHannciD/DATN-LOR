@@ -9,9 +9,12 @@ namespace AuthDemo.Areas.Admin.Interface
     public interface IMauSacService
     {
         Task<ApiResponse<IEnumerable<MauSac>>> GetAll();
+        Task<ApiResponse<IEnumerable<MauSac>>> GetAllDelete();
+
         MauSac? GetById(Guid id);
         Task<ApiResponse<CreateMauSac>> AddAsync(CreateMauSac create);
         void Update(MauSac entity);
         Task<ApiResponse<string>> Delete(Guid id);
+        Task<ApiResponse<string>> Restore(Guid id);
     }
 }

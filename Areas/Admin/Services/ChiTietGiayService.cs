@@ -74,28 +74,41 @@ namespace AuthDemo.Areas.Admin.Services
         }
 
 
-        public ApiResponse<string> Delete(Guid id)
-        {
-            try
-            {
-                var obj = _db.ChiTietGiays.Find(id);
-                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
-
-                obj.IsDelete = true;
-                _db.SaveChanges();
-                return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chi tiết giày");
-            }
-            catch (Exception ex)
-            {
-                return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
-            }
-        }
         public async Task<ApiResponse<IEnumerable<IndexVM>>> GetAllIndexVMAsync()
         {
             try
             {
                 var data = await _db.ChiTietGiays
                     .Where(ct => !ct.IsDelete)
+                    .Select(ct => new IndexVM
+                    {
+                        ShoeDetailID = ct.ShoeDetailID,
+                        TenGiay = ct.Giay != null ? ct.Giay.TenGiay : "Chưa có",
+                        TenKichThuoc = ct.KichThuoc != null ? ct.KichThuoc.TenKichThuoc : "Chưa có",
+                        TenMau = ct.MauSac != null ? ct.MauSac.TenMau : "Chưa có",
+                        TenChatLieu = ct.ChatLieu != null ? ct.ChatLieu.TenChatLieu : "Chưa có",
+                        TenThuongHieu = ct.ThuongHieu != null ? ct.ThuongHieu.TenThuongHieu : "Chưa có",
+                        TenDanhMuc = ct.DanhMuc != null ? ct.DanhMuc.TenDanhMuc : "Chưa có",
+                        SoLuong = ct.SoLuong,
+                        Gia = ct.Gia
+                    })
+                    .ToListAsync();
+
+                return ApiResponse<IEnumerable<IndexVM>>.SuccessResponse(data, "Lấy danh sách thành công");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<IndexVM>>.FailResponse("Fail", "Lỗi khi lấy danh sách: " + ex.Message);
+            }
+        }
+        public async Task<ApiResponse<IEnumerable<IndexVM>>> GetAllDelete()
+        {
+            try
+            {
+
+                // Lọc các bản ghi chưa bị xóa
+                var data = await _db.ChiTietGiays
+                    .Where(ct => ct.IsDelete)
                     .Select(ct => new IndexVM
                     {
                         ShoeDetailID = ct.ShoeDetailID,
@@ -224,7 +237,39 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<CreateVM>.FailResponse("Exception", $"Có lỗi khi thêm/cập nhật chi tiết giày: {ex.Message}");
             }
         }
+        public ApiResponse<string> Delete(Guid id)
+        {
+            try
+            {
+                var obj = _db.ChiTietGiays.Find(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy đang xóa");
 
+                obj.IsDelete = true;
+                _db.SaveChanges();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã xóa chi tiết giày");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
+            }
+        }
+
+        public async Task<ApiResponse<string>> Restore(Guid id)
+        {
+            try
+            {
+                var obj = _db.ChiTietGiays.Find(id);
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy muốn khôi phục");
+
+                obj.IsDelete = false;
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Success", "Đã khôi phục thành công");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.FailResponse("Error", "Lỗi khi xóa:" + ex.Message);
+            }
+        }
     }
 }
 
