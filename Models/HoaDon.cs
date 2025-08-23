@@ -25,7 +25,7 @@ namespace AuthDemo.Models
         public PhuongThucVanChuyen PhuongThucVanChuyen { get; set; }
         public bool DaHuy { get; set; }
         [StringLength(255)]
-        public string ?GhiChu { get; set; }
+        public string ? GhiChu { get; set; }
         public DateTime? NgayGiaoHang { get; set; }
         [StringLength(255)]
         public decimal? GiamGiaPhanTram { get; set; } // % giảm giá toàn hóa đơn (nullable)

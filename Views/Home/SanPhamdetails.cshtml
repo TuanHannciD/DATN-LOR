@@ -10,7 +10,7 @@
 {
 
     <div id="toastSuccess"
-        class="toast-toast fixed top-6 right-6 z-50 bg-green-500 text-white p-4 rounded-xl shadow-lg flex items-center gap-3 opacity-0 transition-opacity duration-300">
+         class="toast-toast fixed top-6 right-6 z-50 bg-green-500 text-white p-4 rounded-xl shadow-lg flex items-center gap-3 opacity-0 transition-opacity duration-300">
         <div class="toast-icon text-xl">✔</div>
         <div class="toast-content">
             <strong>Thành công</strong><br />
@@ -57,10 +57,10 @@
         transition: all 0.3s ease !important;
     }
 
-    .owl-carousel .owl-nav button:hover {
-        background: #FF6B6B !important;
-        transform: scale(1.1) !important;
-    }
+        .owl-carousel .owl-nav button:hover {
+            background: #FF6B6B !important;
+            transform: scale(1.1) !important;
+        }
 
     .product__details__pic__item img,
     .product__details__pic__slider img {
@@ -87,10 +87,10 @@
         transition: opacity .3s;
     }
 
-    .toast.show {
-        display: flex;
-        opacity: 1;
-    }
+        .toast.show {
+            display: flex;
+            opacity: 1;
+        }
 
     .toast-close {
         cursor: pointer;
@@ -106,51 +106,53 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <!-- Product Images -->
             <div class="relative">
-                <div
-                    class="product__details__pic__item w-full max-w-xl mx-auto rounded-xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-500">
-                    <img class="product__details__pic__item--large w-[200px] h-[200px] object-cover"
-                        src="@Url.Content("~/AnhDoiGiay/" + Model.giay.AnhDaiDien)" alt="">
+                @{
+                    string anhChinhUrl = string.IsNullOrEmpty(Model.AnhDaiDien)
+                    ? Url.Content("~/images/no-image.png")
+                    : Model.AnhDaiDien; // vì trong DB đã là link full rồi
+                }
+                <div class="product__details__pic__item w-full max-w-xl mx-auto rounded-xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-500">
+                    <img id="mainProductImage" class="product__details__pic__item--large w-[200px] h-[200px] object-cover"
+                         src="@anhChinhUrl"
+                         alt="@Model.giay.TenGiay">
                 </div>
                 <div class="product__details__pic__slider owl-carousel mt-6 flex justify-center space-x-4">
                     @foreach (var img in Model.DanhSachAnh)
                     {
-                        <div
-                            class="w-20 h-20 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <img data-imgbigurl="@Url.Content("~/AnhDoiGiay/" + img)"
-                                src="@Url.Content("~/AnhDoiGiay/" + img)" alt="@Model.giay.TenGiay"
-                                class="w-full h-full object-cover cursor-pointer transform hover:scale-110 transition-transform duration-300">
+                        <div class="w-20 h-20 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                            <img data-imgbigurl=" @img"
+                                 src="@img" alt="@Model.giay.TenGiay"
+                                 class="thumbnail w-full h-full object-cover cursor-pointer transform hover:scale-110 transition-transform duration-300">
                         </div>
                     }
                 </div>
-                <div
-                    class="absolute -top-5 -left-5 w-32 h-32 bg-accent-200/30 rounded-full blur-2xl animate-pulse-slow">
+                <div class="absolute -top-5 -left-5 w-32 h-32 bg-accent-200/30 rounded-full blur-2xl animate-pulse-slow">
                 </div>
             </div>
             <!-- Product Details -->
             <div class="flex flex-col justify-center">
-                <h3
-                    class="text-3xl md:text-4xl font-serif font-bold text-dark mb-4 bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600 bg-clip-text text-transparent animate-fade-in">
+                <h3 class="text-3xl md:text-4xl font-serif font-bold text-dark mb-4 bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600 bg-clip-text text-transparent animate-fade-in">
                     @Model.giay.TenGiay
                 </h3>
                 <div class="product__details__price text-2xl font-semibold text-accent-600 mb-6" id="giaSanPham">
-                    @ViewBag.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) Vnđ
+                    @ViewBag.Gia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫
                 </div>
                 <form id="addToCartForm"
-                    class="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-primary-200 space-y-6">
+                      class="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-primary-200 space-y-6">
                     @Html.AntiForgeryToken()
                     <!-- Quantity -->
                     <div class="form-group">
                         <label class="block text-lg font-medium text-dark mb-2">Số lượng:</label>
                         <div class="flex items-center gap-4">
                             <button type="button" id="decreaseQty"
-                                class="w-10 h-10 bg-primary-100 hover:bg-primary-200 rounded-full flex items-center justify-center text-xl font-bold transition-transform hover:scale-110">
+                                    class="w-10 h-10 bg-primary-100 hover:bg-primary-200 rounded-full flex items-center justify-center text-xl font-bold transition-transform hover:scale-110">
                                 –
                             </button>
                             <input type="number" id="quantity" name="quantity" value="1"
-                                class="w-20 text-center border-2 border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 text-dark px-3 py-2 transition-all hover:shadow-md"
-                                min="1">
+                                   class="w-20 text-center border-2 border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 text-dark px-3 py-2 transition-all hover:shadow-md"
+                                   min="1">
                             <button type="button" id="increaseQty"
-                                class="w-10 h-10 bg-primary-100 hover:bg-primary-200 rounded-full flex items-center justify-center text-xl font-bold transition-transform hover:scale-110">
+                                    class="w-10 h-10 bg-primary-100 hover:bg-primary-200 rounded-full flex items-center justify-center text-xl font-bold transition-transform hover:scale-110">
                                 +
                             </button>
                             <span id="stockStatus" class="ml-4 text-lg font-medium text-green-600"></span>
@@ -163,8 +165,8 @@
                             @foreach (var mau in Model.MauSacOptions)
                             {
                                 <button type="button"
-                                    class="mau-option px-4 py-2 bg-white border border-primary-300 rounded-lg hover:bg-primary-50 transition-all duration-300 hover:shadow-md text-sm"
-                                    data-id="@mau.ColorID">
+                                        class="mau-option px-4 py-2 bg-white border border-primary-300 rounded-lg hover:bg-primary-50 transition-all duration-300 hover:shadow-md text-sm"
+                                        data-id="@mau.ColorID">
                                     @mau.TenMau
                                 </button>
                             }
@@ -177,8 +179,8 @@
                             @foreach (var size in Model.KichCoOptions)
                             {
                                 <button type="button"
-                                    class="size-option px-4 py-2 bg-white border border-primary-300 rounded-lg hover:bg-primary-50 transition-all duration-300 hover:shadow-md text-sm"
-                                    data-id="@size.SizeID">
+                                        class="size-option px-4 py-2 bg-white border border-primary-300 rounded-lg hover:bg-primary-50 transition-all duration-300 hover:shadow-md text-sm"
+                                        data-id="@size.SizeID">
                                     @size.TenKichThuoc
                                 </button>
                             }
@@ -190,7 +192,7 @@
                     <input type="hidden" id="productId" value="@Model.giay.ShoeID" />
                     <!-- Submit Button -->
                     <button type="submit"
-                        class="primary-btn w-full bg-gradient-to-r from-accent-500 to-accent-600 text-white px-6 py-3 rounded-full font-semibold hover:from-accent-600 hover:to-accent-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                            class="primary-btn w-full bg-gradient-to-r from-accent-500 to-accent-600 text-white px-6 py-3 rounded-full font-semibold hover:from-accent-600 hover:to-accent-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                         Thêm vào giỏ hàng
                     </button>
                     <div id="toastBox" class="fixed top-6 right-6 z-50 max-w-xs w-full transform translate-x-full opacity-0
@@ -205,8 +207,7 @@
         </div>
     </div>
     <div class="absolute top-10 -left-10 w-40 h-40 bg-accent-200/30 rounded-full blur-2xl animate-dream-float"></div>
-    <div
-        class="absolute bottom-10 -right-10 w-40 h-40 bg-accent-200/30 rounded-full blur-2xl animate-dream-float delay-2000">
+    <div class="absolute bottom-10 -right-10 w-40 h-40 bg-accent-200/30 rounded-full blur-2xl animate-dream-float delay-2000">
     </div>
 </section>
 
@@ -214,27 +215,25 @@
 <section class="related-product py-20 bg-white relative overflow-hidden">
     <div class="container mx-auto px-6 relative z-10">
         <div class="text-center mb-12">
-            <h2
-                class="text-3xl md:text-4xl font-serif font-bold text-dark mb-4 bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600 bg-clip-text text-transparent animate-fade-in">
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-dark mb-4 bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600 bg-clip-text text-transparent animate-fade-in">
                 Sản phẩm liên quan
             </h2>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             @foreach (var item in Model.SanPhamLienQuan)
             {
-                <div
-                    class="product__item transform hover:-translate-y-2 transition-all duration-300 hover:shadow-xl rounded-lg overflow-hidden">
+                <div class="product__item transform hover:-translate-y-2 transition-all duration-300 hover:shadow-xl rounded-lg overflow-hidden">
                     <a asp-controller="Home" asp-action="SanPhamdetails" asp-route-id="@item.Giay.ShoeID">
                         <div class="w-full h-64 bg-gray-200 overflow-hidden">
                             <img src="@Url.Content("~/AnhDoiGiay/" + item.Giay.AnhDaiDien)" alt="@item.Giay.TenGiay"
-                                class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300">
+                                 class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300">
                         </div>
                         <div class="p-4 text-center">
                             <h6 class="text-lg font-medium text-dark mb-2 hover:text-accent-600 transition-colors">
                                 @item.Giay.TenGiay
                             </h6>
                             <h5 class="text-xl font-semibold text-accent-600">
-                                @item.GiaMin.ToString("N0") VNĐ
+                                @item.GiaMin.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫
                             </h5>
                         </div>
                     </a>
@@ -243,8 +242,7 @@
         </div>
     </div>
     <div class="absolute -top-10 -left-10 w-40 h-40 bg-accent-100/30 rounded-full blur-2xl animate-spin-slow"></div>
-    <div
-        class="absolute -bottom-10 -right-10 w-40 h-40 bg-accent-100/30 rounded-full blur-2xl animate-spin-slow delay-2000">
+    <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-accent-100/30 rounded-full blur-2xl animate-spin-slow delay-2000">
     </div>
     @section Scripts {
         <script>
@@ -292,43 +290,65 @@
                         .then(data => {
                             const giaEl = document.getElementById("giaSanPham");
                             giaEl.textContent = data.success ?
-                                data.gia.toLocaleString('vi-VN') + ' Vnđ' : 'Không có giá';
+                                data.gia.toLocaleString('vi-VN') + ' ₫' : 'Không có giá';
                         });
                 }
 
                 // chọn màu
                 colorBtns.forEach(btn => btn.addEventListener("click", () => {
-                    colorBtns.forEach(b => b.classList.remove("selected"));
-                    btn.classList.add("selected");
-                    colorInp.value = btn.dataset.id;
+                    if (btn.classList.contains("selected")) {
+                        btn.classList.remove("selected");
+                        colorInp.value = "";
 
-                    fetch(`/Home/GetAvailableSizes?shoeId=${shoeId}&colorId=${colorInp.value}`)
-                        .then(r => r.json())
-                        .then(validSizes => {
-                            sizeBtns.forEach(sizeBtn => {
-                                sizeBtn.disabled = !validSizes.includes(sizeBtn.dataset.id);
-                                sizeBtn.classList.toggle("disabled", sizeBtn.disabled);
-                            });
+                        // reset size khi bỏ chọn màu
+                        sizeBtns.forEach(s => {
+                            s.disabled = false;
+                            s.classList.remove("disabled");
                         });
+                    } else {
+                        colorBtns.forEach(b => b.classList.remove("selected"));
+                        btn.classList.add("selected");
+                        colorInp.value = btn.dataset.id;
 
+                        // chỉ disable khi có màu được chọn
+                        fetch(`/Home/GetAvailableSizes?shoeId=${shoeId}&colorId=${colorInp.value}`)
+                            .then(r => r.json())
+                            .then(valid => sizeBtns.forEach(s => {
+                                s.disabled = !valid.includes(s.dataset.id);
+                                s.classList.toggle("disabled", s.disabled);
+                            }));
+                    }
+
+                    loadProductImage();
                     updateStockAndPrice();
                 }));
 
                 // chọn size
                 sizeBtns.forEach(btn => btn.addEventListener("click", () => {
-                    sizeBtns.forEach(b => b.classList.remove("selected"));
-                    btn.classList.add("selected");
-                    sizeInp.value = btn.dataset.id;
+                    if (btn.classList.contains("selected")) {
+                        btn.classList.remove("selected");
+                        sizeInp.value = "";
 
-                    fetch(`/Home/GetAvailableColors?shoeId=${shoeId}&sizeId=${sizeInp.value}`)
-                        .then(r => r.json())
-                        .then(validColors => {
-                            colorBtns.forEach(colorBtn => {
-                                colorBtn.disabled = !validColors.includes(colorBtn.dataset.id);
-                                colorBtn.classList.toggle("disabled", colorBtn.disabled);
-                            });
+                        // reset màu khi bỏ chọn size
+                        colorBtns.forEach(c => {
+                            c.disabled = false;
+                            c.classList.remove("disabled");
                         });
+                    } else {
+                        sizeBtns.forEach(b => b.classList.remove("selected"));
+                        btn.classList.add("selected");
+                        sizeInp.value = btn.dataset.id;
 
+                        // chỉ disable khi có size được chọn
+                        fetch(`/Home/GetAvailableColors?shoeId=${shoeId}&sizeId=${sizeInp.value}`)
+                            .then(r => r.json())
+                            .then(valid => colorBtns.forEach(c => {
+                                c.disabled = !valid.includes(c.dataset.id);
+                                c.classList.toggle("disabled", c.disabled);
+                            }));
+                    }
+
+                    loadProductImage();
                     updateStockAndPrice();
                 }));
 
@@ -374,6 +394,43 @@
                         });
                 });
             });
+
+            document.querySelectorAll(".thumbnail").forEach(item => {
+                item.addEventListener("click", function () {
+                    let newSrc = this.getAttribute("data-imgbigurl");
+                    document.getElementById("mainProductImage").setAttribute("src", newSrc);
+                });
+            });
+            // Hàm load ảnh chi tiết sp
+            function loadProductImage() {
+                let colorId = document.getElementById("selectedColorId").value;
+                let sizeId = document.getElementById("selectedSizeId").value;
+                let pid = document.getElementById("productId").value;
+
+                if (!colorId || !sizeId) return; // chưa chọn đủ thì thoát
+
+                $.ajax({
+                    url: "/Home/GetAnhChiTiet",
+                    type: "GET",
+                    data: { shoeId: pid, colorId: colorId, sizeId: sizeId },
+                    success: function (res) {
+                        if (res.success && res.images.length > 0) {
+                            // ảnh chính = ảnh đầu tiên
+                            $("#mainProductImage").attr("src", res.images[0]);
+
+                            // load gallery (nếu có nhiều ảnh)
+                            let html = "";
+                            res.images.forEach(img => {
+                                html += `<img src="${img}"
+                                              class="w-20 h-20 border rounded cursor-pointer hover:border-blue-500"
+                                              onclick="$('#mainProductImage').attr('src','${img}')"/>`;
+                            });
+                            $("#productGallery").html(html);
+                        }
+                    }
+                });
+            }
+           
         </script>
     }
 </section>

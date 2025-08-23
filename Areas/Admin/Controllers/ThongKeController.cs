@@ -153,11 +153,11 @@ namespace AuthDemo.Areas.Admin.Controllers
             try
             {
                 // CHỈ tính doanh thu từ các đơn hàng ĐÃ GIAO
-                var total = await _db.HoaDons
-                .Where(h => h.TrangThai == TrangThaiHoaDon.DaGiao && // Chỉ đơn hàng đã giao
-                h.NgayTao >= startDate &&
-                h.NgayTao <= endDate)
-                .SumAsync(h => (decimal?)h.TongTien) ?? 0;
+                var total = await _db.ChiTietHoaDons
+    .Where(ct => ct.HoaDon.TrangThai == TrangThaiHoaDon.DaGiao &&
+                 ct.HoaDon.NgayTao >= startDate &&
+                 ct.HoaDon.NgayTao <= endDate)
+    .SumAsync(ct => (decimal?)(ct.SoLuong * ct.DonGia)) ?? 0;
 
                 return total;
             }
