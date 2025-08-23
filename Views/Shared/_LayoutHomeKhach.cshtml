@@ -243,6 +243,42 @@
         .header-shadow {
             box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
         }
+
+        .user-menu {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #333;
+            padding: 5px 10px;
+            display: inline-block;
+        }
+
+        .dropdown {
+            display: none; /* Ẩn mặc định */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #ccc;
+            min-width: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+            .dropdown a {
+                display: block;
+                padding: 8px 12px;
+                text-decoration: none;
+                color: #333;
+            }
+
+                .dropdown a:hover {
+                    background: #f2f2f2;
+                }
     </style>
 </head>
 <body class="font-sans antialiased relative overflow-x-hidden">
@@ -317,16 +353,55 @@
                     </div>
                     <div class="relative group">
                         <button class="p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
-                            <li><a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-bag text-xl text-accent-600"></i></a></li>
+                            <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-bag text-xl text-accent-600"></i></a>
                         </button>
                         <div class="absolute hidden group-hover:block right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 p-4 animate-fade-in border border-primary-100">
                             <h4 class="font-medium text-primary-800 mb-2">Giỏ Hàng</h4>
                             <p class="text-sm text-primary-500">Sản phẩm trong giỏ hàng của bạn</p>
                         </div>
                     </div>
-                    <a href="@Url.Action("Login", "Account")" class="hidden md:inline-flex items-center px-8 py-3 border border-accent-500 rounded-full text-sm font-medium bg-accent-100/50 hover:bg-accent-200 text-accent-700 transition-all duration-300 hover:shadow-md transform hover:scale-105">
-                        <i class="far fa-user mr-2"></i> Đăng Nhập
-                    </a>
+                    <div>
+                        @{
+                            var tenDangNhap = Context.Session.GetString("TenDangNhap");
+                        }
+
+                        @if (!string.IsNullOrEmpty(tenDangNhap))
+                        {
+                            <!-- Đã đăng nhập -->
+                            <div class="user-menu" id="userMenu">
+                                <span class="user-name" id="userName">
+                                    <i class="fa fa-user"></i> @tenDangNhap
+                                </span>
+                                <div class="dropdown" id="dropdownMenu">
+                                    <a asp-controller="Account" asp-action="UserProfile">Thông tin người dùng</a>
+                                    <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                                </div>
+                            </div>
+
+                            <script>
+                                const userName = document.getElementById("userName");
+                                const dropdown = document.getElementById("dropdownMenu");
+
+                                userName.addEventListener("click", function (e) {
+                                    e.stopPropagation(); // chặn click lan ra ngoài
+                                    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+                                });
+
+                                // Click ra ngoài thì ẩn menu
+                                document.addEventListener("click", function () {
+                                    dropdown.style.display = "none";
+                                });
+                            </script>
+
+                        }
+                        else
+                        {
+                            <!-- Chưa đăng nhập -->
+                            <a href="@Url.Action("Login", "Account")" class="hidden md:inline-flex items-center px-8 py-3 border border-accent-500 rounded-full text-sm font-medium bg-accent-100/50 hover:bg-accent-200 text-accent-700 transition-all duration-300 hover:shadow-md transform hover:scale-105">
+                                <i class="far fa-user mr-2"></i> Đăng Nhập
+                            </a>
+                        }
+                    </div>
                     <button class="lg:hidden p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
                         <i class="fas fa-bars text-xl text-accent-600"></i>
                     </button>
@@ -368,21 +443,7 @@
                 <p class="max-w-2xl mx-auto text-primary-600">Tìm kiếm đôi giày hoàn hảo để bước vào giấc mơ của bạn.</p>
             </div>
             <!-- Search and Filter -->
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-12">
-                <div class="relative w-full sm:w-1/2 mb-4 sm:mb-0">
-                    <input type="text" placeholder="Tên sản phẩm muốn tìm?" class="w-full px-6 py-3 rounded-full border border-primary-300 focus:outline-none focus:ring-2 focus:ring-accent-500 text-primary-900">
-                    <i class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-primary-500"></i>
-                </div>
-                <div class="relative">
-                    <select class="px-6 py-3 rounded-full border border-primary-300 focus:outline-none focus:ring-2 focus:ring-accent-500 text-primary-900 appearance-none bg-white">
-                        <option>Tất Cả Danh Mục</option>
-                        <option>Người Đi Trên Mây</option>
-                        <option>Nhảy Dưới Ánh Sao</option>
-                        <option>Lướt Dưới Ánh Trăng</option>
-                    </select>
-                    <i class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-primary-500"></i>
-                </div>
-            </div>
+           
             <!-- Product Grid -->
             @RenderBody()
 
@@ -390,19 +451,19 @@
             <div class="text-center mt-16">
                 @if (Model.HasPreviousPage)
                 {
-                    <a href="@Url.Action("Index", "Shop", new { page = Model.PageNumber - 1 })" class="inline-flex items-center px-4 py-2 border border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 rounded-full font-medium transition mr-2">
+                    <a href="@Url.Action("Index", "Home", new { page = Model.PageNumber - 1 })" class="inline-flex items-center px-4 py-2 border border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 rounded-full font-medium transition mr-2">
                         Trang Trước
                     </a>
                 }
                 <span class="text-primary-600 mx-4">Trang @Model.PageNumber / @Model.PageCount</span>
                 @if (Model.HasNextPage)
                 {
-                    <a href="@Url.Action("Index", "Shop", new { page = Model.PageNumber + 1 })" class="inline-flex items-center px-4 py-2 border border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 rounded-full font-medium transition ml-2">
+                    <a href="@Url.Action("Index", "Home", new { page = Model.PageNumber + 1 })" class="inline-flex items-center px-4 py-2 border border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 rounded-full font-medium transition ml-2">
                         Trang Sau
                     </a>
                 }
                 <div class="mt-4">
-                    <a href="@Url.Action("Index", "Shop")" class="inline-flex items-center border-2 border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 px-8 py-3 rounded-full font-medium transition">
+                    <a href="@Url.Action("Index", "Home")" class="inline-flex items-center border-2 border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 px-8 py-3 rounded-full font-medium transition">
                         Xem Thêm Giày  <i class="fas fa-arrow-right ml-3"></i>
                     </a>
                 </div>

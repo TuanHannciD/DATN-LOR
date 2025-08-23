@@ -29,6 +29,7 @@ namespace AuthDemo.Controllers
                 .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.Giay)
                 .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.MauSac)
                 .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.KichThuoc)
+                 .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.AnhGiays)
                 .Where(c => c.CartID == cartId)
                 .ToList();
 
@@ -37,11 +38,21 @@ namespace AuthDemo.Controllers
             foreach (var item in cartItems)
             {
                 var stock = item.ChiTietGiay.SoLuong;
+                var trangthai = item.ChiTietGiay.IsDelete;
+                if (trangthai == true)
+                {
+                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã ngừng kinh doanh và sẽ không thể đặt hàng.");
+
+
+                }
+
                 if (stock == 0)
                 {
-                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã hết hàng, nên đã bị xóa khỏi giỏ hàng");
-                    _context.ChiTietGioHangs.Remove(item);
+                    warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã hết hàng và sẽ không thể đặt hàng.");
+                    
+                    
                 }
+
                 else if (item.SoLuong > stock)
                 {
                     item.SoLuong = stock;

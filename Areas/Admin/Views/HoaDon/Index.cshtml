@@ -16,15 +16,17 @@
                         <th>Khách hàng</th>
                         <th>SĐT</th>
                         <th>Email</th>
-                        <th>Trạng thái</th>
+                        <th>Trạng thái đơn hàng</th>
                         <th>Hình thức thanh toán</th>
                         <th>Hình thức vận chuyển</th>
                         <th>Tổng tiền</th>
+                        <th>Trạng thái thanh toán</th>
                         <th>Người tạo</th>
                         <th>Ngày tạo</th>
                         <th>Người cập nhật</th>
                         <th>Ngày cập nhật</th>
-                        <th class="text-center">Thao tác</th>
+
+                        @* <th class="text-center">Thao tác</th> *@
                     </tr>
                 </thead>
                 <tbody>
@@ -35,14 +37,18 @@
                             <td>@item.SoDienThoai</td>
                             <td>@item.Email</td>
                             <td>
-                                <span class="badge  status-badge" data-id="@item.HoaDonID" style="cursor:pointer;">
-                                    @item.TrangThaiDisplay
+                                <span class="badge  status-badge" data-id="@item.HoaDonID" style="cursor:pointer;" >
+                                   
+                                        @item.TrangThaiDisplay
+                                    
+                                    
                                 </span>
                             </td>
 
                             <td>@item.HinhThucThanhToanDisplay</td>
                             <td>@item.HinhThucVanChuyenDisplay</td>
                             <td><span class="badge bg-success">@item.TongTien.ToString("N0")</span></td>
+                            <td>@(item.DaThanhToan ? "Đã thanh toán" : "Chưa thanh toán")</td>
                             <td>@item.NguoiTao</td>
                             <td>
                                 @if (item.NgayTao.HasValue)
@@ -61,7 +67,7 @@
                                     </span>
                                 }
                             </td>
-                            <td class="text-center">
+                            @* <td class="text-center">
                                 <a class="btn btn-info btn-sm me-1" href="#">
                                     <i class="mdi mdi-eye"></i> Xem
                                 </a>
@@ -69,10 +75,10 @@
                                     <i class="mdi mdi-pencil"></i> Sửa
                                 </a>
                                 <a class="btn btn-danger btn-sm btn-huy-hoa-don" href="#" data-id="@item.HoaDonID">
-                                    <i class="mdi mdi-delete"></i> Cập nhật trạng thái
+                                    <i class="mdi mdi-delete"></i> Hủy 
                                 </a>
 
-                            </td>
+                            </td> *@
                         </tr>
                     }
                 </tbody>

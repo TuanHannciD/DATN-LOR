@@ -13,8 +13,8 @@
 
     <div class="order-card">
         <div class="order-header d-flex justify-content-between">
-            <span>Mã đơn: @hoaDon.BillID |</span>
-            <span class="badge bg-info text-dark"> @hoaDon.TrangThai </span>
+            @* <span>Mã đơn: @hoaDon.BillID |</span> *@
+            <span class="badge bg-info text-dark">@hoaDon.TrangThai.GetDisplayName()</span>
         </div>
 
         @* <div class="px-3 pt-2">
@@ -37,8 +37,8 @@
                        asp-action="ChiTietDonHang"
                        asp-route-HoaDonId="@hoaDon.BillID">
                     <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
-                        
-                            <img src="@Url.Content("~/AnhDoiGiay/" + item.HinhAnh)" alt="" width="100"
+
+                            <img src="@(Url.Content(item.HinhAnh ?? "/images/default.png"))" alt="@item.TenSanPham" width="100"
                                  style="border-radius: 8px;" />
                        
                         <div style="line-height: 1.5;">
@@ -54,11 +54,11 @@
 
                 <div style="width: 30%; text-align: right;">
 
-                    <div>@item.DonGia.ToString("N0") VNĐ</div>
+                    <div>@item.DonGia.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</div>
                 </div>
             </div>
         }
-        <div class="text-end px-3 py-2"><strong>Tổng tiền:</strong> @hoaDon.TongTien.ToString("N0") VNĐ</div>
+        <div class="text-end px-3 py-2"><strong>Tổng tiền:</strong> @hoaDon.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</div>
     </div>
 }
 

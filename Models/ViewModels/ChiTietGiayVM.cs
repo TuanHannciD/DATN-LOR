@@ -54,8 +54,8 @@ namespace AuthDemo.Models.ViewModels
             public Guid CategoryID { get; set; }
             public int SoLuong { get; set; }
             public decimal Gia { get; set; }
-            [Required]
-            public string Image { get; set; }
+       
+            public string? Image { get; set; }
         }
 
         public class QuickAddVM

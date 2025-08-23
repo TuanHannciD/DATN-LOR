@@ -170,11 +170,25 @@
 <div class="dream-element" style="width:150px; height:150px; background:#C1E3FF; bottom:15%; right:10%; animation: dreamFloat 15s ease-in-out infinite reverse;"></div>
 
 <section class="py-24 bg-primary-50 relative overflow-hidden">
+    
     <div class="container mx-auto px-6">
         <div class="text-center mb-16 animate-fade-in">
             <span class="inline-block text-accent-600 font-medium mb-3 tracking-widest">CỬA HÀNG MỘNG MƠ</span>
             <h2 class="text-4xl font-serif font-bold text-primary-900 bg-gradient-to-r from-accent-600 to-accent-400 gradient-text">Khám Phá Bộ Sưu Tập Giày</h2>
             <p class="max-w-xl mx-auto text-primary-600 mt-4">Tìm kiếm đôi giày hoàn hảo để bước vào giấc mơ của bạn.</p>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-12">
+                <div class="relative w-full sm:w-1/2 mb-4 sm:mb-0">
+                    <form asp-action="Index" method="get">
+                        <input type="text" name="searchString" id="searchInput" placeholder="Tên sản phẩm muốn tìm?"
+                               value="@ViewBag.SearchString"
+                               class="w-full px-6 py-3 rounded-full border border-primary-300 focus:outline-none focus:ring-2 focus:ring-accent-500 text-primary-900">
+                        <button type="submit" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary-500">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
         </div>
 
         <div class="flex flex-col lg:flex-row gap-8">
@@ -282,8 +296,25 @@
                 </div>
 
                 <!-- Phân trang -->
-                <div class="product__pagination text-center">
-                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }))
+                <div class="text-center mt-16">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <a href="@Url.Action("Index", "Shop", new { page = Model.PageNumber - 1 })" class="inline-flex items-center px-4 py-2 border border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 rounded-full font-medium transition mr-2">
+                            Trang Trước
+                        </a>
+                    }
+                    <span class="text-primary-600 mx-4">Trang @Model.PageNumber / @Model.PageCount</span>
+                    @if (Model.HasNextPage)
+                    {
+                        <a href="@Url.Action("Index", "Shop", new { page = Model.PageNumber + 1 })" class="inline-flex items-center px-4 py-2 border border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 rounded-full font-medium transition ml-2">
+                            Trang Sau
+                        </a>
+                    }
+                    <div class="mt-4">
+                        <a href="@Url.Action("Index", "Shop")" class="inline-flex items-center border-2 border-primary-300 hover:border-accent-600 text-primary-900 hover:text-accent-600 px-8 py-3 rounded-full font-medium transition">
+                            Xem Thêm Giày  <i class="fas fa-arrow-right ml-3"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -292,7 +323,28 @@
 
 @section Scripts {
     <script>
+       
+
         $(document).ready(function () {
+            $("#searchInput").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Shop/GetSearchSuggestions",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    $("#searchInput").val(ui.item.value);
+                    $("#searchInput").closest("form").submit();
+                }
+            });
             // Format tiền Việt Nam
             function formatVND(val) {
                 return Number(val).toLocaleString('vi-VN') + " đ";
@@ -397,9 +449,13 @@
                     },
                     success: function (data) {
                         $('#product-list').html(data);
-                        $('.set-bg').each(function () {
+
+                        // Re-apply background images
+                        $('#product-list .set-bg').each(function () {
                             var bg = $(this).data('setbg');
-                            $(this).css('background-image', 'url(' + bg + ')');
+                            if (bg && bg.trim() !== "") {
+                                $(this).css('background-image', 'url(' + bg + ')');
+                            }
                         });
                     }
                 });
