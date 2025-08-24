@@ -37,6 +37,28 @@ document.addEventListener("DOMContentLoaded", () => {
       : "";
     document.getElementById("BrandID").value = data.brandID;
 
+    console.log("shoeID:", data.shoeID);
+
+    //
+    document.getElementById("ShoeName").value = data.shoeID
+      ? selectData.shoeList.find((b) => b.id === data.shoeID)?.name || ""
+      : "";
+    document.getElementById("ShoeID").value = data.shoeID;
+
+    //
+    document.getElementById("MaterialName").value = data.materialID
+      ? selectData.materialList.find((b) => b.id === data.materialID)?.name ||
+        ""
+      : "";
+    document.getElementById("MaterialID").value = data.materialID;
+
+    //
+    document.getElementById("CategoryName").value = data.categoryID
+      ? selectData.categoryList.find((b) => b.id === data.categoryID)?.name ||
+        ""
+      : "";
+    document.getElementById("CategoryID").value = data.categoryID;
+
     console.log("Branch:", data);
   }
 
@@ -60,25 +82,14 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
         const selectData = await selectRes.json();
-        console.log("data:", selectData);
+        console.log("shoeList:", selectData.shoeList);
 
         // Lấy danh sách từ ViewBag
 
         // Fill các select box trước vì có chọn option rồi
-        fillSelectOptions("ShoeID", selectData.shoeList, data.shoeID);
+        // fillSelectOptions("ShoeID", selectData.shoeList, data.shoeID);
         fillSelectOptions("SizeID", selectData.sizeList, data.sizeID);
         fillSelectOptions("ColorID", selectData.colorList, data.colorID);
-        fillSelectOptions(
-          "MaterialID",
-          selectData.materialList,
-          data.materialID
-        );
-        // fillSelectOptions("BrandID", selectData.brandList, data.brandID);
-        fillSelectOptions(
-          "CategoryID",
-          selectData.categoryList,
-          data.categoryID
-        );
 
         // Fill các input còn lại
         fillModalInputs(data, selectData);
