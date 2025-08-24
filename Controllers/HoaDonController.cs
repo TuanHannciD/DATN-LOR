@@ -8,6 +8,7 @@ using AuthDemo.Helpers;
 using AuthDemo.Areas.Admin.Services;
 using Newtonsoft.Json.Linq;
 using System.Drawing.Drawing2D;
+using AuthDemo.Models.VnPay;
 
 
 namespace Controllers
@@ -234,57 +235,117 @@ namespace Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            decimal tongTien = 0;
+            decimal tongTienchuaship = 0;
 
             for (int i = 0; i < selectedIds.Count; i++)
             {
-                tongTien += (cartItems[i].ChiTietGiay.Gia * quantities[i]) + ship;
+                tongTienchuaship += (cartItems[i].ChiTietGiay.Gia * quantities[i]) ;
             }
-
-            var hoaDon = new HoaDon
+            decimal tongTien = tongTienchuaship + ship;
+            // khi nhận
+            if (phuongthuc == "0")
             {
-                BillID = Guid.NewGuid(),
-                UserID = userId,
-                HoTen = hoten,
-                Email = email,
-                SoDienThoai = sdt,
-                DiaChi = diachi_full,
-                TongTien = tongTien,
-                TrangThai = TrangThaiHoaDon.ChoXacNhan,
-                DaThanhToan = false,
-                PhuongThucThanhToan = Enum.Parse<PhuongThucThanhToan>(phuongthuc),
-                DaHuy = false,
-                GhiChu = ghichu,
-                NgayTao = DateTime.Now,
-                NguoiTao = "system",
-                NguoiCapNhat = "system",
-                NgayCapNhat = DateTime.Now,
-            };
-            _context.HoaDons.Add(hoaDon);
-            _context.SaveChanges();
-
-            for (int i = 0; i < selectedIds.Count; i++)
-            {
-                var id = selectedIds[i];
-                var soLuong = quantities[i];
-                var product = cartItems.First(c => c.ShoeDetailID == id);
-
-                var hdct = new ChiTietHoaDon
+                var hoaDon = new HoaDon
                 {
-                    BillDetailID = Guid.NewGuid(),
-                    BillID = hoaDon.BillID,
-                    ShoeDetailID = id,
-                    SoLuong = soLuong,
-                    DonGia = product.ChiTietGiay.Gia,
+                    BillID = Guid.NewGuid(),
+                    UserID = userId,
+                    HoTen = hoten,
+                    Email = email,
+                    SoDienThoai = sdt,
+                    DiaChi = diachi_full,
+                    TongTien = tongTien,
+                    TrangThai = TrangThaiHoaDon.ChoXacNhan,
+                    DaThanhToan = false,
+                    PhuongThucThanhToan = Enum.Parse<PhuongThucThanhToan>(phuongthuc),
+                    DaHuy = false,
+                    GhiChu = ghichu,
                     NgayTao = DateTime.Now,
                     NguoiTao = "system",
                     NguoiCapNhat = "system",
                     NgayCapNhat = DateTime.Now,
                 };
-                _context.ChiTietHoaDons.Add(hdct);
+                _context.HoaDons.Add(hoaDon);
+                for (int i = 0; i < selectedIds.Count; i++)
+                {
+                    var id = selectedIds[i];
+                    var soLuong = quantities[i];
+                    var product = cartItems.First(c => c.ShoeDetailID == id);
 
-
+                    var hdct = new ChiTietHoaDon
+                    {
+                        BillDetailID = Guid.NewGuid(),
+                        BillID = hoaDon.BillID,
+                        ShoeDetailID = id,
+                        SoLuong = soLuong,
+                        DonGia = product.ChiTietGiay.Gia,
+                        NgayTao = DateTime.Now,
+                        NguoiTao = "system",
+                        NguoiCapNhat = "system",
+                        NgayCapNhat = DateTime.Now,
+                    };
+                    _context.ChiTietHoaDons.Add(hdct);
+                    _context.ChiTietGioHangs.RemoveRange(cartItems);                  
+                    _context.SaveChanges();
+                    return RedirectToAction("DonHang", "HoaDon");
+                }
             }
+            // vnpay
+            else if (phuongthuc == "3")
+            {
+                var hoaDon = new HoaDon
+                {
+                    BillID = Guid.NewGuid(),
+                    UserID = userId,
+                    HoTen = hoten,
+                    Email = email,
+                    SoDienThoai = sdt,
+                    DiaChi = diachi_full,
+                    TongTien = tongTien,
+                    TrangThai = TrangThaiHoaDon.ChoXacNhan,
+                    DaThanhToan = true,
+                    PhuongThucThanhToan = Enum.Parse<PhuongThucThanhToan>(phuongthuc),
+                    DaHuy = false,
+                    GhiChu = ghichu,
+                    NgayTao = DateTime.Now,
+                    NguoiTao = "system",
+                    NguoiCapNhat = "system",
+                    NgayCapNhat = DateTime.Now,
+                };
+                _context.HoaDons.Add(hoaDon);
+                for (int i = 0; i < selectedIds.Count; i++)
+                {
+                    var id = selectedIds[i];
+                    var soLuong = quantities[i];
+                    var product = cartItems.First(c => c.ShoeDetailID == id);
+                    var spct = _context.ChiTietGiays.First(ct => ct.ShoeDetailID == id);
+
+                    var hdct = new ChiTietHoaDon
+                    {
+                        BillDetailID = Guid.NewGuid(),
+                        BillID = hoaDon.BillID,
+                        ShoeDetailID = id,
+                        SoLuong = soLuong,
+                        DonGia = product.ChiTietGiay.Gia,
+                        NgayTao = DateTime.Now,
+                        NguoiTao = "system",
+                        NguoiCapNhat = "system",
+                        NgayCapNhat = DateTime.Now,
+                    };
+                    spct.SoLuong -= soLuong;
+                    _context.ChiTietHoaDons.Add(hdct);
+                }
+                var paymentModel = new PaymentInformationModel
+                {
+                    Name = hoten,
+                    Amount = (double)hoaDon.TongTien,
+                    OrderType = "other",
+                    OrderDescription = $"Thanh toán đơn hàng {hoaDon.BillID}"
+                };
+                _context.ChiTietGioHangs.RemoveRange(cartItems);
+                _context.SaveChanges();
+                return RedirectToAction("CreatePaymentUrlVnpay", "Payment" , paymentModel);
+            }
+            
 
             _context.ChiTietGioHangs.RemoveRange(cartItems);
             _context.SaveChanges();

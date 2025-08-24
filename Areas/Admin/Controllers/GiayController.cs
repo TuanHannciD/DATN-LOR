@@ -150,7 +150,7 @@ namespace AuthDemo.Areas.Admin.Controllers
             giay.TenGiay = vm.TenGiay;
             giay.MaGiayCode = vm.MaGiayCode;
             giay.MoTa = vm.MoTa;
-            giay.TrangThai = Enum.Parse<TrangThai>(vm.TrangThai);
+            //giay.TrangThai = Enum.Parse<TrangThai>(vm.TrangThai);
             giay.NguoiCapNhat = User.Identity?.Name ?? "ad";
             giay.NgayCapNhat = DateTime.Now;
 

@@ -49,8 +49,7 @@ namespace AuthDemo.Controllers
                 if (stock == 0)
                 {
                     warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã hết hàng và sẽ không thể đặt hàng.");
-                    
-                    
+                                       
                 }
 
                 else if (item.SoLuong > stock)
