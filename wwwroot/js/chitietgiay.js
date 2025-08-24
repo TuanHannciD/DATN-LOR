@@ -59,6 +59,18 @@ document.addEventListener("DOMContentLoaded", () => {
       : "";
     document.getElementById("CategoryID").value = data.categoryID;
 
+    //
+    document.getElementById("SizeName").value = data.sizeID
+      ? selectData.sizeList.find((b) => b.id === data.sizeID)?.name || ""
+      : "";
+    document.getElementById("SizeID").value = data.sizeID;
+
+    //
+    document.getElementById("ColorName").value = data.colorID
+      ? selectData.colorList.find((b) => b.id === data.colorID)?.name || ""
+      : "";
+    document.getElementById("CategoryID").value = data.categoryID;
+
     console.log("Branch:", data);
   }
 
@@ -87,9 +99,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Lấy danh sách từ ViewBag
 
         // Fill các select box trước vì có chọn option rồi
-        // fillSelectOptions("ShoeID", selectData.shoeList, data.shoeID);
-        fillSelectOptions("SizeID", selectData.sizeList, data.sizeID);
-        fillSelectOptions("ColorID", selectData.colorList, data.colorID);
+        // // fillSelectOptions("ShoeID", selectData.shoeList, data.shoeID);
+        // fillSelectOptions("SizeID", selectData.sizeList, data.sizeID);
+        // fillSelectOptions("ColorID", selectData.colorList, data.colorID);
 
         // Fill các input còn lại
         fillModalInputs(data, selectData);
