@@ -23,7 +23,7 @@ namespace AuthDemo.Controllers
             int pageSize = 9;
             int pagenumber = page == null || page < 0 ? 1 : page.Value;
             var query = _context.Giays
-        .Where(g => g.ChiTietGiays.Any());
+        .Where(g => g.IsDelete == false && g.ChiTietGiays.Any());
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -63,7 +63,7 @@ namespace AuthDemo.Controllers
         {
             var suggestions = _context.Giays
                 .Where(g => g.TenGiay.ToLower().Contains(term.ToLower()))
-                .Where(g => g.ChiTietGiays.Any())
+                .Where(g => g.IsDelete == false && g.ChiTietGiays.Any())
                 .Select(g => new { label = g.TenGiay, value = g.TenGiay })
                 .Take(5) // Giới hạn 5 gợi ý
                 .ToList();
@@ -77,7 +77,7 @@ namespace AuthDemo.Controllers
             var filtered = _context.ChiTietGiays
                 .Include(ct => ct.Giay)
                 .Include(ct => ct.AnhGiays)
-                .Where(ct => ct.SoLuong > 0);
+                .Where(ct => ct.Giay.IsDelete == false && ct.SoLuong > 0);
 
             if (danhMucIds != null && danhMucIds.Any())
                 filtered = filtered.Where(ct => danhMucIds.Contains(ct.DanhMuc.CategoryID));

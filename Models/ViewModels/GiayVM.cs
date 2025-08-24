@@ -18,7 +18,7 @@ namespace AuthDemo.Models.ViewModels
         public string MoTa { get; set; }
 
         [StringLength(50)]
-        public string TrangThai { get; set; }
+        public string? TrangThai { get; set; }
 
         // Thông tin cập nhật
         [StringLength(50)]

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 using DotNetEnv;
 using AuthDemo.Models;
 using CloudinaryDotNet;
+using AuthDemo.Services.VnPay;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +47,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Vnpay configuration
 builder.Services.Configure<VNPayConfig>(builder.Configuration.GetSection("VnPay"));
-
+// vnpay khách
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 // Đăng ký DI cho SanPhamService
 builder.Services.AddScoped<IGiayService, GiayService>();
 builder.Services.AddScoped<IThuongHieuService, ThuongHieuService>();

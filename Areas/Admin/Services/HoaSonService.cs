@@ -46,13 +46,11 @@ namespace AuthDemo.Areas.Admin.Services
                 NgayTao = x.NgayTao,
                 NguoiCapNhat = x.NguoiCapNhat ?? "",
                 NgayCapNhat = x.NgayCapNhat,
-                TenKhachHang = x.NguoiDung.HoTen,
+                TenKhachHang = x.HoTen,
                 DaThanhToan = x.DaThanhToan,
-                SoDienThoai = x.NguoiDung.SoDienThoai,
-                Email = x.NguoiDung.Email,
-                DiaChi = x.NguoiDung != null && x.NguoiDung.DiaChis != null && x.NguoiDung.DiaChis.Any()
-                    ? x.NguoiDung.DiaChis.Select(d => d.DiaChiDayDu).FirstOrDefault()
-                    : "",
+                SoDienThoai = x.SoDienThoai,
+                Email = x.Email,
+                DiaChi = x.DiaChi,
                 HinhThucThanhToan = x.PhuongThucThanhToan,
 
                 HinhThucVanChuyen = x.PhuongThucVanChuyen,
@@ -281,7 +279,7 @@ namespace AuthDemo.Areas.Admin.Services
                 _db.SaveChanges();
             }
             var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == HoaDonID).ToList();
-            if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan)
+            if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
             {
                 foreach (var ct in hdct)
                 {
