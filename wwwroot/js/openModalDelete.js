@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const removeBtn = document.getElementById("openModalRemoveBtn");
   const modalEl = document.getElementById("isRemoveModal"); // element modal
   const removeModal = new bootstrap.Modal(modalEl); // bootstrap modal object
+  modalEl.addEventListener("hidden.bs.modal", function () {
+    location.reload(); // reload toàn bộ trang sau khi modal bị đóng
+  });
 
   document
     .getElementById("openModalRemoveBtn")
@@ -358,7 +361,7 @@ function restore(id, entity, ten) {
         showToast("Khôi phục thành công", true);
         getAllData(entity);
       } else {
-        alert("Lỗi: " + rs.message);
+        showToast(rs.message, false);
       }
     });
 }
