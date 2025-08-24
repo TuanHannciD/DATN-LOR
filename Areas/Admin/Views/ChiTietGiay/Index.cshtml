@@ -70,7 +70,8 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="ShoeID" class="form-label">Sản phẩm</label>
-                                <select id="ShoeID" name="ShoeID" class="form-select" required></select>
+                                <input type="text" id="ShoeName" name="ShoeName" class="form-control" disabled>
+                                <input type="hidden" id="ShoeID" name="ShoeID" value="">
                             </div>
 
                             <div class="col-md-6">
@@ -79,14 +80,16 @@
                             </div>
 
                             <div class="col-md-6">
+                                <label for="MaterialID" class="form-label">Chất liệu</label>
+                                <input type="text" id="MaterialName" name="MaterialName" class="form-control" disabled>
+                                <input type="hidden" id="MaterialID" name="MaterialID" value="">
+                            </div>
+
+                            <div class="col-md-6">
                                 <label for="ColorID" class="form-label">Màu sắc</label>
                                 <select id="ColorID" name="ColorID" class="form-select" required></select>
                             </div>
 
-                            <div class="col-md-6">
-                                <label for="MaterialID" class="form-label">Chất liệu</label>
-                                <select id="MaterialID" name="MaterialID" class="form-select" required></select>
-                            </div>
 
                             <div class="col-md-6">
                                 <label for="BrandName" class="form-label">Thương hiệu</label>
@@ -95,11 +98,10 @@
                                 <input type="hidden" id="BrandID" name="BrandID" value="" />
                             </div>
 
-
-
                             <div class="col-md-6">
                                 <label for="CategoryID" class="form-label">Danh mục</label>
-                                <select id="CategoryID" name="CategoryID" class="form-select" required></select>
+                                <input type="text" id="CategoryName" name="CategoryName" class="form-control" disabled>
+                                <input type="hidden" id="CategoryID" name="CategoryID" value="">
                             </div>
 
                             <div class="col-md-6">
