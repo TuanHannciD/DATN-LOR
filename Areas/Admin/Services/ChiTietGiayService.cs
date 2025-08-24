@@ -293,8 +293,30 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                var obj = _db.ChiTietGiays.Find(id);
+                var obj = await _db.ChiTietGiays
+                .Include(c => c.Giay)
+                .Include(c => c.DanhMuc)
+                .Include(c => c.ThuongHieu)
+                .Include(c => c.ChatLieu)
+                .Include(c => c.MauSac)
+                .Include(c => c.KichThuoc)
+                .FirstOrDefaultAsync(c => c.ShoeDetailID == id);
+
                 if (obj == null) return ApiResponse<string>.FailResponse("ID_ShoeDetail_Not_Found", "Không tìm thấy giầy muốn khôi phục");
+
+                if (obj.Giay == null || obj.Giay.IsDelete == true)
+                    return ApiResponse<string>.FailResponse("Product_Delete", $"Sản phẩm {obj.Giay?.TenGiay ?? "không tên"} đang bị lỗi hoặc đã ngưng hoạt động hãy kiểm tra lại sau.");
+                if (obj.ThuongHieu == null || obj.ThuongHieu.IsDelete == true)
+                    return ApiResponse<string>.FailResponse("Product_Delete", $"Tên thương hiệu {obj.ThuongHieu?.TenThuongHieu ?? "không tên"} đang bị lỗi hoặc đã ngưng hoạt động hãy kiểm tra lại sau.");
+                if (obj.ChatLieu == null || obj.ChatLieu.IsDelete == true)
+                    return ApiResponse<string>.FailResponse("Product_Delete", $"Chất liệu {obj.ChatLieu?.TenChatLieu ?? "không tên"} đang bị lỗi hoặc đã ngưng hoạt động hãy kiểm tra lại sau.");
+                if (obj.DanhMuc == null || obj.DanhMuc.IsDelete == true)
+                    return ApiResponse<string>.FailResponse("Product_Delete", $"Danh mục {obj.DanhMuc?.TenDanhMuc ?? "không tên"} đang bị lỗi hoặc đã ngưng hoạt động hãy kiểm tra lại sau.");
+                if (obj.MauSac == null || obj.MauSac.IsDelete == true)
+                    return ApiResponse<string>.FailResponse("Product_Delete", $"Màu sắc {obj.MauSac?.TenMau ?? "không tên"} đang bị lỗi hoặc đã ngưng hoạt động hãy kiểm tra lại sau.");
+                if (obj.KichThuoc == null || obj.KichThuoc.IsDelete == true)
+                    return ApiResponse<string>.FailResponse("Product_Delete", $"Kích thước {obj.KichThuoc?.TenKichThuoc ?? "không tên"} đang bị lỗi hoặc đã ngưng hoạt động hãy kiểm tra lại sau.");
+
 
                 obj.IsDelete = false;
                 await _db.SaveChangesAsync();
