@@ -435,6 +435,7 @@
         document.getElementById('diachi').addEventListener('input', updateDiaChiFull);
         //
         document.querySelector('form').addEventListener('submit', function (e) {
+            const form = document.querySelector('form');
             e.preventDefault(); // Ngăn form submit tạm thời
 
             let hoten = document.getElementById('hoten').value.trim();
