@@ -32,7 +32,7 @@ public class HomeController : Controller
 
 
         var product = _context.Giays
-     .Where(g => g.ChiTietGiays.Any())
+     .Where(g =>g.IsDelete == false && g.ChiTietGiays.Any())
      .Select(g => new ProductViewModel
      {
          ShoeID = g.ShoeID,
@@ -70,7 +70,7 @@ public class HomeController : Controller
             .Include(c => c.ThuongHieu)
             .Include(c => c.DanhMuc)
             .Include(c=>c.AnhGiays)
-            .Where(c => c.ShoeID == id)
+            .Where(c =>  c.ShoeID == id )
             .ToList();
 
          var allImagePaths = chiTietList
