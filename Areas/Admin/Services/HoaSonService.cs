@@ -278,27 +278,34 @@ namespace AuthDemo.Areas.Admin.Services
                 hoaDon.DaThanhToan = true;
                 _db.SaveChanges();
             }
+            var errors = new List<string>();
             var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == HoaDonID).ToList();
             if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
             {
-
-
                 foreach (var ct in hdct)
                 {
                     // Lấy chi tiết giày trong kho theo ShoeDetailID
                     var giay = _db.ChiTietGiays
+                        .Include(ct => ct.Giay)
                         .Include(ct => ct.MauSac)
-                        .Include(ct=>ct.KichThuoc)
+                        .Include(ct => ct.KichThuoc)
                         .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
-                    if (giay.SoLuong == 0)
-                    {
-                        return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", $"Số lượng trong kho không đủ cho hóa vui lòng nhập thêm hàng cho sản phẩm :{giay.Giay.TenGiay} ({giay.MauSac.TenMau}{giay.KichThuoc.TenKichThuoc}) ");
-                    }
                     if (ct.SoLuong > giay.SoLuong)
                     {
-                        return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", $"Số lượng trong kho đã hết vui lòng nhập thêm hàng cho sản phẩm :{giay.Giay.TenGiay} ({giay.MauSac.TenMau}{giay.KichThuoc.TenKichThuoc}) ");
+                        errors.Add($"Số lượng trong kho không đủ cho sản phẩm: {giay.Giay.TenGiay} ({giay.MauSac.TenMau}, {giay.KichThuoc.TenKichThuoc})");
+                        continue;
                     }
-                    if (giay.SoLuong > 0)
+                    if (giay.SoLuong == 0)
+                    {
+                        errors.Add($"Sản phẩm đã hết hàng: {giay.Giay.TenGiay} ({giay.MauSac.TenMau}, {giay.KichThuoc.TenKichThuoc})");
+                        continue;
+                    }
+                    if (giay.IsDelete == true)
+                    {
+                        errors.Add($"Sản phẩm đã ngưng bán: {giay.Giay.TenGiay} ({giay.MauSac.TenMau}, {giay.KichThuoc.TenKichThuoc})");
+                        continue;
+                    }
+                    else
                     {
                         // Trừ số lượng tồn kho
                         giay.SoLuong -= ct.SoLuong;
@@ -310,8 +317,13 @@ namespace AuthDemo.Areas.Admin.Services
                     }
                 }
 
-                _db.SaveChanges();
+
             }
+            if (errors.Any())
+            {
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", string.Join("<br/>", errors));
+            }
+            _db.SaveChanges();
 
             hoaDon.TrangThai = (TrangThaiHoaDon)nextStatus;
             await _db.SaveChangesAsync();
