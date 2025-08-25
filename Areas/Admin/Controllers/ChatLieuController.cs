@@ -65,14 +65,14 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ChatLieu model)
+        public async Task<IActionResult> Edit(ChatLieu model)
         {
-            if (ModelState.IsValid)
-            {
-                _chatLieuService.Update(model);
-                return RedirectToAction("Index");
-            }
-            return View(model);
+
+            var response = await _chatLieuService.Update(model);
+            // Lưu message vào TempData
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(Guid id)

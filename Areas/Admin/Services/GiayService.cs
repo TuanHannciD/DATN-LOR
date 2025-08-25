@@ -105,19 +105,31 @@ namespace AuthDemo.Areas.Admin.Services
             }
         }
 
-        public void Update(Giay entity)
+        public async Task<ApiResponse<string>> Update(Giay entity)
         {
+            if (entity == null) return ApiResponse<string>.FailResponse("Entity_Null", "Lỗi khi gửi dữ liệu");
+            if (entity.ShoeID == Guid.Empty) return ApiResponse<string>.FailResponse("ID_Invalid", "Không tìm thấy ID sản phẩm cần cập nhật");
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
                 var obj = _db.Giays.Find(entity.ShoeID);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy sản phẩm để cập nhật!");
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìn thấy sản phẩm cần cập nhật");
+                if (obj.IsDelete) return ApiResponse<string>.FailResponse("Already_Deleted", "Sản phẩm đã bị xóa vui lòng kiểm tra lại");
+
+                bool isDuplicate = await _db.Giays.AnyAsync(c => c.TenGiay == obj.TenGiay && c.ShoeID != obj.ShoeID);
+                bool isDuplicateID = await _db.Giays.AnyAsync(c => c.MaGiayCode == entity.MaGiayCode && c.ShoeID != entity.ShoeID);
+
+
+                if (isDuplicate) return ApiResponse<string>.FailResponse("Duplicate_Name", "Tên sản phẩm đã tồn tại");
+                if (isDuplicateID) return ApiResponse<string>.FailResponse("Duplicate_Code", "Mã sản phẩm đã tồn tại");
+
                 _db.Entry(obj).CurrentValues.SetValues(entity);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
+
+                return ApiResponse<string>.SuccessResponse("Update_Success", "Cập nhật sản phẩm thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi cập nhật sản phẩm: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Unhandled_Error", "Đã xảy ra lỗi: " + ex.Message);
             }
         }
         public async Task<ApiResponse<string>> Delete(Guid id)

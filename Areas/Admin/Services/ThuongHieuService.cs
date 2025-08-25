@@ -101,19 +101,29 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<CreateHangSanXuat>.FailResponse("AddError", $"Lỗi khi thêm sản phẩm: {ex.Message}");
             }
         }
-        public void Update(ThuongHieu entity)
+        public async Task<ApiResponse<string>> Update(ThuongHieu entity)
         {
+            if (entity == null) return ApiResponse<string>.FailResponse("Entity_Null", "Dữ liệu gửi lên bị null");
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
                 var obj = _db.ThuongHieus.Find(entity.BrandID);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy thương hiệu để cập nhật!");
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy Thương hiwwuj muốn cập nhật");
+                if (obj.IsDelete) return ApiResponse<string>.FailResponse("Already_Deleted", "Thương hiệu cập nhật đã bị xóa trước đó vui lòng kiểm tra lại");
+
+                var isDuplicate = await _db.ThuongHieus.AnyAsync(c => c.TenThuongHieu == entity.TenThuongHieu && c.BrandID != entity.BrandID);
+                bool isDuplicateID = await _db.ThuongHieus.AnyAsync(c => c.MaThuongHieuCode == entity.MaThuongHieuCode && c.BrandID != entity.BrandID);
+
+                if (isDuplicate) return ApiResponse<string>.FailResponse("Duplicate_Name", "Tên thương hiệu bị trùng lặp vui lòng cập nhật lại tên khác");
+                if (isDuplicateID) return ApiResponse<string>.FailResponse("Duplicate_Code", "Mã thương hiệu đã tồn tại");
+
+
                 _db.Entry(obj).CurrentValues.SetValues(entity);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Update_Success", "Cập nhật thương hiệu thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi cập nhật thương hiệu: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Unhandled_Error", "Đã xảy ra lỗi: " + ex.Message);
             }
         }
         public async Task<ApiResponse<string>> Delete(Guid id)

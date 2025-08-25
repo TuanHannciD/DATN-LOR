@@ -13,7 +13,7 @@ namespace AuthDemo.Areas.Admin.Interface
 
         MauSac? GetById(Guid id);
         Task<ApiResponse<CreateMauSac>> AddAsync(CreateMauSac create);
-        void Update(MauSac entity);
+        Task<ApiResponse<string>> Update(MauSac entity);
         Task<ApiResponse<string>> Delete(Guid id);
         Task<ApiResponse<string>> Restore(Guid id);
     }
