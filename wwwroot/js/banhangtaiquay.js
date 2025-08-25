@@ -41,19 +41,21 @@ $(document).ready(function () {
         if (data && data.length > 0) {
           let html = "";
           data.forEach(function (sp) {
-            html += `<button type="button" class="dropdown-item" data-id="${
+            html += `
+            <button type="button" class="dropdown-item" data-id="${
               sp.shoeDetailID
             }">
-                        <div><strong>${
-                          sp.tenSp
-                        }</strong> <span class="text-success ms-2">${sp.gia.toLocaleString()} VNĐ</span></div>
-                        <div class="text-muted">Màu: ${sp.mauSac} | Size: ${
+            <div><strong>${
+              sp.tenSp
+            }</strong> <span class="text-success ms-2">${sp.gia.toLocaleString()} VNĐ</span></div>
+            <div class="text-muted">Màu: ${sp.mauSac} | Size: ${
               sp.kichThuoc
             }</div>
-                        <div class="text-muted">Thương hiệu: ${
-                          sp.thuongHieu
-                        } | Chất liệu: ${sp.chatLieu}</div>
-                        <div class="text-muted">Danh mục: ${sp.danhMuc}</div>
+            <div class="text-muted">Thương hiệu: ${
+              sp.thuongHieu
+            } | Chất liệu: ${sp.chatLieu}</div>
+            <div class="text-muted">Danh mục: ${sp.danhMuc}</div>
+            <div class="text-muted">Số lượng kho: ${sp.soLuong}</div>
             </button>`;
           });
 

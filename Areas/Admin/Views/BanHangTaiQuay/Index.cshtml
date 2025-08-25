@@ -93,40 +93,46 @@
                     }
                     else
                     {
-                        foreach (var sp in tuVanList)
-                        {
-                            var cartItem = cartItems.FirstOrDefault(x => x.ShoeDetailID == sp.ShoeDetailID);
-                            var qty = cartItem?.SoLuong ?? 0;
-                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                <div class="product-card ">
-                                    <div><strong>@sp.TenSp</strong></div>
-                                    <div class="text-success">@sp.Gia.ToString("N0") VNĐ</div>
-                                    <div class="text-muted">Màu: @sp.MauSac | Size: @sp.KichThuoc</div>
-                                    <div class="text-muted">@sp.ThuongHieu - @sp.ChatLieu</div>
-                                    <div class="text-muted">@sp.DanhMuc</div>
-                                    @if(qty > 0) {
-                                        <div class="cart-controls">
-                                            <span class="badge bg-primary ">Số lượng: @qty</span>
-                                            <div class="d-flex gap-1 mt-2 flex-wrap justify-content-center ">
-                                                <button class="btn btn-sm btn-outline-secondary btn-update-cart"
-                                                 data-id="@sp.ShoeDetailID" data-action="decrease">-</button>
-                                                <button class="btn btn-sm btn-outline-secondary btn-plus btn-update-cart"
-                                                 data-id="@sp.ShoeDetailID" data-action="increase">+</button>
-                                                <button class="btn btn-sm btn-outline-danger btn-remove btn-update-cart" 
+                        @foreach (var sp in tuVanList)
+                    {
+                        var cartItem = cartItems.FirstOrDefault(x => x.ShoeDetailID == sp.ShoeDetailID);
+                        var qty = cartItem?.SoLuong ?? 0;
+
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                            <div class="product-card border rounded shadow-sm p-3 h-100 d-flex flex-column justify-content-between">
+                                <!-- Tên & Giá -->
+                                <div>
+                                    <h6 class="fw-bold text-truncate">@sp.TenSp</h6>
+                                    <div class="text-success fw-semibold">@sp.Gia.ToString("N0") VNĐ</div>
+                                </div>
+
+                                <!-- Thuộc tính -->
+                                <div class="small text-muted mt-2">
+                                    <div><strong>Màu:</strong> @sp.MauSac | <strong>Size:</strong> @sp.KichThuoc</div>
+                                    <div><strong>Thương hiệu:</strong> @sp.ThuongHieu</div>
+                                    <div><strong>Chất liệu:</strong> @sp.ChatLieu</div>
+                                    <div><strong>Danh mục:</strong> @sp.DanhMuc</div>
+                                </div>
+
+                                <!-- Số lượng & Nút thao tác -->
+                                <div class="cart-controls mt-3 text-center">
+                                    <span class="badge bg-primary mb-2">Kho: @sp.SoLuong</span>
+
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        <button class="btn btn-sm btn-outline-secondary btn-update-cart"
+                                                data-id="@sp.ShoeDetailID" data-action="decrease">-</button>
+
+                                        <button class="btn btn-sm btn-outline-secondary btn-update-cart"
+                                                data-id="@sp.ShoeDetailID" data-action="increase">+</button>
+
+                                        <button class="btn btn-sm btn-outline-danger btn-update-cart"
                                                 data-id="@sp.ShoeDetailID" data-action="remove">X</button>
-                                            </div>
-                                        </div>
-                                        
-                                    }
-                                    else{
-                                        <button class="btn btn-sm btn-primary btn-choose btn-update-cart" 
-                                        data-id="@sp.ShoeDetailID" data-action="add">Chọn</button>
-                                    }
-                                    
+                                    </div>
                                 </div>
                             </div>
-                        }
+                        </div>
                     }
+                  }
                 </div>
             </div>
         </div>

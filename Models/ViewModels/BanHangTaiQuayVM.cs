@@ -44,12 +44,13 @@ namespace AuthDemo.Models.ViewModels
         public string? ChatLieu { get; set; }
         public string? DanhMuc { get; set; }
         public string? LyDo { get; set; }
+        public int SoLuongKho { get; set; }
     }
     public class UpdateCartRequestVM
     {
-        [JsonPropertyName("shoeDetailId")   ]
+        [JsonPropertyName("shoeDetailId")]
         public Guid ShoeDetailID { get; set; }
         [JsonPropertyName("actionType")]
         public string ActionType { get; set; } // "add", "remove", "increase", "decrease"
     }
-} 
+}
