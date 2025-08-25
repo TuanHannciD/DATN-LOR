@@ -281,12 +281,24 @@ namespace AuthDemo.Areas.Admin.Services
             var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == HoaDonID).ToList();
             if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
             {
+
+
                 foreach (var ct in hdct)
                 {
                     // Lấy chi tiết giày trong kho theo ShoeDetailID
-                    var giay = _db.ChiTietGiays.FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
-
-                    if (giay != null)
+                    var giay = _db.ChiTietGiays
+                        .Include(ct => ct.MauSac)
+                        .Include(ct=>ct.KichThuoc)
+                        .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
+                    if (giay.SoLuong == 0)
+                    {
+                        return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", $"Số lượng trong kho không đủ cho hóa vui lòng nhập thêm hàng cho sản phẩm :{giay.Giay.TenGiay} ({giay.MauSac.TenMau}{giay.KichThuoc.TenKichThuoc}) ");
+                    }
+                    if (ct.SoLuong > giay.SoLuong)
+                    {
+                        return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", $"Số lượng trong kho đã hết vui lòng nhập thêm hàng cho sản phẩm :{giay.Giay.TenGiay} ({giay.MauSac.TenMau}{giay.KichThuoc.TenKichThuoc}) ");
+                    }
+                    if (giay.SoLuong > 0)
                     {
                         // Trừ số lượng tồn kho
                         giay.SoLuong -= ct.SoLuong;
