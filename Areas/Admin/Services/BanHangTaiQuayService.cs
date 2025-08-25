@@ -23,7 +23,8 @@ namespace AuthDemo.Areas.Admin.Services
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                return _db.ChiTietGiays.Select(sp => new BanHangTaiQuayVM {
+                return _db.ChiTietGiays.Select(sp => new BanHangTaiQuayVM
+                {
                     ShoeDetailID = sp.ShoeDetailID,
                     TenSp = sp.Giay != null ? sp.Giay.TenGiay : "Chưa có",
                     Gia = sp.Gia,
@@ -39,7 +40,8 @@ namespace AuthDemo.Areas.Admin.Services
             var lowerKeyword = keyword.ToLower();
             return _db.ChiTietGiays
                 .Where(sp => sp.Giay != null && sp.Giay.TenGiay.ToLower().Contains(lowerKeyword))
-                .Select(sp => new BanHangTaiQuayVM {
+                .Select(sp => new BanHangTaiQuayVM
+                {
                     ShoeDetailID = sp.ShoeDetailID,
                     TenSp = sp.Giay != null ? sp.Giay.TenGiay : "Chưa có",
                     Gia = sp.Gia,
@@ -72,7 +74,8 @@ namespace AuthDemo.Areas.Admin.Services
                         || (u.HoTen != null && u.HoTen.ToLower().Contains(lowerKeyword))
                     )
                 )
-                .Select(u => new {
+                .Select(u => new
+                {
                     u.UserID,
                     u.TenDangNhap,
                     u.HoTen,
@@ -82,7 +85,8 @@ namespace AuthDemo.Areas.Admin.Services
                     DiaChiObj = (u.DiaChis != null && u.DiaChis.Any()) ? u.DiaChis.FirstOrDefault() : null
                 })
                 .AsEnumerable() // chuyển sang LINQ to Objects để dùng null-safe
-                .Select(u => new KhachHangDropdownVM {
+                .Select(u => new KhachHangDropdownVM
+                {
                     UserID = u.UserID,
                     TenDangNhap = u.TenDangNhap,
                     HoTen = u.HoTen,
@@ -115,20 +119,23 @@ namespace AuthDemo.Areas.Admin.Services
                 .Include(c => c.ChiTietGiay.ThuongHieu)
                 .Include(c => c.ChiTietGiay.DanhMuc)
                 .ToList();
-            var result = cartItems.Select(item => {
+            var result = cartItems.Select(item =>
+            {
                 var ctg = item.ChiTietGiay;
                 var giaGoc = ctg?.Gia ?? 0;
                 var ckpt = item.ChietKhauPhanTram ?? 0;
                 var cktm = item.ChietKhauTienMat ?? 0;
                 var isTang = item.IsTangKem == true;
                 var giaSauGiam = isTang ? 0 : Math.Max(0, giaGoc - (giaGoc * ckpt / 100) - cktm);
-                return new CartItemDisplayVM {
+                return new CartItemDisplayVM
+                {
                     CartDetailID = item.CartDetailID,
                     ShoeDetailID = item.ShoeDetailID,
                     TenSanPham = ctg?.Giay?.TenGiay ?? "",
                     MauSac = ctg?.MauSac?.TenMau,
                     KichThuoc = ctg?.KichThuoc?.TenKichThuoc,
                     SoLuong = item.SoLuong,
+                    SoLuongKho = item.ChiTietGiay.SoLuong,
                     GiaGoc = giaGoc,
                     GiaSauGiam = giaSauGiam,
                     IsTangKem = isTang,
@@ -219,4 +226,4 @@ namespace AuthDemo.Areas.Admin.Services
             _db.SaveChanges();
         }
     }
-} 
+}
