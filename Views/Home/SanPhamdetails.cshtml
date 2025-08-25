@@ -186,6 +186,12 @@
                             }
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="block text-lg font-medium text-dark mb-2">Thương hiệu :@Model.ThuongHieuOptions.FirstOrDefault()?.TenThuongHieu |  Chất liệu :@Model.ChatLieuOptions.FirstOrDefault()?.TenChatLieu  | Danh mục :@Model.DanhMucOptions.FirstOrDefault()?.TenDanhMuc </label>
+                       
+                    </div>
+               
+
                     <!-- Hidden Fields -->
                     <input type="hidden" id="selectedColorId" />
                     <input type="hidden" id="selectedSizeId" />

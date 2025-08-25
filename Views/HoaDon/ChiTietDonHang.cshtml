@@ -440,7 +440,7 @@
         @foreach (var item in hoaDon.ChiTiet)
         {
             <div class="product">
-                <img src="@Url.Content("~/AnhDoiGiay/" + item.HinhAnh)" alt="@item.TenSanPham" />
+                <img src="@item.HinhAnh" alt="@item.TenSanPham" />
                 <div class="product-info">
                     <div class="product-line">
                         <div class="product-name">@item.TenSanPham (@item.MauSac @item.Size)</div>
