@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("ColorName").value = data.colorID
       ? selectData.colorList.find((b) => b.id === data.colorID)?.name || ""
       : "";
-    document.getElementById("CategoryID").value = data.categoryID;
+    document.getElementById("ColorID").value = data.colorID;
 
     console.log("Branch:", data);
   }
