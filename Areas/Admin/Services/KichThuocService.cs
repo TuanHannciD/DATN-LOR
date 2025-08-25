@@ -102,15 +102,28 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<CreateKichThuoc>.FailResponse("AddError", $"Lỗi khi thêm kích thước: {ex.Message}");
             }
         }
-        public void Update(KichThuoc entity)
+        public async Task<ApiResponse<string>> Update(KichThuoc entity)
         {
+            if (entity == null) return ApiResponse<string>.FailResponse("Entity_Null", "Dữ liệu gửi về bị lỗi hoặc null");
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
                 var obj = _db.KichThuocs.Find(entity.SizeID);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy kích thước để cập nhật!");
+
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìn thấy thông tin kích thước cập nhật");
+                if (obj.IsDelete) return ApiResponse<string>.FailResponse("Already_Deleted", "Kích thước đã bị xóa trước đó kiểm tra lại");
+
+                bool isDuplicate = await _db.KichThuocs.AnyAsync(c => c.TenKichThuoc == entity.TenKichThuoc && c.SizeID != entity.SizeID);
+                bool isDuplicateID = await _db.KichThuocs.AnyAsync(c => c.MaKichThuocCode == entity.MaKichThuocCode && c.SizeID != entity.SizeID);
+
+
+                if (isDuplicate) return ApiResponse<string>.FailResponse("Duplicate_Name", "Tên kích thước đã tồn tại vui lòng đổi tên khác");
+                if (isDuplicateID) return ApiResponse<string>.FailResponse("Duplicate_Code", "Mã kích thước đã tồn tại");
+
+
                 _db.Entry(obj).CurrentValues.SetValues(entity);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
+
+                return ApiResponse<string>.SuccessResponse("Update_Success", "Cập nhật kích thước thành công");
             }
             catch (Exception ex)
             {

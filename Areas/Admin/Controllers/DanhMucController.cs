@@ -72,12 +72,12 @@ namespace AuthDemo.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public IActionResult Edit(DanhMuc model)
+        public async Task<IActionResult> Edit(DanhMuc model)
         {
-            _danhmucSV.Update(model);
+            var response = await _danhmucSV.Update(model);
 
-            TempData["ToastMessage"] = "Cập nhật thành công";
-            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
 
             return RedirectToAction("Index");
         }

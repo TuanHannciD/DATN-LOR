@@ -141,19 +141,37 @@ namespace AuthDemo.Areas.Admin.Services
             }
         }
 
-        public void Update(DanhMuc entity)
+        public async Task<ApiResponse<string>> Update(DanhMuc entity)
         {
+            if (entity == null)
+                return ApiResponse<string>.FailResponse("Entity_Null", "Dữ liệu gửi lên bị null");
+            if (entity.CategoryID == Guid.Empty) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy ID danh muc ");
+
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
+
                 var obj = _db.DanhMucs.Find(entity.CategoryID);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy danh mục để cập nhật!");
+
+                if (obj == null)
+                    return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy chất liệu cần cập nhật");
+
+                if (obj.IsDelete)
+                    return ApiResponse<string>.FailResponse("Already_Deleted", "Chất liệu này đã bị xóa, không thể cập nhật");
+
+                bool isDuplicate = await _db.DanhMucs.AnyAsync(c => c.TenDanhMuc == entity.TenDanhMuc && c.CategoryID != entity.CategoryID);
+                bool isDuplicateID = await _db.DanhMucs.AnyAsync(c => c.MaDanhMucCode == entity.MaDanhMucCode && c.CategoryID != entity.CategoryID);
+
+
+                if (isDuplicate) return ApiResponse<string>.FailResponse("Duplicate_Name", "Tên danh mục đã tồn tại");
+                if (isDuplicateID) return ApiResponse<string>.FailResponse("Duplicate_Code", "Mã danh mục đã tồn tại");
+
                 _db.Entry(obj).CurrentValues.SetValues(entity);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Update_Success", "Cập nhật tên danh mục thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi cập nhật danh mục: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Unhandled_Error", "Đã xảy ra lỗi: ", ex.Message);
             }
         }
     }

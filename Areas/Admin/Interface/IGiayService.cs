@@ -13,7 +13,7 @@ namespace AuthDemo.Areas.Admin.Interface
         IEnumerable<Giay> GetAllDelete();
         Giay? GetById(Guid id);
         Task<ApiResponse<GiayCreate>> AddAsync(GiayCreate giayCreate);
-        void Update(Giay sp);
+        Task<ApiResponse<string>> Update(Giay sp);
         Task<ApiResponse<string>> Delete(Guid id);
         Task<ApiResponse<string>> Restore(Guid id);
 

@@ -10,7 +10,7 @@ namespace AuthDemo.Areas.Admin.Interface
         Task<ApiResponse<IEnumerable<DanhMuc>>> GetAllDelete();
         DanhMuc? GetById(Guid id);
         Task<ApiResponse<CreateDanhMuc>> AddAsync(CreateDanhMuc createChatLieu);
-        void Update(DanhMuc entity);
+        Task<ApiResponse<string>> Update(DanhMuc entity);
         Task<ApiResponse<string>> Delete(Guid id);
         Task<ApiResponse<string>> Restore(Guid id);
     }

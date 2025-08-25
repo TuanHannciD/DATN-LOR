@@ -99,19 +99,30 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<CreateMauSac>.FailResponse("AddError", $"Lỗi khi thêm màu sắc: {ex.Message}");
             }
         }
-        public void Update(MauSac entity)
+        public async Task<ApiResponse<string>> Update(MauSac entity)
         {
+            if (entity == null) return ApiResponse<string>.FailResponse("Entity_Null", "Lỗi dữ liệu gửi về kiểm tra lại");
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
                 var obj = _db.MauSacs.Find(entity.ColorID);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy màu sắc để cập nhật!");
+                if (obj == null) return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy kích thước cần cập nhật");
+                if (obj.IsDelete) return ApiResponse<string>.FailResponse("Already_Deleted", "Sản phẩm đã bị xóa trước đó vui lòng kiểm tra lại");
+
+                var isDuplicate = await _db.MauSacs.AnyAsync(c => c.TenMau == entity.TenMau && c.ColorID != entity.ColorID);
+                bool isDuplicateID = await _db.MauSacs.AnyAsync(c => c.MaMau == entity.MaMau && c.ColorID != entity.ColorID);
+
+
+                if (isDuplicate) return ApiResponse<string>.FailResponse("Duplicate_Name", "Tên màu sắc bị trùng vui lòng kiểm tra lại ");
+                if (isDuplicateID) return ApiResponse<string>.FailResponse("Duplicate_Code", "Mã màu sắc đã tồn tại");
+
+
                 _db.Entry(obj).CurrentValues.SetValues(entity);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
+                return ApiResponse<string>.SuccessResponse("Update_Success", "Cập nhật màu sắc thành công");
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi cập nhật màu sắc: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Unhandled_Error", "Đã xảy ra lỗi: " + ex.Message);
             }
         }
         public async Task<ApiResponse<string>> Delete(Guid id)

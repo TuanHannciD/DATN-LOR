@@ -142,7 +142,7 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(GiayVM vm)
+        public async Task<IActionResult> Edit(GiayVM vm)
         {
             var giay = _sanPhamService.GetById(vm.ShoeID);
             if (giay == null) return NotFound();
@@ -150,16 +150,16 @@ namespace AuthDemo.Areas.Admin.Controllers
             giay.TenGiay = vm.TenGiay;
             giay.MaGiayCode = vm.MaGiayCode;
             giay.MoTa = vm.MoTa;
+            
             //giay.TrangThai = Enum.Parse<TrangThai>(vm.TrangThai);
             giay.NguoiCapNhat = User.Identity?.Name ?? "ad";
             giay.NgayCapNhat = DateTime.Now;
+            var response = await _sanPhamService.Update(giay);
 
-            if (ModelState.IsValid)
-            {
-                _sanPhamService.Update(giay);
-                return RedirectToAction("Index");
-            }
-            return View(vm);
+            // Lưu message vào TempData
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(Guid id)

@@ -96,21 +96,53 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<CreateChatLieu>.FailResponse("Error", $"Lỗi khi thêm chất liệu: {ex.Message}");
             }
         }
-        public void Update(ChatLieu entity)
+        public async Task<ApiResponse<string>> Update(ChatLieu entity)
         {
+            if (entity == null)
+                return ApiResponse<string>.FailResponse("Entity_Null", "Dữ liệu gửi lên bị null");
+
+            if (entity.MaterialID == Guid.Empty)
+                return ApiResponse<string>.FailResponse("ID_Invalid", "ID không hợp lệ");
+
             try
             {
-                ArgumentNullException.ThrowIfNull(entity);
-                var obj = _db.ChatLieus.Find(entity.MaterialID);
-                ArgumentNullException.ThrowIfNull(obj, "Không tìm thấy chất liệu để cập nhật!");
+                var obj = await _db.ChatLieus.FindAsync(entity.MaterialID);
+
+                if (obj == null)
+                    return ApiResponse<string>.FailResponse("ID_Not_Found", "Không tìm thấy chất liệu cần cập nhật");
+
+                if (obj.IsDelete)
+                    return ApiResponse<string>.FailResponse("Already_Deleted", "Chất liệu này đã bị xóa, không thể cập nhật");
+
+                //checked trùng tên
+                bool isDuplicate = await _db.ChatLieus
+                    .AnyAsync(c => c.TenChatLieu == entity.TenChatLieu && c.MaterialID != entity.MaterialID);
+
+                bool isDuplicateID = await _db.ChatLieus.AnyAsync(c => c.MaChatLieuCode == entity.MaChatLieuCode && c.MaterialID != entity.MaterialID);
+
+                if (isDuplicate)
+                    return ApiResponse<string>.FailResponse("Duplicate_Name", "Tên chất liệu đã tồn tại");
+
+                if (isDuplicateID) return ApiResponse<string>.FailResponse("Duplicate_Code", "Mã chất liệu đã tồn tại");
+
+
+                // Cập nhật giá trị
                 _db.Entry(obj).CurrentValues.SetValues(entity);
-                _db.SaveChanges();
+
+                await _db.SaveChangesAsync();
+
+                return ApiResponse<string>.SuccessResponse("Update_Success", "Cập nhật chất liệu thành công");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return ApiResponse<string>.FailResponse("Database_Error", "Lỗi khi cập nhật DB: " + dbEx.Message);
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi cập nhật chất liệu: " + ex.Message, ex);
+                return ApiResponse<string>.FailResponse("Unhandled_Error", "Đã xảy ra lỗi: " + ex.Message);
             }
         }
+
         public async Task<ApiResponse<string>> Delete(Guid id)
         {
             try

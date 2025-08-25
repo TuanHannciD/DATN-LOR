@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models;
 using static AuthDemo.Models.ViewModels.VMCHUNG;
+using System.Threading.Tasks;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -63,14 +64,12 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(MauSac model)
+        public async Task<IActionResult> Edit(MauSac model)
         {
-            if (ModelState.IsValid)
-            {
-                _mauSacService.Update(model);
-                return RedirectToAction("Index");
-            }
-            return View(model);
+            var response = await _mauSacService.Update(model);
+            TempData["ToastMessage"] = response.Message;
+            TempData["ToastType"] = response.Success;
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(Guid id)
