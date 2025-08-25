@@ -52,7 +52,7 @@ namespace AuthDemo.Areas.Admin.Services
                 Email = x.Email,
                 DiaChi = x.DiaChi,
                 HinhThucThanhToan = x.PhuongThucThanhToan,
-
+                TrangThaiHoaDon = x.TrangThai,
                 HinhThucVanChuyen = x.PhuongThucVanChuyen,
                 TrangThaiDisplay = x.TrangThai.GetDisplayName(),
                 HinhThucThanhToanDisplay = x.PhuongThucThanhToan.GetDisplayName(),
@@ -94,6 +94,22 @@ namespace AuthDemo.Areas.Admin.Services
 
             if (!Enum.TryParse(createHoaDonVM.HinhThucVanChuyen, out PhuongThucVanChuyen phuongThucVanChuyen))
                 return Result<HoaDonDTO>.Fail("Phương thức vận chuyển không hợp lệ.");
+
+            // Lấy tất cả sản phẩm trong giỏ của user
+            var deletedProductsInCart = await _db.ChiTietGioHangs
+                .Include(c => c.ChiTietGiay) // join sang bảng sản phẩm
+                .Where(c => c.GioHang.UserID == createHoaDonVM.UserID && c.ChiTietGiay.IsDelete == true)
+                .ToListAsync();
+
+            if (deletedProductsInCart.Count > 0)
+            {
+                // Xóa tất cả sản phẩm đã bị IsDelete
+                _db.ChiTietGioHangs.RemoveRange(deletedProductsInCart);
+                await _db.SaveChangesAsync();
+
+                return Result<HoaDonDTO>.Fail("Một số sản phẩm trong giỏ đã bị ngưng bán và đã được xóa khỏi giỏ hàng. Vui lòng kiểm tra lại.");
+            }
+
             //Tính tiền cho vào hóa đơn sau tất cả loại giảm
             var tongTienVM = TinhTienHoaDon(gioHang.CartID, createHoaDonVM.GiamGiaPhanTram, createHoaDonVM.GiamGiaTienMat);
             if (tongTienVM.TongThanhToan <= 0)
@@ -260,8 +276,8 @@ namespace AuthDemo.Areas.Admin.Services
         public async Task<ApiResponse<UpdateTrangThaiResponse>> UpdateTrangThai(Guid HoaDonID)
         {
             var hoaDon = _db.HoaDons.Find(HoaDonID);
-            
-                if (hoaDon == null)
+
+            if (hoaDon == null)
             {
                 return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Null", "Không tìm thấy hóa đơn");
             }
@@ -344,7 +360,7 @@ namespace AuthDemo.Areas.Admin.Services
         {
             public Guid Id { get; set; }
             public TrangThaiHoaDon NewStatus { get; set; }
-             
+
             public string NewStatusDisplay { get; set; }
         }
 

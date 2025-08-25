@@ -4,87 +4,118 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 <div class="card mt-4">
+    <!-- Bộ lọc thời gian -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <label for="thoiGianSelect" class="mb-0 fw-bold">
+                <i class="mdi mdi-calendar-clock me-1"></i>
+                Lọc theo thời gian:</label>
+
+            <select id="thoiGianSelect" class="form-select form-select-sm" style="width: 200px;">
+                <option value="">Tất cả</option>
+                <option value="today" selected>Hôm nay</option>
+                <option value="month">Tháng này</option>
+                <option value="year">Năm nay</option>
+                <option value="custom">Khác...</option>
+            </select>
+
+            <!-- Luôn hiện ngày -->
+            <input type="date" id="startDate" class="form-control form-control-sm" style="width: 180px;" />
+            <span class="fw-bold">→</span>
+            <input type="date" id="endDate" class="form-control form-control-sm" style="width: 180px;" />
+
+
+        </div>
+    </div>
+
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0"><i class="mdi mdi-file-document-box"></i> Danh sách hóa đơn</h4>
 
     </div>
+
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
+                        <th>ID</th>
                         <th>Khách hàng</th>
                         <th>SĐT</th>
-                        <th>Email</th>
                         <th>Trạng thái đơn hàng</th>
                         <th>Hình thức thanh toán</th>
-                        <th>Hình thức vận chuyển</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái thanh toán</th>
                         <th>Người tạo</th>
                         <th>Ngày tạo</th>
-                        <th>Người cập nhật</th>
-                        <th>Ngày cập nhật</th>
 
-                        @* <th class="text-center">Thao tác</th> *@
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                    <!-- Row filter -->
+                    <tr>
+                        <th><input type="text" class="form-control form-control-sm filter-input" id="idFilter"
+                                placeholder="Lọc ID">
+                        </th>
+                        <th><input type="text" class="form-control form-control-sm filter-input"
+                                placeholder="Lọc tên KH" id="nameFilter"></th>
+                        <th><input type="number" class="form-control form-control-sm filter-input" id="phoneFilter"
+                                placeholder="Lọc SĐT">
+                        </th>
+                        <th>
+                            <select class="form-select form-select-sm filter-input" id="trangThaiSelect">
+                                <option value="">Tất cả</option>
+                                @foreach (var item in (List<SelectListItem>)ViewBag.TrangThaiDonHangList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </th>
+                        <th>
+                            <select class="form-select form-select-sm filter-input" id="hinhThucSelect">
+                                <option value="">Tất cả</option>
+                                @foreach (var item in (List<SelectListItem>)ViewBag.HinhThucThanhToanList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </th>
+                        <th></th>
+                        <th>
+                            <select class="form-select form-select-sm filter-input" id="trangThaiTT">
+                                <option value="">Tất cả</option>
+                                <option value=true>Đã thanh toán</option>
+                                <option value=false>Chưa thanh toán</option>
+                            </select>
+                        </th>
+                        <th><input type="text" class="form-control form-control-sm filter-input"
+                                placeholder="Lọc người tạo" id="nameCreateFilter"></th>
+                        <th></th>
+                        <th> <button id="applyFilter" class="btn btn-sm btn-primary">Áp dụng</button></th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.TenKhachHang</td>
-                            <td>@item.SoDienThoai</td>
-                            <td>@item.Email</td>
-                            <td>
-                                <span class="badge  status-badge" data-id="@item.HoaDonID" style="cursor:pointer;" >
-                                   
-                                        @item.TrangThaiDisplay
-                                    
-                                    
-                                </span>
-                            </td>
-
-                            <td>@item.HinhThucThanhToanDisplay</td>
-                            <td>@item.HinhThucVanChuyenDisplay</td>
-                            <td><span class="badge bg-success">@item.TongTien.ToString("N0")</span></td>
-                            <td>@(item.DaThanhToan ? "Đã thanh toán" : "Chưa thanh toán")</td>
-                            <td>@item.NguoiTao</td>
-                            <td>
-                                @if (item.NgayTao.HasValue)
-                                {
-                                    <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
-                                        @item.NgayTao.Value.ToString("HH:mm dd/MM/yyyy")
-                                    </span>
-                                }
-                            </td>
-                            <td>@item.NguoiCapNhat</td>
-                            <td>
-                                @if (item.NgayCapNhat.HasValue)
-                                {
-                                    <span class="badge bg-light text-dark px-2 py-1 rounded-2 shadow-sm">
-                                        @item.NgayCapNhat.Value.ToString("HH:mm dd/MM/yyyy")
-                                    </span>
-                                }
-                            </td>
-                            @* <td class="text-center">
-                                <a class="btn btn-info btn-sm me-1" href="#">
-                                    <i class="mdi mdi-eye"></i> Xem
-                                </a>
-                                <a class="btn btn-warning btn-sm me-1" href="#">
-                                    <i class="mdi mdi-pencil"></i> Sửa
-                                </a>
-                                <a class="btn btn-danger btn-sm btn-huy-hoa-don" href="#" data-id="@item.HoaDonID">
-                                    <i class="mdi mdi-delete"></i> Hủy 
-                                </a>
-
-                            </td> *@
-                        </tr>
-                    }
+                <tbody id="hoaDonTableBody">
+                    <!-- Dữ liệu sẽ load bằng AJAX -->
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Modal hiển thị hóa đơn -->
+    <div class="modal fade" id="isOpenModal" tabindex="-1" aria-labelledby="isOpenModalLabel">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-light text-dark">
+                    <h5 class="modal-title " id="isOpenModalLabel">
+                        <i class="mdi mdi-invoice-list"></i> Hóa đơn
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Nội dung chi tiết sẽ được load vào đây -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 

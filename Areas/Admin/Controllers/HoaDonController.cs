@@ -3,6 +3,8 @@ using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
 using System.Threading.Tasks;
+using AuthDemo.Models.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -18,9 +20,114 @@ namespace AuthDemo.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
+            ViewBag.TrangThaiDonHangList = Enum.GetValues(typeof(TrangThaiHoaDon))
+                .Cast<TrangThaiHoaDon>()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.ToString(),
+                    Text = x.GetDisplayName() // Nếu có DisplayAttribute
+                }).ToList();
+
+            ViewBag.HinhThucThanhToanList = Enum.GetValues(typeof(PhuongThucThanhToan))
+                .Cast<PhuongThucThanhToan>()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.ToString(),
+                    Text = x.GetDisplayName()
+                }).ToList();
+
+            return View(); // Không truyền Model trực tiếp, dữ liệu load bằng AJAX
+        }
+
+        // API trả JSON danh sách hóa đơn theo filter
+        [HttpGet]
+        public IActionResult GetHoaDons(DateTime? startDate,
+         DateTime? endDate,
+        string trangThai = "",
+        string hinhThuc = "",
+        string phone = "",
+         string idFilter = "",
+         string nameFilter = "",
+         bool? trangThaiTT = null,
+         string nameCreateFilter = "",
+         string tongTienFilter = ""
+        )
+        {
             var hoaDons = _hoaDonService.GetAllHoaDon();
-            var listTrangThai = _hoaDonService.GetTrangThaiList();
-            return View(hoaDons);
+
+
+            if (startDate.HasValue)
+                hoaDons = hoaDons.Where(h => h.NgayTao >= startDate.Value).ToList();
+
+            if (endDate.HasValue)
+                hoaDons = hoaDons.Where(h => h.NgayTao <= endDate.Value).ToList();
+
+
+            if (!string.IsNullOrEmpty(trangThai))
+                if (Enum.TryParse<TrangThaiHoaDon>(trangThai, out var trangthaiEnum))
+                {
+                    hoaDons = hoaDons.Where(h => h.TrangThaiHoaDon == trangthaiEnum).ToList();
+                }
+
+
+            if (!string.IsNullOrEmpty(hinhThuc))
+            {
+                if (Enum.TryParse<PhuongThucThanhToan>(hinhThuc, out var hinhThucEnum))
+                {
+                    hoaDons = hoaDons.Where(h => h.HinhThucThanhToan == hinhThucEnum).ToList();
+                }
+            }
+
+
+            if (!string.IsNullOrEmpty(phone))
+            {
+                // Lọc số điện thoại bắt đầu với phone
+                hoaDons = hoaDons
+                    .Where(h => h.SoDienThoai != null && h.SoDienThoai.StartsWith(phone))
+                    .ToList();
+            }
+
+
+            if (!string.IsNullOrEmpty(idFilter))
+            {
+                hoaDons = hoaDons
+                    .Where(h => h.HoaDonID.ToString().StartsWith(idFilter))
+                    .ToList();
+            }
+            if (!string.IsNullOrEmpty(nameCreateFilter))
+            {
+                hoaDons = hoaDons
+                    .Where(h => !string.IsNullOrEmpty(h.NguoiTao) &&
+                                h.NguoiTao.StartsWith(nameCreateFilter, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+            // if (!string.IsNullOrEmpty(nameFilter))
+            // {
+            //     var keywords = nameFilter.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            //     hoaDons = hoaDons
+            //         .Where(h => keywords.All(k => h.TenKhachHang.Contains(k, StringComparison.OrdinalIgnoreCase)))
+            //         .ToList();
+            // }
+            // loc tên theo phương pháp ADN
+
+
+            if (!string.IsNullOrEmpty(nameFilter))
+            {
+                var keywords = nameFilter.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                hoaDons = hoaDons
+                    .Where(h => !string.IsNullOrEmpty(h.TenKhachHang) &&
+                                keywords.All(k => h.TenKhachHang.Contains(k, StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+
+
+
+            if (trangThaiTT.HasValue)
+            {
+                hoaDons = hoaDons.Where(h => h.DaThanhToan == trangThaiTT.Value).ToList();
+            }
+
+            return Json(hoaDons);
         }
 
         public IActionResult GetTrangThaiList()
@@ -74,11 +181,16 @@ namespace AuthDemo.Areas.Admin.Controllers
             }
             return Ok(new { message = "Cập nhật trạng thái thanh toán thành công." });
         }
+
+        public class HoaDonIdDto
+        {
+            public Guid HoaDonID { get; set; }
+        }
         [HttpPost]
-        public async Task<IActionResult> UpdateTrangThai(Guid HoaDonID)
+        public async Task<IActionResult> UpdateTrangThai([FromBody] HoaDonIdDto HoaDonID)
         {
 
-            var result = await _hoaDonService.UpdateTrangThai(HoaDonID);
+            var result = await _hoaDonService.UpdateTrangThai(HoaDonID.HoaDonID);
             if (!result.Success)
             {
                 return BadRequest(result);

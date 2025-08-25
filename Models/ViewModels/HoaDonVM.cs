@@ -19,6 +19,7 @@ namespace AuthDemo.Models.ViewModels
         public string? DiaChi { get; set; }
         public PhuongThucThanhToan HinhThucThanhToan { get; set; }
         public PhuongThucVanChuyen HinhThucVanChuyen { get; set; }
+        public TrangThaiHoaDon TrangThaiHoaDon { get; set; }
         // Thêm các trường display
         public string TrangThaiDisplay { get; set; }
         public string HinhThucThanhToanDisplay { get; set; }
@@ -31,16 +32,16 @@ namespace AuthDemo.Models.ViewModels
         public string SoDienThoai { get; set; }
         public string DiaChi { get; set; }
         public decimal TongTien { get; set; }
-        public DateTime ?NgayTao { get; set; }
+        public DateTime? NgayTao { get; set; }
         public string PhuongThucThanhToan { get; set; }
         public string PhuongThucVanChuyen { get; set; }
     }
-    
+
     public class CreateHoaDonVM
     {
 
         [JsonPropertyName("userID")]
-        public Guid ?UserID { get; set; } 
+        public Guid? UserID { get; set; }
         [JsonPropertyName("hinhThucThanhToan")]
         public string HinhThucThanhToan { get; set; }
         [JsonPropertyName("hinhThucVanChuyen")]
@@ -53,7 +54,7 @@ namespace AuthDemo.Models.ViewModels
 
         public string? LyDo { get; set; }
     }
-    
+
     public class HoaDonTongTienVM
     {
         public decimal TongTienHang { get; set; }
