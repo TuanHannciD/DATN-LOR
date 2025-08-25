@@ -17,7 +17,7 @@ namespace AuthDemo.Services.VnPay
             var timeNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneById);
             var tick = DateTime.Now.Ticks.ToString();
             var pay = new VnPayLibrary();
-            var urlCallBack = _configuration["PaymentCallBack:PaymentCompleteUrl"];
+            var urlCallBack = _configuration["PaymentCallBack:ReturnUrl"];
 
             pay.AddRequestData("vnp_Version", _configuration["Vnpay2:Version"]);
             pay.AddRequestData("vnp_Command", _configuration["Vnpay2:Command"]);
@@ -30,8 +30,8 @@ namespace AuthDemo.Services.VnPay
             pay.AddRequestData("vnp_OrderInfo", $"{model.Name} {model.OrderDescription} {model.Amount}");
             pay.AddRequestData("vnp_OrderType", model.OrderType ?? "other");
             pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-            pay.AddRequestData("vnp_TxnRef", tick);
-            
+            pay.AddRequestData("vnp_TxnRef", model.OrderId.ToString("N"));
+
             var paymentUrl =
                 pay.CreateRequestUrl(_configuration["Vnpay2:BaseUrl"], _configuration["Vnpay2:HashSecret"]);
 

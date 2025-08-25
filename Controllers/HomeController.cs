@@ -70,6 +70,8 @@ public class HomeController : Controller
             .Include(c => c.ThuongHieu)
             .Include(c => c.DanhMuc)
             .Include(c=>c.AnhGiays)
+            .Include(c => c.ChatLieu)
+            .Include(c => c.DanhMuc)
             .Where(c =>  c.ShoeID == id )
             .ToList();
 
@@ -84,7 +86,8 @@ public class HomeController : Controller
         var mauSacList = chiTietList.Select(x => x.MauSac).Distinct().ToList();
         var kichCoList = chiTietList.Select(x => x.KichThuoc).Distinct().ToList();
         var thuongHieuList = chiTietList.Select(x => x.ThuongHieu).Distinct().ToList();
-        var danhmuclist = chiTietList.Select(x => x.DanhMuc).ToList();
+        var danhmuclist = chiTietList.Select(x => x.DanhMuc).Distinct().ToList();
+        var chatlieulist = chiTietList.Select(x => x.ChatLieu).Distinct().ToList();
 
         var sanPhamLienQuan = _context.ChiTietGiays
      .Include(c => c.Giay)
@@ -110,7 +113,9 @@ public class HomeController : Controller
             ThuongHieuOptions = thuongHieuList,
             DanhSachAnh = allImagePaths,
             SanPhamLienQuan = sanPhamLienQuan,
-            AnhDaiDien = anhDaiDien
+            AnhDaiDien = anhDaiDien,
+            ChatLieuOptions = chatlieulist,
+            DanhMucOptions = danhmuclist
         };
 
 

@@ -62,6 +62,7 @@ namespace AuthDemo.Controllers
             if (warnings.Any())
             {
                 TempData["CartWarnings"] = string.Join("<br>", warnings);
+
                 _context.SaveChanges();
             }
 
