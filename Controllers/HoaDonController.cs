@@ -223,10 +223,7 @@ namespace Controllers
                     hasInvalid = true;
                 }
 
-                if (requestedQty <= product.ChiTietGiay.SoLuong)
-                {
-
-                }
+                
             }
 
             if (hasInvalid)
@@ -284,10 +281,12 @@ namespace Controllers
                         NgayCapNhat = DateTime.Now,
                     };
                     _context.ChiTietHoaDons.Add(hdct);
-                    _context.ChiTietGioHangs.RemoveRange(cartItems);                  
-                    _context.SaveChanges();
-                    return RedirectToAction("DonHang", "HoaDon");
+                    
+
                 }
+                _context.ChiTietGioHangs.RemoveRange(cartItems);
+                _context.SaveChanges();
+                return RedirectToAction("DonHang", "HoaDon");
             }
             // vnpay
             else if (phuongthuc == "3")
@@ -347,7 +346,7 @@ namespace Controllers
             }
             
 
-            _context.ChiTietGioHangs.RemoveRange(cartItems);
+           
             _context.SaveChanges();
             return RedirectToAction("DonHang", "HoaDon");
         }
