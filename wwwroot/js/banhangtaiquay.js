@@ -71,15 +71,15 @@ $(document).ready(function () {
     );
   });
 
-  // Khi click vào 1 sản phẩm trong dropdown
-  $(document).on("click", "button.dropdown-item", function (e) {
-    e.preventDefault(); // chặn link nhảy trang
+  // // Khi click vào 1 sản phẩm trong dropdown
+  // $(document).on("click", "button.dropdown-item", function (e) {
+  //   e.preventDefault(); // chặn link nhảy trang
 
-    let shoeDetailId = $(this).data("id");
-    console.log("Click vào sản phẩm có ID:", shoeDetailId);
+  //   let shoeDetailId = $(this).data("id");
+  //   console.log("Click vào sản phẩm có ID:", shoeDetailId);
 
-    updateCart(shoeDetailId, "add");
-  });
+  //   updateCart(shoeDetailId, "add");
+  // });
 
   $("#phuongthuc-thanh-toan").select2({
     width: "100%",

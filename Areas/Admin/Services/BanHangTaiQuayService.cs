@@ -23,23 +23,28 @@ namespace AuthDemo.Areas.Admin.Services
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                return _db.ChiTietGiays.Select(sp => new BanHangTaiQuayVM
-                {
-                    ShoeDetailID = sp.ShoeDetailID,
-                    TenSp = sp.Giay != null ? sp.Giay.TenGiay : "Chưa có",
-                    Gia = sp.Gia,
-                    SoLuong = sp.SoLuong,
-                    MauSac = sp.MauSac != null ? sp.MauSac.TenMau : "Chưa có",
-                    KichThuoc = sp.KichThuoc != null ? sp.KichThuoc.TenKichThuoc : "Chưa có",
-                    ChatLieu = sp.ChatLieu != null ? sp.ChatLieu.TenChatLieu : "Chưa có",
-                    ThuongHieu = sp.ThuongHieu != null ? sp.ThuongHieu.TenThuongHieu : "Chưa có",
-                    DanhMuc = sp.DanhMuc != null ? sp.DanhMuc.TenDanhMuc : "Chưa có",
-                    Giay = sp.Giay != null ? sp.Giay.TenGiay : "Chưa có"
-                }).Take(20).ToList();
+                return _db.ChiTietGiays
+                    .Where(sp => !sp.IsDelete) // chỉ lấy sp chưa xóa
+                    .Select(sp => new BanHangTaiQuayVM
+                    {
+                        ShoeDetailID = sp.ShoeDetailID,
+                        TenSp = sp.Giay != null ? sp.Giay.TenGiay : "Chưa có",
+                        Gia = sp.Gia,
+                        SoLuong = sp.SoLuong,
+                        MauSac = sp.MauSac != null ? sp.MauSac.TenMau : "Chưa có",
+                        KichThuoc = sp.KichThuoc != null ? sp.KichThuoc.TenKichThuoc : "Chưa có",
+                        ChatLieu = sp.ChatLieu != null ? sp.ChatLieu.TenChatLieu : "Chưa có",
+                        ThuongHieu = sp.ThuongHieu != null ? sp.ThuongHieu.TenThuongHieu : "Chưa có",
+                        DanhMuc = sp.DanhMuc != null ? sp.DanhMuc.TenDanhMuc : "Chưa có",
+                        Giay = sp.Giay != null ? sp.Giay.TenGiay : "Chưa có"
+                    })
+                    .Take(20)
+                    .ToList();
             }
+
             var lowerKeyword = keyword.ToLower();
             return _db.ChiTietGiays
-                .Where(sp => sp.Giay != null && sp.Giay.TenGiay.ToLower().Contains(lowerKeyword))
+                .Where(sp => !sp.IsDelete && sp.Giay != null && sp.Giay.TenGiay.ToLower().Contains(lowerKeyword))
                 .Select(sp => new BanHangTaiQuayVM
                 {
                     ShoeDetailID = sp.ShoeDetailID,
@@ -56,6 +61,7 @@ namespace AuthDemo.Areas.Admin.Services
                 .Take(20)
                 .ToList();
         }
+
         public List<KhachHangDropdownVM> SearchKhachHang(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
