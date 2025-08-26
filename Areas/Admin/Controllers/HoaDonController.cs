@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using AuthDemo.Data;
 using AuthDemo.Areas.Admin.Interface;
 using AuthDemo.Models.ViewModels;
-using System.Threading.Tasks;
 using AuthDemo.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -127,6 +127,9 @@ namespace AuthDemo.Areas.Admin.Controllers
                 hoaDons = hoaDons.Where(h => h.DaThanhToan == trangThaiTT.Value).ToList();
             }
 
+            // Sắp xếp mới nhất -> cũ nhất
+            hoaDons = hoaDons.OrderByDescending(h => h.NgayTao).ToList();
+
             return Json(hoaDons);
         }
 
@@ -163,6 +166,59 @@ namespace AuthDemo.Areas.Admin.Controllers
                 hoaDon = result.Data
             });
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetHoaDonChiTiet(Guid billID)
+        {
+            var hoaDon = await db.HoaDons
+                .Include(h => h.ChiTietHoaDons)
+                    .ThenInclude(c => c.ChiTietGiay)
+                        .ThenInclude(ctg => ctg.Giay)
+                .Include(h => h.ChiTietHoaDons)
+                    .ThenInclude(c => c.ChiTietGiay)
+                        .ThenInclude(ctg => ctg.MauSac)
+                .Include(h => h.ChiTietHoaDons)
+                    .ThenInclude(c => c.ChiTietGiay)
+                        .ThenInclude(ctg => ctg.KichThuoc)
+                .FirstOrDefaultAsync(h => h.BillID == billID);
+
+            if (hoaDon == null) return NotFound();
+
+            var result = new
+            {
+                hoaDon.BillID,
+                hoaDon.HoTen,
+                hoaDon.Email,
+                hoaDon.SoDienThoai,
+                hoaDon.DiaChi,
+                hoaDon.TongTien,
+                hoaDon.TrangThai,
+                trangThaiDisplay = hoaDon.TrangThai.GetDisplayName(),
+                hoaDon.DaThanhToan,
+                hoaDon.PhuongThucThanhToan,
+                PhuongThucThanhToanDisplay = hoaDon.PhuongThucThanhToan.GetDisplayName(),
+                PhuongThucVanChuyenDisplay = hoaDon.PhuongThucVanChuyen.GetDisplayName(),
+                hoaDon.PhuongThucVanChuyen,
+                hoaDon.GhiChu,
+                hoaDon.NgayGiaoHang,
+                ChiTietHoaDons = hoaDon.ChiTietHoaDons.Select(c => new
+                {
+                    c.BillDetailID,
+                    c.SoLuong,
+                    c.DonGia,
+                    c.ChietKhauPhanTram,
+                    c.ChietKhauTienMat,
+                    c.IsTangKem,
+                    TenGiay = c.ChiTietGiay?.Giay?.TenGiay ?? "Không tìm thấy tên giày",
+                    MauSac = c.ChiTietGiay?.MauSac?.TenMau ?? "Không tìm thấy tên màu săc",
+                    Size = c.ChiTietGiay?.KichThuoc?.TenKichThuoc ?? "Không tìm thấy tên kích thước"
+                })
+            };
+
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> XacnhanTienMat(bool confirmdone, Guid orderId)
         {
