@@ -12,6 +12,8 @@ namespace AuthDemo.Models.ViewModels
         public List<AnhGiay> anhgiay { get; set; }
         public List<KichThuoc> KichCoOptions { get; set; }
         public List<ThuongHieu> ThuongHieuOptions { get; set; }
+        public List<DanhMuc> DanhMucOptions { get; set; }
+        public List<ChatLieu> ChatLieuOptions { get; set; }
 
         public List<SanPhamLqVM> SanPhamLienQuan { get; set; }
     }

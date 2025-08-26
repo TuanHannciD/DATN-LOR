@@ -291,6 +291,7 @@ namespace Controllers
             // vnpay
             else if (phuongthuc == "3")
             {
+                
                 var hoaDon = new HoaDon
                 {
                     BillID = Guid.NewGuid(),
@@ -301,7 +302,7 @@ namespace Controllers
                     DiaChi = diachi_full,
                     TongTien = tongTien,
                     TrangThai = TrangThaiHoaDon.ChoXacNhan,
-                    DaThanhToan = true,
+                    DaThanhToan = false,
                     PhuongThucThanhToan = Enum.Parse<PhuongThucThanhToan>(phuongthuc),
                     DaHuy = false,
                     GhiChu = ghichu,
@@ -330,11 +331,12 @@ namespace Controllers
                         NguoiCapNhat = "system",
                         NgayCapNhat = DateTime.Now,
                     };
-                    spct.SoLuong -= soLuong;
+                  
                     _context.ChiTietHoaDons.Add(hdct);
                 }
                 var paymentModel = new PaymentInformationModel
                 {
+                    OrderId = hoaDon.BillID,
                     Name = hoten,
                     Amount = (double)hoaDon.TongTien,
                     OrderType = "other",
@@ -442,12 +444,13 @@ namespace Controllers
                .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.Giay)
                .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.MauSac)
                .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.KichThuoc)
+               .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.AnhGiays)
                .Where(c => c.BillID == h.BillID)
                .Select(c => new
                {
                 TenSanPham = c.ChiTietGiay.Giay.TenGiay,
-                HinhAnh = c.ChiTietGiay.Giay.AnhDaiDien,
-                Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
+                   HinhAnh = c.ChiTietGiay.AnhGiays.FirstOrDefault().DuongDanAnh ?? "/images/default.png",
+                   Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
                 MauSac = c.ChiTietGiay.MauSac.TenMau,
                 c.SoLuong,
                 c.DonGia
@@ -540,12 +543,13 @@ namespace Controllers
                         .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.Giay)
                         .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.KichThuoc)
                         .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.MauSac)
+                        .Include(c => c.ChiTietGiay).ThenInclude(ct => ct.AnhGiays)
                         .Select(c => new ChiTietHoaDonKHVM
                         {
                             TenSanPham = c.ChiTietGiay.Giay.TenGiay,
                             SoLuong = c.SoLuong,
                             DonGia = c.DonGia,
-                            HinhAnh = c.ChiTietGiay.Giay.AnhDaiDien,
+                            HinhAnh = c.ChiTietGiay.AnhGiays.FirstOrDefault().DuongDanAnh ?? "/images/default.png",
                             Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
                             MauSac = c.ChiTietGiay.MauSac.TenMau
                         }).ToList()
