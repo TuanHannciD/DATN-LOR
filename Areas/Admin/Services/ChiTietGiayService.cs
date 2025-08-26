@@ -78,7 +78,7 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                var data = await _db.ChiTietGiays
+                var data = await _db.ChiTietGiays.OrderByDescending(ct => ct.NgayTao) // Sắp xếp mới nhất -> cũ nhất
                     .Where(ct => !ct.IsDelete)
                     .Select(ct => new IndexVM
                     {
@@ -93,6 +93,8 @@ namespace AuthDemo.Areas.Admin.Services
                         Gia = ct.Gia
                     })
                     .ToListAsync();
+                // Sắp xếp mới nhất -> cũ nhất
+
 
                 return ApiResponse<IEnumerable<IndexVM>>.SuccessResponse(data, "Lấy danh sách thành công");
             }

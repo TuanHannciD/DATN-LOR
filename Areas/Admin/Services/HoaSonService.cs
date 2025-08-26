@@ -20,17 +20,17 @@ namespace AuthDemo.Areas.Admin.Services
         public List<object> GetTrangThaiList()
         {
             var list = Enum.GetValues(typeof(TrangThaiHoaDon))
-                           .Cast<TrangThaiHoaDon>()
-                           .Select(e =>
-                           {
-                               var member = e.GetType().GetMember(e.ToString()).First();
-                               var displayAttr = member.GetCustomAttribute<DisplayAttribute>(); // .NET 8 cho phép dùng generic
-                               return new
-                               {
-                                   value = (int)e,
-                                   text = displayAttr?.Name ?? e.ToString()
-                               };
-                           }).ToList<object>();
+                .Cast<TrangThaiHoaDon>()
+                .Select(e =>
+                {
+                    var member = e.GetType().GetMember(e.ToString()).First();
+                    var displayAttr = member.GetCustomAttribute<DisplayAttribute>(); // .NET 8 cho phép dùng generic
+                    return new
+                    {
+                        value = (int)e,
+                        text = displayAttr?.Name ?? e.ToString()
+                    };
+                }).ToList<object>();
 
             return list;
         }
@@ -84,8 +84,7 @@ namespace AuthDemo.Areas.Admin.Services
             if (gioHang == null)
                 return Result<HoaDonDTO>.Fail("Không tìm thấy giỏ hàng cho người dùng hoặc chưa thêm sản phẩm vào giỏ hàng.");
 
-
-            //  Kiểm tra enum phương thức thanh toán và vận chuyển
+            // Kiểm tra enum phương thức thanh toán và vận chuyển
             if (createHoaDonVM.HinhThucThanhToan == null && createHoaDonVM.HinhThucVanChuyen == null)
                 return Result<HoaDonDTO>.Fail("Phương thức thanh toán và vận chuyển không được để trống.");
 
@@ -97,25 +96,22 @@ namespace AuthDemo.Areas.Admin.Services
 
             // Lấy tất cả sản phẩm trong giỏ của user
             var deletedProductsInCart = await _db.ChiTietGioHangs
-                .Include(c => c.ChiTietGiay) // join sang bảng sản phẩm
+                .Include(c => c.ChiTietGiay)
                 .Where(c => c.GioHang.UserID == createHoaDonVM.UserID && c.ChiTietGiay.IsDelete == true)
                 .ToListAsync();
 
             if (deletedProductsInCart.Count > 0)
             {
-                // Xóa tất cả sản phẩm đã bị IsDelete
                 _db.ChiTietGioHangs.RemoveRange(deletedProductsInCart);
                 await _db.SaveChangesAsync();
 
                 return Result<HoaDonDTO>.Fail("Một số sản phẩm trong giỏ đã bị ngưng bán và đã được xóa khỏi giỏ hàng. Vui lòng kiểm tra lại.");
             }
 
-            //Tính tiền cho vào hóa đơn sau tất cả loại giảm
+            // Tính tiền cho vào hóa đơn sau tất cả loại giảm
             var tongTienVM = TinhTienHoaDon(gioHang.CartID, createHoaDonVM.GiamGiaPhanTram, createHoaDonVM.GiamGiaTienMat);
             if (tongTienVM.TongThanhToan <= 0)
                 return Result<HoaDonDTO>.Fail("Tổng tiền thanh toán không hợp lệ.");
-
-
 
             var hoaDon = new HoaDon
             {
@@ -138,6 +134,7 @@ namespace AuthDemo.Areas.Admin.Services
                 GiamGiaPhanTram = createHoaDonVM.GiamGiaPhanTram,
                 GiamGiaTienMat = createHoaDonVM.GiamGiaTienMat,
             };
+
             try
             {
                 _db.HoaDons.Add(hoaDon);
@@ -154,12 +151,24 @@ namespace AuthDemo.Areas.Admin.Services
                     PhuongThucThanhToan = hoaDon.PhuongThucThanhToan.GetDisplayName(),
                     PhuongThucVanChuyen = hoaDon.PhuongThucVanChuyen.GetDisplayName()
                 };
-                // Cập nhật giỏ hàng
-                var cart = await _db.GioHangs.FirstOrDefaultAsync(g => g.CartID == gioHang.CartID);
-                if (cart == null)
-                    return Result<HoaDonDTO>.Fail("Không tìm thấy giỏ hàng để cập nhật.");
 
-                //Cập nhật số lượng sản phẩm trong kho
+                // Lưu chi tiết hóa đơn
+                foreach (var item in gioHang.ChiTietGioHangs)
+                {
+                    var chiTietHoaDon = new ChiTietHoaDon
+                    {
+                        BillID = hoaDon.BillID,
+                        ShoeDetailID = item.ShoeDetailID,
+                        SoLuong = item.SoLuong,
+                        DonGia = item.ChiTietGiay.Gia,
+                        ChietKhauPhanTram = item.ChietKhauPhanTram,
+                        ChietKhauTienMat = item.ChietKhauTienMat,
+                        IsTangKem = item.IsTangKem
+                    };
+                    _db.ChiTietHoaDons.Add(chiTietHoaDon);
+                }
+
+                // Cập nhật số lượng sản phẩm trong kho
                 foreach (var item in gioHang.ChiTietGioHangs)
                 {
                     var chiTietGiay = await _db.ChiTietGiays.FirstOrDefaultAsync(c => c.ShoeDetailID == item.ShoeDetailID);
@@ -173,8 +182,10 @@ namespace AuthDemo.Areas.Admin.Services
                         _db.ChiTietGiays.Update(chiTietGiay);
                     }
                 }
+
                 _db.ChiTietGioHangs.RemoveRange(gioHang.ChiTietGioHangs); // Xóa chi tiết giỏ hàng
                 await _db.SaveChangesAsync();
+
                 return Result<HoaDonDTO>.Success(hoaDonDTO);
             }
             catch (Exception ex)
@@ -183,6 +194,7 @@ namespace AuthDemo.Areas.Admin.Services
                 return Result<HoaDonDTO>.Fail($"Lỗi khi tạo hóa đơn: {ex.Message} | Chi tiết: {innerMessage}");
             }
         }
+
         public HoaDonTongTienVM TinhTienHoaDon(Guid cartID, decimal? giamGiaPhanTram, decimal? giamGiaTienMat)
         {
             var gioHang = _db.GioHangs
@@ -304,7 +316,7 @@ namespace AuthDemo.Areas.Admin.Services
                     // Lấy chi tiết giày trong kho theo ShoeDetailID
                     var giay = _db.ChiTietGiays
                         .Include(ct => ct.MauSac)
-                        .Include(ct=>ct.KichThuoc)
+                        .Include(ct => ct.KichThuoc)
                         .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
                     if (giay.SoLuong == 0)
                     {

@@ -1,14 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Hiển thị xem hóa đơn
+  // Hiển thị modal
   const modalEl = document.getElementById("isOpenModal");
   const modalObj = new bootstrap.Modal(modalEl);
 
-  // Reload trang sau khi modal đóng (nếu muốn thì bật)
-  // modalEl.addEventListener("hidden.bs.modal", function () {
-  //     location.reload();
-  // });
-
-  // Bắt sự kiện click cho tất cả nút Xem
+  // Lấy các element
   const thoiGianSelect = document.getElementById("thoiGianSelect");
   const startDate = document.getElementById("startDate");
   const endDate = document.getElementById("endDate");
@@ -22,40 +17,78 @@ document.addEventListener("DOMContentLoaded", function () {
   const trangThaiTT = document.getElementById("trangThaiTT");
   const nameCreateFilter = document.getElementById("nameCreateFilter");
 
-  console.log("phoneFilterphoneFilter:", phoneFilter.value);
-
+  // Format ngày + giờ
   function formatDate(date) {
-    return date.toISOString().split("T")[0];
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
+    const ss = String(date.getSeconds()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
   }
 
   function updateDateRange(value) {
-    const today = new Date();
+    const now = new Date();
     let start, end;
 
     if (value === "today") {
-      start = end = today;
+      start = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        0,
+        0,
+        0,
+        0
+      ); // giờ hiện tại
+      end = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        23,
+        59,
+        59,
+        999
+      );
     } else if (value === "month") {
-      start = new Date(today.getFullYear(), today.getMonth(), 1);
-      end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
     } else if (value === "year") {
-      start = new Date(today.getFullYear(), 0, 1);
-      end = new Date(today.getFullYear(), 11, 31);
-    } else {
-      return;
-    }
+      start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
+      end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+    } else return;
 
     startDate.value = formatDate(start);
     endDate.value = formatDate(end);
+    console.log("startDate:", startDate.value, "endDate:", endDate.value);
   }
 
+  // Gọi khi load
   updateDateRange(thoiGianSelect.value);
 
+  // Thay đổi select
   thoiGianSelect.addEventListener("change", function () {
     updateDateRange(this.value);
   });
+  // thoiGianSelect.addEventListener("change", function () {
+  //   updateDateRange(this.value);
+  // });
 
+  // Load danh sách hóa đơn
   function loadHoaDon() {
     const params = new URLSearchParams({
+      startDate: startDate.value,
+      endDate: endDate.value,
+      trangThai: trangThaiSelect.value,
+      hinhThuc: hinhThucSelect.value,
+      phone: phoneFilter.value,
+      idFilter: idFilter.value,
+      nameFilter: nameFilter.value,
+      trangThaiTT: trangThaiTT.value,
+      nameCreateFilter: nameCreateFilter.value,
+    });
+    console.log("Dữ liệu gửi đi:", {
       startDate: startDate.value,
       endDate: endDate.value,
       trangThai: trangThaiSelect.value,
@@ -74,54 +107,104 @@ document.addEventListener("DOMContentLoaded", function () {
         data.forEach((item) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-          <td>${item.hoaDonID.substring(0, 8)}...</td>
-          <td>${item.tenKhachHang}</td>
-          <td>${item.soDienThoai}</td>
-          <td>
-            <span class="badge ${getBadgeClassFromText(
-              item.trangThaiDisplay
-            )} trangThaiCell"
-                  data-id="${item.hoaDonID}">
-              ${item.trangThaiDisplay}
-            </span>
-          </td>
-          <td>${item.hinhThucThanhToanDisplay}</td>
-          <td>${item.tongTien.toLocaleString()}</td>
-          <td>${item.daThanhToan ? "Đã thanh toán" : "Chưa thanh toán"}</td>
-          <td>${item.nguoiTao}</td>
-          <td>${
-            item.ngayTao ? new Date(item.ngayTao).toLocaleString() : ""
-          }</td>
-          <td class="text-center">
-            <a class="btn btn-info btn-sm me-1" href="#" data-id="${
-              item.hoaDonID
-            }">
-              <i class="mdi mdi-eye"></i> Xem
-            </a>
-          </td>
-        `;
+            <td>${item.hoaDonID?.substring(0, 8) ?? ""}...</td>
+            <td>${item.tenKhachHang ?? ""}</td>
+            <td>${item.soDienThoai ?? ""}</td>
+            <td>
+              <span class="badge ${getBadgeClassFromText(
+                item.trangThaiDisplay
+              )} trangThaiCell"
+                    data-id="${item.hoaDonID ?? ""}">
+                ${item.trangThaiDisplay ?? ""}
+              </span>
+            </td>
+            <td>${item.hinhThucThanhToanDisplay ?? ""}</td>
+            <td>${
+              item.tongTien != null ? item.tongTien.toLocaleString() : "0"
+            }</td>
+            <td>${item.daThanhToan ? "Đã thanh toán" : "Chưa thanh toán"}</td>
+            <td>${item.nguoiTao ?? ""}</td>
+            <td>${
+              item.ngayTao ? new Date(item.ngayTao).toLocaleString() : ""
+            }</td>
+            <td class="text-center">
+              <a class="btn btn-info btn-sm me-1 xemHoaDonBtn" href="#" data-id="${
+                item.hoaDonID ?? ""
+              }">
+                <i class="mdi mdi-eye"></i> Xem
+              </a>
+            </td>
+          `;
           tbody.appendChild(tr);
         });
       });
   }
 
-  // Bắt sự kiện click badge trạng thái
-  tbody.addEventListener("click", function (e) {
-    // --- XEM HÓA ĐƠN ---
-    const xemBtn = e.target.closest(".btn-info"); // Nút xem
-    if (xemBtn) {
-      const hoaDonID = xemBtn.dataset.id;
-      console.log("Xem hóa đơn ID:", hoaDonID);
+  // Hiển thị modal chi tiết hóa đơn
+  function showHoaDonModal(data) {
+    document.getElementById("modalHoTen").textContent = data.hoTen ?? "";
+    document.getElementById("modalEmail").textContent = data.email ?? "";
+    document.getElementById("modalSoDienThoai").textContent =
+      data.soDienThoai ?? "";
+    document.getElementById("modalDiaChi").textContent = data.diaChi ?? "";
+    document.getElementById("modalTongTien").textContent =
+      data.tongTien != null ? data.tongTien.toLocaleString() : "0";
+    document.getElementById("modalTrangThai").textContent =
+      data.trangThaiDisplay ?? "";
+    document.getElementById("modalPhuongThucTT").textContent =
+      data.phuongThucThanhToanDisplay ?? "";
+    document.getElementById("modalPhuongThucVC").textContent =
+      data.phuongThucVanChuyenDisplay ?? "";
+    document.getElementById("modalGhiChu").textContent = data.ghiChu ?? "";
 
-      // Tạm hiển thị modal
-      const modalContent = document.getElementById("modalContent");
-      modalContent.innerHTML = `<p>Đang load chi tiết hóa đơn: <strong>${hoaDonID}</strong></p>`;
-      const modalEl = document.getElementById("isOpenModal");
-      const modalObj = new bootstrap.Modal(modalEl);
-      modalObj.show();
-      return; // Dừng sự kiện ở đây
+    // Chi tiết sản phẩm
+    const chiTietBody = document.getElementById("modalChiTietBody");
+    chiTietBody.innerHTML = ""; // Xóa dữ liệu cũ trước khi hiển thị
+
+    if (data.chiTietHoaDons && data.chiTietHoaDons.length > 0) {
+      data.chiTietHoaDons.forEach((item) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td class="chiTietTenGiay">${item.tenGiay ?? ""}</td>
+      <td class="chiTietMauSac">${item.mauSac ?? ""}</td>
+      <td class="chiTietSize">${item.size ?? ""}</td>
+      <td class="chiTietSoLuong">${item.soLuong ?? 0}</td>
+      <td class="chiTietDonGia">${item.donGia?.toLocaleString() ?? "0"}</td>
+      <td class="chiTietCKPhanTram">${item.chietKhauPhanTram ?? 0}</td>
+      <td class="chiTietCKTienMat">${item.chietKhauTienMat ?? 0}</td>
+      <td class="chiTietTangKem">${item.isTangKem ? "Có" : "Không"}</td>
+    `;
+        chiTietBody.appendChild(tr);
+      });
     }
 
+    modalObj.show();
+  }
+
+  // Bắt sự kiện click
+  tbody.addEventListener("click", function (e) {
+    const xemBtn = e.target.closest(".xemHoaDonBtn");
+    if (!xemBtn) return;
+
+    const hoaDonID = xemBtn.dataset.id;
+    if (!hoaDonID) return;
+
+    fetch(`/Admin/HoaDon/GetHoaDonChiTiet?billID=${hoaDonID}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Dữ liệu hóa đơn chi tiết:", data); // <-- log để kiểm tra
+        showHoaDonModal(data);
+      })
+      .catch((err) => console.error(err));
+  });
+
+  applyFilter.addEventListener("click", loadHoaDon);
+
+  // Load mặc định hôm nay
+  loadHoaDon();
+  //bắt sự kiên chuyển trạng thái
+  // Bắt sự kiện click vào trạng thái
+  tbody.addEventListener("click", function (e) {
     const target = e.target.closest(".trangThaiCell");
     if (!target) return;
 
@@ -133,34 +216,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetch(`/Admin/HoaDon/UpdateTrangThai`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ HoaDonID: hoaDonID }),
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.success) {
-          showToast(data.message.message, data.success);
-          console.log("data:", data);
-
-          loadHoaDon(); // Load lại bảng để thấy trạng thái mới
-        } else {
-          showToast(data.message, data.success);
-          console.log("data:", data);
-        }
+        showToast(
+          data.success ? data.message.message : data.message,
+          data.success
+        );
+        loadHoaDon(); // Load lại bảng
       })
       .catch((err) => console.error(err));
   });
-
-  applyFilter.addEventListener("click", loadHoaDon);
-
-  // Load mặc định hôm nay
-  loadHoaDon();
 });
 
 function getBadgeClassFromText(text) {
-  switch (text.trim()) {
+  switch (text?.trim()) {
     case "Chờ xác nhận":
       return "bg-dark";
     case "Đã xác nhận":
