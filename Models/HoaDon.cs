@@ -31,6 +31,10 @@ namespace AuthDemo.Models
         public decimal? GiamGiaPhanTram { get; set; } // % giảm giá toàn hóa đơn (nullable)
         public decimal? GiamGiaTienMat { get; set; }  // Số tiền giảm trực tiếp (nullable)
         public string? LyDoGiamGia { get; set; }      // Lý do giảm giá (nullable)
+
+        public Guid? VoucherID { get; set; }
+        public decimal? SoTienGiam { get; set; }
+        public Vouchers Vouchers { get; set; }
         public NguoiDung NguoiDung { get; set; }
         public ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; }
         public ICollection<LichSuHoaDon> LichSuHoaDons { get; set; }

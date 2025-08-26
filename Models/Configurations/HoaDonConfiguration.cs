@@ -24,6 +24,11 @@ namespace AuthDemo.Models.Configurations
                 .HasForeignKey(x => x.UserID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_HoaDon_NguoiDung");
+            builder.HasOne(x => x.Vouchers)
+          .WithMany(x => x.HoaDons)
+          .HasForeignKey(x => x.VoucherID)
+          .OnDelete(DeleteBehavior.SetNull) // nếu voucher bị xóa thì set null
+          .HasConstraintName("FK_HoaDon_Voucher");
             builder.HasData(
                 new HoaDon {
                     BillID = new Guid("11112222-3333-4444-5555-666677778888"),
@@ -40,7 +45,8 @@ namespace AuthDemo.Models.Configurations
                     GhiChu = "",
                     NgayGiaoHang = null,
                     NguoiTao = "system",
-                    NguoiCapNhat = "system"
+                    NguoiCapNhat = "system",
+
                 }
             );
         }
