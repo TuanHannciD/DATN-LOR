@@ -13,19 +13,19 @@ namespace AuthDemo.Models.Configurations
             builder.HasOne(vu => vu.Vouchers)
                    .WithMany()
                    .HasForeignKey(vu => vu.VoucherID)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Quan hệ với User
             builder.HasOne(vu => vu.NguoiDung)
                    .WithMany()
                    .HasForeignKey(vu => vu.UserID)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Quan hệ với Hóa đơn
             builder.HasOne(vu => vu.HoaDon)
                    .WithMany()
                    .HasForeignKey(vu => vu.BillID)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
