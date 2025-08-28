@@ -34,7 +34,8 @@ namespace AuthDemo.Data
         public DbSet<LichSuHoaDon> LichSuHoaDons { get; set; }
         public DbSet<DiaChi> DiaChis { get; set; }
         public DbSet<VaiTroNguoiDung> VaiTroNguoiDungs { get; set; }
-
+        public DbSet<Vouchers> Vouchers { get; set; }
+        public DbSet<VouchersUsage> VoucherUsages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -56,6 +57,8 @@ namespace AuthDemo.Data
             modelBuilder.ApplyConfiguration(new AuthDemo.Models.Configurations.LichSuHoaDonConfiguration());
             modelBuilder.ApplyConfiguration(new AuthDemo.Models.Configurations.DiaChiConfiguration());
             modelBuilder.ApplyConfiguration(new AuthDemo.Models.Configurations.VaiTroNguoiDungConfiguration());
+            modelBuilder.ApplyConfiguration(new AuthDemo.Models.Configurations.VouchersConfiguration());
+            modelBuilder.ApplyConfiguration(new AuthDemo.Models.Configurations.VoucherUsageConfiguration());
         }
 
         public override int SaveChanges()
