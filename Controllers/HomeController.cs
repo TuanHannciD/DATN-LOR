@@ -72,7 +72,7 @@ public class HomeController : Controller
             .Include(c=>c.AnhGiays)
             .Include(c => c.ChatLieu)
             .Include(c => c.DanhMuc)
-            .Where(c =>  c.ShoeID == id )
+            .Where(c =>  c.ShoeID == id && c.IsDelete == false)
             .ToList();
 
          var allImagePaths = chiTietList

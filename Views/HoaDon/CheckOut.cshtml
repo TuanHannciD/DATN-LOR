@@ -291,13 +291,21 @@
                             </li>
                         }
                     </ul>
+                   
+                    
                     <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
                         Tổng tiền hàng <span class="text-accent-600">@ViewBag.TongTien1.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
                     </div>
                     <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
-                        Phí vận chuyển  <span id="ship" class="text-accent-600"> 0 Vnđ</span>
+                        Phí vận chuyển  <span id="ship" class="text-accent-600"> 0 ₫</span>
                         <input type="hidden" id="shipInput" name="ship" />
                     </div>
+                    <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
+                        Giảm giá <span id="discountAmount" class="text-red-600">0 ₫</span>
+                        <input type="hidden" id="discountInput" name="discount" value="0" />
+                        <input type="hidden" id="voucherIdInput" name="voucherId" value="" />
+                    </div>
+
                     <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
                         Tổng <span id="tongtien" name="tongtien" class="text-accent-600">@ViewBag.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
                     </div>
@@ -316,6 +324,21 @@
                             <input type="radio" name="phuongthuc" id="paypal" value="3"
                                    class="ml-4 w-6 h-6 border-2 border-gray-300 rounded-full focus:ring-2 focus:ring-accent-500 transition-all duration-200 cursor-pointer checked:bg-accent-500 checked:border-accent-500">
                         </label>
+                    </div>
+                    <div class="checkout__order__voucher text-lg font-semibold text-gray-800 mb-6 relative z-10">
+                        <label class="block mb-2 text-xl font-bold text-gray-900">Chọn Voucher</label>
+                        <select id="voucherSelect" class="w-full px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-accent-400 transition">
+                            <option value="">-- Không áp dụng voucher --</option>
+                            @foreach (var voucher in ViewBag.Vouchers as List<AuthDemo.Models.Vouchers>)
+                            {
+                                <option value="@voucher.VoucherID"
+                                        data-type="@voucher.LoaiGiam"
+                                        data-value="@voucher.GiaTri"
+                                        data-max="@voucher.GiaTriToiDa">
+                                    @voucher.MaVoucherCode - @voucher.MoTa
+                                </option>
+                            }
+                        </select>
                     </div>
 
                     <!-- Hidden input để truyền lên server -->
@@ -349,13 +372,8 @@
                 hiddenInput.value = this.value;
             });
         });
+        
 
-        // document.getElementById('submit-order').addEventListener('click', function (e) {
-        //     if (!document.querySelector('input[name="phuongthuc"]:checked')) {
-        //         alert('Vui lòng chọn phương thức thanh toán');
-        //         e.preventDefault();
-        //     }
-        // });
         // Chọn tỉnh -> load quận
         $("#province").change(function () {
             var provinceId = parseInt($(this).val());
@@ -389,32 +407,68 @@
                 });
             });
         });
-        // tiền hàng chưa ship
-        let tongHang = parseInt("@ViewBag.TongTien");
+        let tongHang = parseInt("@ViewBag.TongTien1");
+        let currentShip = 0;
+        let currentDiscount = 0;
 
-        // Chọn xã -> tính phí
+        function capNhatTongTien() {
+            let tongMoi = tongHang - currentDiscount + currentShip;
+            if (tongMoi < 0) tongMoi = 0;
+            $("#tongtien").text(tongMoi.toLocaleString("vi-VN") + " ₫");
+        }
+
+        $("#voucherSelect").change(function () {
+            let selected = $(this).find(":selected");
+            let type = (selected.data("type") || "").toString().toLowerCase();
+            let value = parseFloat(selected.data("value")) || 0;
+            let maxValue = parseFloat(selected.data("max")) || null;
+
+            currentDiscount = 0;
+            console.log("type=", type, "value=", value, "maxValue=", maxValue);
+
+            if (type === "phantram") {
+                currentDiscount = tongHang * (value / 100);
+                if (maxValue && currentDiscount > maxValue) currentDiscount = maxValue;
+            } else if (type === "tien") {
+                currentDiscount = value;
+            }
+
+            // không cho giảm quá tiền hàng
+            if (currentDiscount > tongHang) currentDiscount = tongHang;
+
+            // cập nhật UI
+            $("#discountAmount").text(currentDiscount.toLocaleString("vi-VN") + " ₫");
+            $("#discountInput").val(currentDiscount);
+            $("#voucherIdInput").val(selected.val());
+
+            // gọi hàm tính lại tổng
+            capNhatTongTien();
+        });
+
         $("#ward").change(function () {
-            var districtId = parseInt($("#district").val()); // parseInt
+            var districtId = parseInt($("#district").val());
             var wardCode = $(this).val();
             if (!districtId || !wardCode) return;
 
             $.post("/HoaDon/TinhPhi", { districtId: districtId, wardCode: wardCode }, function (res) {
                 if (res.success) {
+                    currentShip = res.ship;
+
                     $("#ship").text(res.ship.toLocaleString('vi-VN') + " ₫");
                     $("#shipInput").val(res.ship);
 
-                    let tongMoi = tongHang + res.ship;
-                    $("#tongtien").text(tongMoi.toLocaleString('vi-VN') + " ₫");
+                    capNhatTongTien();
                 } else {
-                    $("#ship").text("0 VNĐ");
+                    currentShip = 0;
+                    $("#ship").text("0 ₫");
                     $("#shipInput").val(0);
 
-                    // ❌ Nếu lỗi thì reset về tổng gốc
-                    $("#tongtien").text(tongHang.toLocaleString('vi-VN') + " ₫");
+                    capNhatTongTien();
                     console.error("TinhPhi error:", res.error);
                 }
             });
         });
+
         function updateDiaChiFull() {
             var province = document.getElementById('province');
             var district = document.getElementById('district');
