@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(`/Admin/HoaDon/GetHoaDons?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log("Dữ liệu nhận về:", data);
         tbody.innerHTML = "";
         data.forEach((item) => {
           const tr = document.createElement("tr");
@@ -132,6 +133,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 item.hoaDonID ?? ""
               }">
                 <i class="mdi mdi-eye"></i> Xem
+              </a>
+              <a class="btn btn-danger btn-sm me-1 huyHoaDonBtn" href="#" data-id="${
+                item.hoaDonID ?? ""
+              }">
+                <i class="mdi mdi-delete"></i> Xóa
               </a>
             </td>
           `;
@@ -184,18 +190,45 @@ document.addEventListener("DOMContentLoaded", function () {
   // Bắt sự kiện click
   tbody.addEventListener("click", function (e) {
     const xemBtn = e.target.closest(".xemHoaDonBtn");
-    if (!xemBtn) return;
+    const huyBtn = e.target.closest(".huyHoaDonBtn");
 
-    const hoaDonID = xemBtn.dataset.id;
-    if (!hoaDonID) return;
+    if (xemBtn) {
+      const hoaDonID = xemBtn.dataset.id;
+      if (!hoaDonID) return;
+      fetch(`/Admin/HoaDon/GetHoaDonChiTiet?billID=${hoaDonID}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Dữ liệu hóa đơn chi tiết:", data); // <-- log để kiểm tra
+          showHoaDonModal(data);
+        })
+        .catch((err) => console.error(err));
+      return;
+    }
 
-    fetch(`/Admin/HoaDon/GetHoaDonChiTiet?billID=${hoaDonID}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Dữ liệu hóa đơn chi tiết:", data); // <-- log để kiểm tra
-        showHoaDonModal(data);
+    //huybtn
+
+    if (huyBtn) {
+      const huyhoaDonID = huyBtn.dataset.id;
+      console.log("huyhoaDonID:", huyhoaDonID);
+
+      if (!huyhoaDonID) return;
+      if (!confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) return;
+      fetch(`/Admin/HoaDon/HuyHoaDon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: huyhoaDonID }),
       })
-      .catch((err) => console.error(err));
+        .then((res) => res.json())
+        .then((data) => {
+          showToast(
+            data.success ? data.message.message : data.message,
+            data.success
+          );
+          loadHoaDon(); // Load lại bảng
+        })
+        .catch((err) => console.error(err));
+      return;
+    }
   });
 
   applyFilter.addEventListener("click", loadHoaDon);

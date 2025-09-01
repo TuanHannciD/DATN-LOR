@@ -19,7 +19,7 @@ namespace AuthDemo.Areas.Admin.Services
             try
             {
                 var data = await _db.KichThuocs
-                    .Where(ct => !ct.IsDelete)
+                    .Where(ct => !ct.IsDelete).OrderByDescending(h => h.NgayTao)
                     .ToListAsync();
                 return ApiResponse<IEnumerable<KichThuoc>>.SuccessResponse(data, "Lấy danh sách thành công");
             }
