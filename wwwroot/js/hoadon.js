@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 item.hoaDonID ?? ""
               }">
                 <i class="mdi mdi-eye"></i> Xem
-              </a>
+              </a>           
             </td>
           `;
           tbody.appendChild(tr);
