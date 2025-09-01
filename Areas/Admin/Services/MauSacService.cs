@@ -19,7 +19,7 @@ namespace AuthDemo.Areas.Admin.Services
             try
             {
                 var data = await _db.MauSacs
-                .Where(ct => !ct.IsDelete)
+                .Where(ct => !ct.IsDelete).OrderByDescending(h => h.NgayTao)
                 .ToListAsync();
                 return ApiResponse<IEnumerable<MauSac>>.SuccessResponse(data, "Lấy danh sách thành công");
             }
