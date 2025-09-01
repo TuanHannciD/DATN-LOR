@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
               <a class="btn btn-danger btn-sm me-1 huyHoaDonBtn" href="#" data-id="${
                 item.hoaDonID ?? ""
               }">
-                <i class="mdi mdi-delete"></i> Xóa
+                <i class="mdi mdi-delete"></i> Xóa/Hoàn tác
               </a>
             </td>
           `;
@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("huyhoaDonID:", huyhoaDonID);
 
       if (!huyhoaDonID) return;
-      if (!confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) return;
+      if (!confirm("Bạn có chắc chắn muốn chuyển trạng thái hóa đơn này?")) return;
       fetch(`/Admin/HoaDon/HuyHoaDon`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
