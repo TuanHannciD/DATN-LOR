@@ -11,6 +11,7 @@ namespace AuthDemo.Areas.Admin.Interface
         List<dynamic> GetTrangThaiList();
         List<GetAllHoaDonVM> GetAllHoaDon();
         HoaDonDTO GetHoaDonById(int id);
+        Task<List<GetAllHoaDonVM>> GetHoaDonsAsync(HoaDonFilter filter);
         Task<Result<HoaDonDTO>> CreateHoaDon(CreateHoaDonVM createHoaDonVM, string tenDangNhap);
         // Tính tổng tiền của hóa đơn
         HoaDonTongTienVM TinhTienHoaDon(Guid cartID, decimal? giamGiaPhanTram, decimal? giamGiaTienMat);

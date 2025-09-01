@@ -22,7 +22,7 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 return _db.Giays
                     .Where(g => !g.IsDelete)   // chỉ lấy chưa xóa
-                    .AsNoTracking()            // tối ưu khi chỉ đọc
+                    .AsNoTracking().OrderByDescending(h => h.NgayTao)         // tối ưu khi chỉ đọc
                     .ToList();
             }
             catch (Exception ex)

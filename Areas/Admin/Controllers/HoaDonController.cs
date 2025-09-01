@@ -5,6 +5,7 @@ using AuthDemo.Models.ViewModels;
 using AuthDemo.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -41,95 +42,38 @@ namespace AuthDemo.Areas.Admin.Controllers
 
         // API trả JSON danh sách hóa đơn theo filter
         [HttpGet]
-        public IActionResult GetHoaDons(DateTime? startDate,
-         DateTime? endDate,
-        string trangThai = "",
-        string hinhThuc = "",
-        string phone = "",
-         string idFilter = "",
-         string nameFilter = "",
-         bool? trangThaiTT = null,
-         string nameCreateFilter = "",
-         string tongTienFilter = ""
+        public async Task<IActionResult> GetHoaDons(
+            DateTime? startDate,
+            DateTime? endDate,
+            string trangThai = "",
+            string hinhThuc = "",
+            string phone = "",
+            string idFilter = "",
+            string nameFilter = "",
+            bool? trangThaiTT = null,
+            string nameCreateFilter = "",
+            string tongTienFilter = ""
         )
         {
-            var hoaDons = _hoaDonService.GetAllHoaDon();
-
-
-            if (startDate.HasValue)
-                hoaDons = hoaDons.Where(h => h.NgayTao >= startDate.Value).ToList();
-
-            if (endDate.HasValue)
-                hoaDons = hoaDons.Where(h => h.NgayTao <= endDate.Value).ToList();
-
-
-            if (!string.IsNullOrEmpty(trangThai))
-                if (Enum.TryParse<TrangThaiHoaDon>(trangThai, out var trangthaiEnum))
-                {
-                    hoaDons = hoaDons.Where(h => h.TrangThaiHoaDon == trangthaiEnum).ToList();
-                }
-
-
-            if (!string.IsNullOrEmpty(hinhThuc))
+            // 1️⃣ Tạo filter object
+            var filter = new HoaDonFilter
             {
-                if (Enum.TryParse<PhuongThucThanhToan>(hinhThuc, out var hinhThucEnum))
-                {
-                    hoaDons = hoaDons.Where(h => h.HinhThucThanhToan == hinhThucEnum).ToList();
-                }
-            }
+                StartDate = startDate,
+                EndDate = endDate,
+                TrangThai = trangThai,
+                HinhThuc = hinhThuc,
+                Phone = phone,
+                IdFilter = idFilter,
+                NameFilter = nameFilter,
+                TrangThaiTT = trangThaiTT,
+                NameCreateFilter = nameCreateFilter,
+                TongTienFilter = tongTienFilter
+            };
 
+            // 2️⃣ Lấy danh sách đã map display name
+            var hoaDons = await _hoaDonService.GetHoaDonsAsync(filter);
 
-            if (!string.IsNullOrEmpty(phone))
-            {
-                // Lọc số điện thoại bắt đầu với phone
-                hoaDons = hoaDons
-                    .Where(h => h.SoDienThoai != null && h.SoDienThoai.StartsWith(phone))
-                    .ToList();
-            }
-
-
-            if (!string.IsNullOrEmpty(idFilter))
-            {
-                hoaDons = hoaDons
-                    .Where(h => h.HoaDonID.ToString().StartsWith(idFilter))
-                    .ToList();
-            }
-            if (!string.IsNullOrEmpty(nameCreateFilter))
-            {
-                hoaDons = hoaDons
-                    .Where(h => !string.IsNullOrEmpty(h.NguoiTao) &&
-                                h.NguoiTao.StartsWith(nameCreateFilter, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-            // if (!string.IsNullOrEmpty(nameFilter))
-            // {
-            //     var keywords = nameFilter.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            //     hoaDons = hoaDons
-            //         .Where(h => keywords.All(k => h.TenKhachHang.Contains(k, StringComparison.OrdinalIgnoreCase)))
-            //         .ToList();
-            // }
-            // loc tên theo phương pháp ADN
-
-
-            if (!string.IsNullOrEmpty(nameFilter))
-            {
-                var keywords = nameFilter.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                hoaDons = hoaDons
-                    .Where(h => !string.IsNullOrEmpty(h.TenKhachHang) &&
-                                keywords.All(k => h.TenKhachHang.Contains(k, StringComparison.OrdinalIgnoreCase)))
-                    .ToList();
-            }
-
-
-
-            if (trangThaiTT.HasValue)
-            {
-                hoaDons = hoaDons.Where(h => h.DaThanhToan == trangThaiTT.Value).ToList();
-            }
-
-            // Sắp xếp mới nhất -> cũ nhất
-            hoaDons = hoaDons.OrderByDescending(h => h.NgayTao).ToList();
-
+            // 3️⃣ Trả về JSON
             return Json(hoaDons);
         }
 
@@ -255,9 +199,9 @@ namespace AuthDemo.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> HuyHoaDon(Guid id)
+        public async Task<IActionResult> HuyHoaDon([FromBody] IDHoaDon iDHoaDon)
         {
-            var result = await _hoaDonService.HuyHoaDon(id);
+            var result = await _hoaDonService.HuyHoaDon(iDHoaDon.ID);
 
             if (!result.Success)
                 return BadRequest(new { message = result.Message ?? "Hủy hóa đơn thất bại." });

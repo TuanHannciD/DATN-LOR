@@ -60,6 +60,83 @@ namespace AuthDemo.Areas.Admin.Services
             }).ToList();
             return hoaDons;
         }
+
+        //Bộ lọc tìm kiếm 
+        public async Task<List<GetAllHoaDonVM>> GetHoaDonsAsync(HoaDonFilter filter)
+        {
+            var hoaDons = _db.HoaDons.AsQueryable();
+
+            // Filter ngày
+            if (filter.StartDate.HasValue)
+                hoaDons = hoaDons.Where(h => h.NgayTao >= filter.StartDate.Value);
+
+            if (filter.EndDate.HasValue)
+                hoaDons = hoaDons.Where(h => h.NgayTao <= filter.EndDate.Value);
+
+            // Filter trạng thái
+            if (!string.IsNullOrEmpty(filter.TrangThai))
+                if (Enum.TryParse<TrangThaiHoaDon>(filter.TrangThai, out var trangthaiEnum))
+                {
+                    hoaDons = hoaDons.Where(h => h.TrangThai == trangthaiEnum);
+                }
+
+            // Filter phương thức thanh toán
+            if (!string.IsNullOrEmpty(filter.HinhThuc) &&
+                Enum.TryParse<PhuongThucThanhToan>(filter.HinhThuc, out var hinhThucEnum))
+            {
+                hoaDons = hoaDons.Where(h => h.PhuongThucThanhToan == hinhThucEnum);
+            }
+
+            // Các filter khác
+            if (!string.IsNullOrEmpty(filter.Phone))
+                hoaDons = hoaDons.Where(h => h.SoDienThoai != null && h.SoDienThoai.StartsWith(filter.Phone));
+
+            if (!string.IsNullOrEmpty(filter.IdFilter))
+                hoaDons = hoaDons.Where(h => h.BillID.ToString().StartsWith(filter.IdFilter));
+
+            if (!string.IsNullOrEmpty(filter.NameCreateFilter))
+                hoaDons = hoaDons.Where(h => !string.IsNullOrEmpty(h.NguoiTao) &&
+                                              h.NguoiTao.StartsWith(filter.NameCreateFilter, StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrEmpty(filter.NameFilter))
+            {
+                var keywords = filter.NameFilter.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                hoaDons = hoaDons.Where(h => h.UserID != Guid.Empty &&
+                                              keywords.All(k => h.HoTen.Contains(k, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (filter.TrangThaiTT.HasValue)
+                hoaDons = hoaDons.Where(h => h.DaThanhToan == filter.TrangThaiTT.Value);
+
+            // Chuyển sang List và map display name
+            var list = await hoaDons.ToListAsync(); // Lấy dữ liệu từ DB trước
+            var result = list
+                .Select(h => new GetAllHoaDonVM
+                {
+                    HoaDonID = h.BillID,
+                    UserID = h.UserID,
+                    TongTien = h.TongTien,
+                    NguoiTao = h.NguoiTao,
+                    NgayTao = h.NgayTao,
+                    NguoiCapNhat = h.NguoiCapNhat,
+                    DaThanhToan = h.DaThanhToan,
+                    NgayCapNhat = h.NgayCapNhat,
+                    TenKhachHang = h.HoTen,
+                    SoDienThoai = h.SoDienThoai,
+                    Email = h.Email,
+                    DiaChi = h.DiaChi,
+                    HinhThucThanhToan = h.PhuongThucThanhToan,
+                    HinhThucVanChuyen = h.PhuongThucVanChuyen,
+                    TrangThaiHoaDon = h.TrangThai,
+                    TrangThaiDisplay = h.TrangThai.GetDisplayName(),
+                    HinhThucThanhToanDisplay = h.PhuongThucThanhToan.GetDisplayName(),
+                    HinhThucVanChuyenDisplay = h.PhuongThucVanChuyen.GetDisplayName()
+                })
+                .OrderByDescending(h => h.NgayTao)
+                .ToList();
+
+            return result;
+        }
         public HoaDonDTO GetHoaDonById(int id)
         {
             // Chưa có logic cụ thể, chỉ trả về một đối tượng rỗng
