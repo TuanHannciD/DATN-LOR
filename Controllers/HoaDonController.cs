@@ -167,7 +167,12 @@ namespace Controllers
             //decimal ship = 0;
             //var phiResult = await _ghn.TinhPhi(districtId, wardCode);
             // Nếu mọi thứ hợp lệ → sang trang thanh toán
+            var tongTien = cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia);
+            var vouchers = _context.Vouchers
+        .Where(v => v.NgayBatDau <= DateTime.Now && v.NgayKetThuc >= DateTime.Now && v.IsDelete == false && v.SoLanSuDung > 0 && tongTien >= v.DonHangToiThieu) // chỉ lấy voucher còn hiệu lực
+        .ToList();
 
+            ViewBag.Vouchers = vouchers;
 
             ViewBag.TongTien1 = cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia);
             ViewBag.TongTien = (cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia));
@@ -176,7 +181,7 @@ namespace Controllers
 
         [HttpPost]
         public IActionResult DatHang(string hoten, string email, string sdt, string diachi_full, string ghichu, string phuongthuc, List<Guid> selectedIds,
-    List<int> quantities, decimal ship)
+    List<int> quantities, decimal ship, decimal? discount, Guid? voucherId)
         {
             var check = HttpContext.Session.GetString("TenDangNhap");
             if (string.IsNullOrEmpty(check))
@@ -223,7 +228,7 @@ namespace Controllers
                     hasInvalid = true;
                 }
 
-                
+
             }
 
             if (hasInvalid)
@@ -236,9 +241,13 @@ namespace Controllers
 
             for (int i = 0; i < selectedIds.Count; i++)
             {
-                tongTienchuaship += (cartItems[i].ChiTietGiay.Gia * quantities[i]) ;
+                tongTienchuaship += (cartItems[i].ChiTietGiay.Gia * quantities[i]);
             }
-            decimal tongTien = tongTienchuaship + ship;
+            // Không cho giảm nhiều hơn tiền hàng
+            decimal giamGia = discount ?? 0;
+            if (giamGia > tongTienchuaship) giamGia = tongTienchuaship;
+
+            decimal tongTien = tongTienchuaship - giamGia + ship;
             // khi nhận
             if (phuongthuc == "0")
             {
@@ -260,6 +269,8 @@ namespace Controllers
                     NguoiTao = "system",
                     NguoiCapNhat = "system",
                     NgayCapNhat = DateTime.Now,
+                    SoTienGiam = giamGia,
+                    VoucherID = voucherId,
                 };
                 _context.HoaDons.Add(hoaDon);
                 for (int i = 0; i < selectedIds.Count; i++)
@@ -281,7 +292,7 @@ namespace Controllers
                         NgayCapNhat = DateTime.Now,
                     };
                     _context.ChiTietHoaDons.Add(hdct);
-                    
+
 
                 }
                 _context.ChiTietGioHangs.RemoveRange(cartItems);
@@ -291,7 +302,7 @@ namespace Controllers
             // vnpay
             else if (phuongthuc == "3")
             {
-                
+
                 var hoaDon = new HoaDon
                 {
                     BillID = Guid.NewGuid(),
@@ -310,6 +321,8 @@ namespace Controllers
                     NguoiTao = "system",
                     NguoiCapNhat = "system",
                     NgayCapNhat = DateTime.Now,
+                    SoTienGiam = giamGia,
+                    VoucherID = voucherId,
                 };
                 _context.HoaDons.Add(hoaDon);
                 for (int i = 0; i < selectedIds.Count; i++)
@@ -331,7 +344,7 @@ namespace Controllers
                         NguoiCapNhat = "system",
                         NgayCapNhat = DateTime.Now,
                     };
-                  
+
                     _context.ChiTietHoaDons.Add(hdct);
                 }
                 var paymentModel = new PaymentInformationModel
@@ -344,11 +357,11 @@ namespace Controllers
                 };
                 _context.ChiTietGioHangs.RemoveRange(cartItems);
                 _context.SaveChanges();
-                return RedirectToAction("CreatePaymentUrlVnpay", "Payment" , paymentModel);
+                return RedirectToAction("CreatePaymentUrlVnpay", "Payment", paymentModel);
             }
-            
 
-           
+
+
             _context.SaveChanges();
             return RedirectToAction("DonHang", "HoaDon");
         }
@@ -440,6 +453,7 @@ namespace Controllers
                    h.NgayTao,
                    h.TongTien,
                    h.PhuongThucThanhToan,
+
                    ChiTiet = _context.ChiTietHoaDons
                .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.Giay)
                .Include(c => c.ChiTietGiay).ThenInclude(ctg => ctg.MauSac)
@@ -448,12 +462,12 @@ namespace Controllers
                .Where(c => c.BillID == h.BillID)
                .Select(c => new
                {
-                TenSanPham = c.ChiTietGiay.Giay.TenGiay,
+                   TenSanPham = c.ChiTietGiay.Giay.TenGiay,
                    HinhAnh = c.ChiTietGiay.AnhGiays.FirstOrDefault().DuongDanAnh ?? "/images/default.png",
                    Size = c.ChiTietGiay.KichThuoc.TenKichThuoc,
-                MauSac = c.ChiTietGiay.MauSac.TenMau,
-                c.SoLuong,
-                c.DonGia
+                   MauSac = c.ChiTietGiay.MauSac.TenMau,
+                   c.SoLuong,
+                   c.DonGia
                }).ToList()
                })
           .ToList();
@@ -469,15 +483,21 @@ namespace Controllers
                     MauSac = c.MauSac,
                     SoLuong = c.SoLuong,
                     DonGia = c.DonGia,
+
                     ThanhTien = c.DonGia * c.SoLuong
                 }).ToList();
 
                 // Tính tổng tiền sản phẩm
                 decimal tongSanPham = chiTietList.Sum(c => c.ThanhTien);
 
-                // Tính phí ship (TongTien - Tổng tiền sản phẩm)
-                decimal phiShip = h.TongTien - tongSanPham;
+                var hoadon = _context.HoaDons.FirstOrDefault(a => a.BillID == HoaDonId);
 
+                decimal sotiengiam = hoadon?.SoTienGiam ?? 0;
+                // Tính phí ship (TongTien - Tổng tiền sản phẩm)
+
+                decimal phiShip = h.TongTien - (tongSanPham - sotiengiam);
+
+                ViewBag.SoTienGiam = sotiengiam;
                 ViewBag.ThanhTien = tongSanPham;
                 ViewBag.Ship = phiShip;
 
@@ -493,7 +513,7 @@ namespace Controllers
                     PhuongThuc = (PhuongThucThanhToan)h.PhuongThucThanhToan,
                     ChiTiet = chiTietList
                 };
-            }).ToList();          
+            }).ToList();
             return View(hoaDons);
 
 
@@ -557,8 +577,43 @@ namespace Controllers
 
             return PartialView("_OrderListPartial", result);
         }
+        // huỷ đơn
+        [HttpPost]
+        public IActionResult HuyDonHang(Guid id)
+        {
+            var hoaDon = _context.HoaDons.FirstOrDefault(h => h.BillID == id);
+            if (hoaDon == null)
+            {
+                return NotFound();
+            }
+
+            // Chỉ cho phép hủy nếu còn đang chờ xác nhận
+            if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan)
+            {
+                var hdct = _context.ChiTietHoaDons.Where(c => c.BillID == id).ToList();
+                if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.ViDienTu)
+                {
+                    foreach (var ct in hdct)
+                    {
+                        // Lấy chi tiết giày trong kho theo ShoeDetailID
+                        var giay = _context.ChiTietGiays
+                            .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
+
+                        // Cộng lại số lượng tồn kho
+                        giay.SoLuong += ct.SoLuong;
+
+                    }
+                }
+               
+
+            }
+            hoaDon.TrangThai = TrangThaiHoaDon.DaHuy; 
+            _context.SaveChanges();
 
 
+
+            return RedirectToAction("DonHang");
+        }
 
         [HttpPost]
         public IActionResult TrangThai()

@@ -247,13 +247,13 @@
     }
 
     .dream-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), transparent); /* Tăng độ trong suốt */
-        border-radius: 1.5rem;
-        opacity: 0.5;
-        pointer-events: none;
-        animation: gradientFlow 8s infinite;
+        pointer-events: none; /* đã có */
+        z-index: 0; /* chắc chắn nằm dưới */
+    }
+
+    form, button {
+        position: relative;
+        z-index: 10; /* đẩy form lên trên */
     }
 
     /* Animations */
@@ -429,9 +429,9 @@
             <p><strong> @hoaDon.DiaChi</strong></p>
             <p>
                 <strong>
-                Ngày Đặt : @(hoaDon.NgayTao.HasValue
-            ? hoaDon.NgayTao.Value.ToString("dd/MM/yyyy HH:mm")
-            : "Chưa có")
+                    Ngày Đặt : @(hoaDon.NgayTao.HasValue
+                ? hoaDon.NgayTao.Value.ToString("dd/MM/yyyy HH:mm")
+                : "Chưa có")
                 </strong>
             </p>
         </div>
@@ -460,6 +460,10 @@
                 <span>Phí vận chuyển</span>
                 <span>@ViewBag.Ship.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
             </div>
+            <div class="summary-item">
+                <span>Voucher giảm</span>
+                <span>@ViewBag.SoTienGiam.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
+            </div>
             <div class="summary-item total">
                 <span>Thành tiền</span>
                 <span class="total-price">@hoaDon.TongTien.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
@@ -468,7 +472,19 @@
                 <span>Phương thức thanh toán :</span>
                 <span>@hoaDon.PhuongThuc.GetDisplayName()</span>
             </div>
+            
         </div>
-
+        @if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan)
+        {
+            <div class="text-right mt-3">
+                <form action="@Url.Action("HuyDonHang", "HoaDon")" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@hoaDon.BillID" />
+                    <button type="submit" class="btn btn-danger px-4 py-2 rounded-2xl shadow-md hover:opacity-90">
+                        ❌ Hủy đơn
+                    </button>
+                </form>
+            </div>
+        }
     }
 </div>
