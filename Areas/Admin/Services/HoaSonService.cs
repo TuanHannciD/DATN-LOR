@@ -450,16 +450,11 @@ namespace AuthDemo.Areas.Admin.Services
                 return ApiResponse<object>.FailResponse("ID_HoaDon_Not_Found", "Không tìm thấy hóa đơn");
 
             string message;
-            if (hoadon.TrangThai == TrangThaiHoaDon.DaHuy)
-            {
-                hoadon.TrangThai = TrangThaiHoaDon.ChoXacNhan;
-                message = "Đã khôi phục lại đơn đã hủy";
-            }
-            else
-            {
+           
+            
                 hoadon.TrangThai = TrangThaiHoaDon.DaHuy;
                 message = "Đã hủy hóa đơn";
-            }
+            
 
             await _db.SaveChangesAsync();
             var trangThaiDisplay = hoadon.TrangThai.GetDisplayName();
