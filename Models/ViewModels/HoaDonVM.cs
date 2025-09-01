@@ -62,4 +62,8 @@ namespace AuthDemo.Models.ViewModels
         public decimal TongThanhToan { get; set; }
 
     }
+    public class IDHoaDon
+    {
+        public Guid ID { get; set; }
+    }
 }
