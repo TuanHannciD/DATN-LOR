@@ -104,7 +104,7 @@ namespace AuthDemo.Areas.Admin.Services
         {
             try
             {
-                var data = await _db.DanhMucs.Where(ct => !ct.IsDelete).ToListAsync();
+                var data = await _db.DanhMucs.Where(ct => !ct.IsDelete).OrderByDescending(h => h.NgayTao).ToListAsync();
                 return ApiResponse<IEnumerable<DanhMuc>>.SuccessResponse(data, "Lấy danh sách thành công");
             }
             catch (Exception ex)
