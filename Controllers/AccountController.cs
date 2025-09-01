@@ -27,7 +27,7 @@ namespace AuthDemo.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(AuthDemo.Models.ViewModels.LoginViewModel model)
+        public async Task<IActionResult> Login(Models.ViewModels.LoginViewModel model)
         {
             // Ghi log: Bắt đầu đăng nhập
             _logger.LogInformation($"Login attempt for username: {model.TenDangNhap}");
@@ -39,8 +39,12 @@ namespace AuthDemo.Controllers
             // Tìm user theo tên đăng nhập, kèm theo các vai trò
             var user = await _context.NguoiDungs
                 .Include(u => u.VaiTroNguoiDungs)
-                    .ThenInclude(vtnd => vtnd.VaiTro)
-                .FirstOrDefaultAsync(u => u.TenDangNhap == model.TenDangNhap);
+                    .ThenInclude(v => v.VaiTro)
+                .FirstOrDefaultAsync(u =>
+                    u.Email == model.TenDangNhap ||
+                    u.SoDienThoai == model.TenDangNhap ||
+                    u.TenDangNhap == model.TenDangNhap
+                );
             if (user == null)
             {
                 // Không tìm thấy user
@@ -50,7 +54,7 @@ namespace AuthDemo.Controllers
             }
             // Hash mật khẩu nhập vào và so sánh với DB
             var passwordHash = HashPassword(model.MatKhau);
-            _logger.LogInformation($"Password check - Input hash: {passwordHash}, DB hash: {user.MatKhau}");
+            _logger.LogInformation($"Password check attempted for user: {model.TenDangNhap}");
             if (user.MatKhau != passwordHash)
             {
                 // Sai mật khẩu
@@ -126,9 +130,41 @@ namespace AuthDemo.Controllers
                     ModelState.AddModelError("TenDangNhap", "Tên đăng nhập đã tồn tại");
                     return View(model);
                 }
+                if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
+                {
+                    ModelState.AddModelError("Email", "Email đã được sử dụng");
+                    return View(model);
+                }
+                if (await _context.NguoiDungs.AnyAsync(u => u.SoDienThoai == model.SoDienThoai))
+                {
+                    ModelState.AddModelError("SoDienThoai", "Số điện thoại đã được sử dụng");
+                    return View(model);
+                }
 
                 model.MatKhau = HashPassword(model.MatKhau);
+                model.UserID = Guid.NewGuid();
+                model.NguoiTao = model.TenDangNhap;
+                model.NgayTao = DateTime.Now;
                 _context.NguoiDungs.Add(model);
+                await _context.SaveChangesAsync();
+
+                // Lấy role mặc định là "User"
+                var roleUser = await _context.VaiTros
+                    .FirstOrDefaultAsync(r => r.TenVaiTro == "User");
+
+                if (roleUser == null)
+                {
+                    throw new Exception("Vai trò 'User' chưa được khởi tạo trong hệ thống.");
+                }
+
+                // Gán quyền cho user
+                var vaiTroNguoiDung = new VaiTroNguoiDung
+                {
+                    UserID = model.UserID,
+                    RoleID = roleUser.RoleID,
+                };
+
+                _context.VaiTroNguoiDungs.Add(vaiTroNguoiDung);
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("Login");
@@ -140,7 +176,7 @@ namespace AuthDemo.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
 
         // Action để debug - tạo hash cho mật khẩu

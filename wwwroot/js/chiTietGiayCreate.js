@@ -111,7 +111,7 @@ $(document).ready(function () {
   );
 
   // =========================
-  // 3️⃣ Thêm/Xóa chi tiết giày
+  //  Thêm/Xóa chi tiết giày
   // =========================
   function setupRowUpload(row) {
     const fileInput = row.querySelector(".imageInput");
@@ -150,16 +150,24 @@ $(document).ready(function () {
   const firstRow = document.querySelector(".chiTietRow");
   setupRowUpload(firstRow);
 
-  // Thêm row mới
   $("#addChiTiet").click(function () {
-    const newRow = $(".chiTietRow").first().clone();
-    newRow.find("select").val("").trigger("change");
-    newRow.find("input[type=file]").val("");
-    newRow.find(".imageUrls").val("");
-    newRow.find(".previewDiv").empty();
+    const lastRow = $(".chiTietRow").last();
+    const newRow = lastRow.clone(false, false);
+
+    // copy value, nhưng bỏ qua input[type=file]
+    newRow.find("input, select, textarea").each(function (index) {
+      const $oldField = lastRow.find("input, select, textarea").eq(index);
+
+      if ($oldField.attr("type") === "file") {
+        $(this).val(""); // reset file input
+      } else {
+        $(this).val($oldField.val());
+      }
+    });
+
     $("#chiTietContainer").append(newRow);
 
-    // ✅ Setup upload cho row mới
+    // setup upload cho row mới
     setupRowUpload(newRow[0]);
   });
 
@@ -171,6 +179,7 @@ $(document).ready(function () {
   });
 });
 document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("createForm");
   // Call api từ BE\
   $("#saveProduct").click(function (e) {
     e.preventDefault();

@@ -25,7 +25,7 @@ namespace AuthDemo.Areas.Admin.Services
 
                 // Lọc các bản ghi chưa bị xóa
                 var result = query
-                    .Where(ct => !ct.IsDelete)
+                    .Where(ct => !ct.IsDelete).OrderByDescending(h => h.NgayTao) 
                     .ToList();
 
                 return result;

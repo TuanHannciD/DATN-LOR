@@ -44,7 +44,10 @@ builder.Services.AddSingleton(new Cloudinary(
 ));
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
 // Vnpay configuration
 builder.Services.Configure<VNPayConfig>(builder.Configuration.GetSection("VnPay"));
 // vnpay khách
