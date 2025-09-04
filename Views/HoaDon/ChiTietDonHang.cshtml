@@ -474,7 +474,7 @@
             </div>
             
         </div>
-        @if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan)
+        @if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan )
         {
             <div class="text-right mt-3">
                 <form action="@Url.Action("HuyDonHang", "HoaDon")" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">

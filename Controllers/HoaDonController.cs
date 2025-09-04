@@ -168,8 +168,13 @@ namespace Controllers
             //var phiResult = await _ghn.TinhPhi(districtId, wardCode);
             // Nếu mọi thứ hợp lệ → sang trang thanh toán
             var tongTien = cartItems.Sum(x => x.SoLuong * x.ChiTietGiay.Gia);
+            var today = DateTime.Now.Date;
             var vouchers = _context.Vouchers
-        .Where(v => v.NgayBatDau <= DateTime.Now && v.NgayKetThuc >= DateTime.Now && v.IsDelete == false && v.SoLanSuDung > 0 && tongTien >= v.DonHangToiThieu) // chỉ lấy voucher còn hiệu lực
+        .Where(v => v.NgayBatDau.Date <= today &&
+        v.NgayKetThuc.Date >= today && // so sánh đến hết ngày
+        v.TrangThai &&
+        v.SoLanSuDung > 0 &&
+        tongTien >= v.DonHangToiThieu)
         .ToList();
 
             ViewBag.Vouchers = vouchers;
@@ -215,7 +220,6 @@ namespace Controllers
                 if (product == null || product.ChiTietGiay.SoLuong == 0 || product.ChiTietGiay.IsDelete == true)
                 {
                     warnings.Add($"Sản phẩm '{product?.ChiTietGiay?.Giay?.TenGiay}' đã hết hàng và không thể đặt hoặc đã ngừng kinh doanh.");
-
                     hasInvalid = true;
                     continue;
                 }
@@ -227,10 +231,18 @@ namespace Controllers
                     _context.SaveChanges(); // cập nhật lại số lượng trong giỏ
                     hasInvalid = true;
                 }
-
-
             }
+            var Phieugg = _context.Vouchers.FirstOrDefault(x => x.VoucherID == voucherId);
+            if (Phieugg != null)
+            {
+                if (Phieugg.SoLanSuDung <= 0 || Phieugg.IsDelete == true)
+                {
 
+                    warnings.Add($"Voucher '{Phieugg.MaVoucherCode}' đã hết hoặc tạm ngưng hoạt động , vui lòng chọn voucher khác.");
+                    hasInvalid = true;
+                }
+            }
+           
             if (hasInvalid)
             {
                 TempData["CartWarnings"] = string.Join(" | ", warnings);
@@ -349,7 +361,7 @@ namespace Controllers
                 }
                 var paymentModel = new PaymentInformationModel
                 {
-                    OrderId = hoaDon.BillID,
+                    OrderId = hoaDon.BillID,                  
                     Name = hoten,
                     Amount = (double)hoaDon.TongTien,
                     OrderType = "other",
@@ -359,9 +371,6 @@ namespace Controllers
                 _context.SaveChanges();
                 return RedirectToAction("CreatePaymentUrlVnpay", "Payment", paymentModel);
             }
-
-
-
             _context.SaveChanges();
             return RedirectToAction("DonHang", "HoaDon");
         }
@@ -582,36 +591,42 @@ namespace Controllers
         public IActionResult HuyDonHang(Guid id)
         {
             var hoaDon = _context.HoaDons.FirstOrDefault(h => h.BillID == id);
+            if (hoaDon != null)
+            {
+                var Voucher = _context.Vouchers.FirstOrDefault(h => h.VoucherID == hoaDon.VoucherID);
+                // Chỉ cho phép hủy nếu còn đang chờ xác nhận   
+                if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan)
+                {
+                    var hdct = _context.ChiTietHoaDons.Where(c => c.BillID == id).ToList();
+                    if (hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.ViDienTu && hoaDon.DaThanhToan == true)
+                    {
+                        foreach (var ct in hdct)
+                        {
+                            // Lấy chi tiết giày trong kho theo ShoeDetailID
+                            var giay = _context.ChiTietGiays
+                                .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
+
+                            // Cộng lại số lượng tồn kho
+                            if (giay != null)
+                            {
+                                giay.SoLuong += ct.SoLuong;
+                            }
+
+                        }
+                        if (Voucher != null)
+                        {
+                            Voucher.SoLanSuDung += 1;
+                        }
+                    }
+                }
+            }
+            
             if (hoaDon == null)
             {
                 return NotFound();
-            }
-
-            // Chỉ cho phép hủy nếu còn đang chờ xác nhận
-            if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan)
-            {
-                var hdct = _context.ChiTietHoaDons.Where(c => c.BillID == id).ToList();
-                if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.ViDienTu)
-                {
-                    foreach (var ct in hdct)
-                    {
-                        // Lấy chi tiết giày trong kho theo ShoeDetailID
-                        var giay = _context.ChiTietGiays
-                            .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
-
-                        // Cộng lại số lượng tồn kho
-                        giay.SoLuong += ct.SoLuong;
-
-                    }
-                }
-               
-
-            }
+            }              
             hoaDon.TrangThai = TrangThaiHoaDon.DaHuy; 
             _context.SaveChanges();
-
-
-
             return RedirectToAction("DonHang");
         }
 

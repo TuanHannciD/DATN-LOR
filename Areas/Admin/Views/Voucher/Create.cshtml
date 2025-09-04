@@ -1,0 +1,125 @@
+﻿@model AuthDemo.Models.Vouchers
+
+@{
+    ViewData["Title"] = "Tạo mới Voucher";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Tạo mới Voucher</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["Error"]
+    </div>
+}
+<style>
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    input:disabled {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+    }
+</style>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="MaVoucherCode" class="control-label">Tên Voucher</label>
+        <input asp-for="MaVoucherCode" class="form-control" />
+        <span asp-validation-for="MaVoucherCode" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="MoTa" class="control-label"></label>
+        <textarea asp-for="MoTa" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="LoaiGiam" class="control-label"></label>
+        <select asp-for="LoaiGiam" class="form-control" asp-items="Html.GetEnumSelectList<AuthDemo.Models.Enums.LoaiGiam>()">
+            <option value="">Chọn loại giảm</option>
+        </select>
+        <span asp-validation-for="LoaiGiam" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="GiaTri" class="control-label"></label>
+        <input asp-for="GiaTri" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="GiaTri" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="GiaTriToiDa" class="control-label"></label>
+        <input asp-for="GiaTriToiDa" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="GiaTriToiDa" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DonHangToiThieu" class="control-label"></label>
+        <input asp-for="DonHangToiThieu" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="DonHangToiThieu" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SoLanSuDung" class="control-label"></label>
+        <input asp-for="SoLanSuDung" class="form-control" type="number" />
+        <span asp-validation-for="SoLanSuDung" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="NgayBatDau" class="control-label"></label>
+        <input asp-for="NgayBatDau" class="form-control" type="date" />
+        <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="NgayKetThuc" class="control-label"></label>
+        <input asp-for="NgayKetThuc" class="form-control" type="date" />
+        <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Tạo" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loaiGiamSelect = document.getElementById('LoaiGiam');
+            const giaTriToiDaInput = document.getElementById('GiaTriToiDa');
+            const giaTriToiDaLabel = document.querySelector('label[for="GiaTriToiDa"]');
+
+            function toggleGiaTriToiDa() {
+                if (loaiGiamSelect.value === '0') { // PhanTram (giá trị enum thường bắt đầu từ 0)
+                    giaTriToiDaInput.disabled = false;
+                    giaTriToiDaInput.required = true;
+                    giaTriToiDaLabel.classList.remove('text-muted');
+                } else if (loaiGiamSelect.value === '1') { // Tien (giá trị enum)
+                    giaTriToiDaInput.disabled = true;
+                    giaTriToiDaInput.value = '';
+                    giaTriToiDaInput.required = false;
+                    giaTriToiDaLabel.classList.add('text-muted');
+                } else {
+                    // Trường hợp chưa chọn hoặc giá trị khác
+                    giaTriToiDaInput.disabled = true;
+                    giaTriToiDaInput.value = '';
+                    giaTriToiDaInput.required = false;
+                    giaTriToiDaLabel.classList.add('text-muted');
+                }
+            }
+
+            // Gọi hàm khi tải trang
+            toggleGiaTriToiDa();
+
+            // Gọi hàm khi thay đổi giá trị của LoaiGiam
+            loaiGiamSelect.addEventListener('change', toggleGiaTriToiDa);
+        });
+    </script>
+}

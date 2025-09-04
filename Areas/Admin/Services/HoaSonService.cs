@@ -382,13 +382,13 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn đã được giao hoặc ở trạng thái cuối.");
             }
-            if (currentStatus == TrangThaiHoaDon.DangGiaoHang)
+            if (currentStatus == TrangThaiHoaDon.ChoXacNhan && hoaDon.DaThanhToan == false && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.ViDienTu)
             {
-                hoaDon.DaThanhToan = true;
-                _db.SaveChanges();
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn này chưa được thanh toán cho phương thức thanh toán bằng VnPay");
             }
             var errors = new List<string>();
             var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == HoaDonID).ToList();
+            var phieugg = _db.Vouchers.FirstOrDefault(x => x.VoucherID == hoaDon.VoucherID);
             if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
             {
                 foreach (var ct in hdct)
@@ -403,6 +403,7 @@ namespace AuthDemo.Areas.Admin.Services
                     {
                         errors.Add($"Không tìm thấy chi tiết giày với ID: {ct.ShoeDetailID}");
                         continue; // Bỏ qua nếu không tìmTạo ra mực định phải  thấy giày
+
                     }
                     else
                     {
@@ -499,6 +500,7 @@ namespace AuthDemo.Areas.Admin.Services
                         var mau = giay.MauSac?.TenMau ?? "(Chưa có màu)";
                         var kichThuoc = giay.KichThuoc?.TenKichThuoc ?? "(Chưa có size)";
                         if (giay.SoLuong == 0)
+
                         {
                             errors.Add($"Sản phẩm đã hết hàng: {tenGiay} ({mau}, {kichThuoc})");
                         }
@@ -510,12 +512,29 @@ namespace AuthDemo.Areas.Admin.Services
                         {
                             errors.Add($"Sản phẩm đã ngưng bán: {tenGiay} ({mau}, {kichThuoc})");
                         }
+                        if (phieugg != null)
+                        {
+                            phieugg.SoLanSuDung -= 1;
+                        }
+
                     }
+
+
                 }
+                if (phieugg != null && phieugg.SoLanSuDung <= 0)
+                {
+                    errors.Add($"Voucher {phieugg.MaVoucherCode} đã hết , vui lòng cập nhật thêm số lượt sử dụng hoặc từ chối đơn hàng");
+                }
+
             }
             if (errors.Any())
             {
                 return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", string.Join("<br/>", errors));
+            }
+            if (currentStatus == TrangThaiHoaDon.DangGiaoHang && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
+            {
+                hoaDon.DaThanhToan = true;
+                await _db.SaveChangesAsync();
             }
             _db.SaveChanges();
 
@@ -538,17 +557,67 @@ namespace AuthDemo.Areas.Admin.Services
             var hoadon = await _db.HoaDons.FindAsync(id);
             if (hoadon == null)
                 return ApiResponse<object>.FailResponse("ID_HoaDon_Not_Found", "Không tìm thấy hóa đơn");
-
             string message;
 
 
+            var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == hoadon.BillID).ToList();
+            var phieugg = _db.Vouchers.FirstOrDefault(x => x.VoucherID == hoadon.VoucherID);
+            var currentStatus = hoadon.TrangThai;
+           
+            // thanh toán khi nhận
+           
+            if (hoadon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
+            {
+                if (currentStatus == TrangThaiHoaDon.DaXacNhan || currentStatus == TrangThaiHoaDon.DangGiaoHang)
+                {
+                    foreach (var ct in hdct)
+                    {
+                        // Lấy chi tiết giày trong kho theo ShoeDetailID
+                        var giay = _db.ChiTietGiays
+                            .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
+                        // Trừ số lượng tồn kho
+                        if(giay != null)
+                        {
+                            giay.SoLuong += ct.SoLuong;                   
+                        }
+                        
+                    }
+                    if (phieugg != null)
+                    {
+                        phieugg.SoLanSuDung += 1;
+                    }
+                    _db.SaveChanges();
+
+                }
+            }
+            // thanh toán vnPay
+            if (hoadon.PhuongThucThanhToan == PhuongThucThanhToan.ViDienTu && hoadon.DaThanhToan == true)
+            {
+                if (currentStatus == TrangThaiHoaDon.ChoXacNhan || currentStatus == TrangThaiHoaDon.DaXacNhan || currentStatus == TrangThaiHoaDon.DangGiaoHang)
+                {
+                    foreach (var ct in hdct)
+                    {
+                        // Lấy chi tiết giày trong kho theo ShoeDetailID
+                        var giay = _db.ChiTietGiays
+                            .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
+                        // Trừ số lượng tồn kho
+                        if (giay != null)
+                        {
+                            giay.SoLuong += ct.SoLuong;
+                        }
+
+                    }
+                    if (phieugg != null)
+                    {
+                        phieugg.SoLanSuDung += 1;
+                    }
+                    _db.SaveChanges();
+                }
+            }
             hoadon.TrangThai = TrangThaiHoaDon.DaHuy;
             message = "Đã hủy hóa đơn";
-
-
             await _db.SaveChangesAsync();
             var trangThaiDisplay = hoadon.TrangThai.GetDisplayName();
-
             // Trả về object chứa trạng thái enum chuẩn để JS map màu
             return ApiResponse<object>.SuccessResponse(new { newStatus = trangThaiDisplay }, message);
         }
