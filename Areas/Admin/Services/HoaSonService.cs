@@ -424,14 +424,24 @@ namespace AuthDemo.Areas.Admin.Services
                         {
                             errors.Add($"Sản phẩm đã ngưng bán: {tenGiay} ({mau}, {kichThuoc})");
                         }
-                        if (phieugg != null)
+
+                        else
                         {
-                            phieugg.SoLanSuDung -= 1;
+                            // Trừ số lượng tồn kho
+                            giay.SoLuong -= ct.SoLuong;
+                            if (giay.SoLuong < 0)
+                            {
+                                giay.SoLuong = 0; // tránh âm
+                            }
+
                         }
-
                     }
+                   
 
-
+                }
+                if (phieugg != null && phieugg.SoLanSuDung > 0)
+                {
+                    phieugg.SoLanSuDung -= 1;
                 }
                 if (phieugg != null && phieugg.SoLanSuDung <= 0)
                 {
