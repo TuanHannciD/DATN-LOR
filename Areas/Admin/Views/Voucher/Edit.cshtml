@@ -1,0 +1,192 @@
+﻿@model AuthDemo.Models.Vouchers
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Vouchers</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="VoucherID" />
+            <div class="form-group">
+                <label asp-for="MaVoucherCode" class="control-label"></label>
+                <input asp-for="MaVoucherCode" class="form-control" />
+                <span asp-validation-for="MaVoucherCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MoTa" class="control-label"></label>
+                <input asp-for="MoTa" class="form-control" />
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LoaiGiam" class="control-label"></label>
+                <select asp-for="LoaiGiam" class="form-control" asp-items="Html.GetEnumSelectList<AuthDemo.Models.Enums.LoaiGiam>()">
+                    <option value="">Chọn loại giảm</option>
+                </select>
+                <span asp-validation-for="LoaiGiam" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaTri" class="control-label"></label>
+                <input asp-for="GiaTri" class="form-control" type="number" step="1" min="0" max="100" />
+                <span asp-validation-for="GiaTri" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaTriToiDa" class="control-label"></label>
+                <input asp-for="GiaTriToiDa" class="form-control" type="number" step="1" min="1" max="1000000" />
+                <span asp-validation-for="GiaTriToiDa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DonHangToiThieu" class="control-label"></label>
+                <input asp-for="DonHangToiThieu" class="form-control" type="number" step="1" min="0" max="1000000" />
+                <span asp-validation-for="DonHangToiThieu" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SoLanSuDung" class="control-label"></label>
+                <input asp-for="SoLanSuDung" class="form-control" type="number" step="1" min="1" />
+                <span asp-validation-for="SoLanSuDung" class="text-danger"></span>
+            </div>
+            @* <div class="form-group">
+            <label asp-for="SoLanSuDungMoiUser" class="control-label"></label>
+            <input asp-for="SoLanSuDungMoiUser" class="form-control" type="number" step="1" min="1" />
+            <span asp-validation-for="SoLanSuDungMoiUser" class="text-danger"></span>
+            </div>  *@
+            <div class="form-group">
+                <label asp-for="NgayBatDau" class="control-label"></label>
+                <input asp-for="NgayBatDau" class="form-control" type="date" />
+                <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NgayKetThuc" class="control-label"></label>
+                <input asp-for="NgayKetThuc" class="form-control" type="date" />
+                <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+            </div>
+            @*             <div class="form-group form-check">
+            <label class="form-check-label">
+            <input class="form-check-input" asp-for="TrangThai" /> @Html.DisplayNameFor(model => model.TrangThai)
+            </label>
+            </div>
+            <div class="form-group">
+            <label asp-for="NguoiTao" class="control-label"></label>
+            <input asp-for="NguoiTao" class="form-control" />
+            <span asp-validation-for="NguoiTao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+            <label asp-for="NgayTao" class="control-label"></label>
+            <input asp-for="NgayTao" class="form-control" />
+            <span asp-validation-for="NgayTao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+            <label asp-for="NguoiCapNhat" class="control-label"></label>
+            <input asp-for="NguoiCapNhat" class="form-control" />
+            <span asp-validation-for="NguoiCapNhat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+            <label asp-for="NgayCapNhat" class="control-label"></label>
+            <input asp-for="NgayCapNhat" class="form-control" />
+            <span asp-validation-for="NgayCapNhat" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+            <label class="form-check-label">
+            <input class="form-check-input" asp-for="IsDelete" /> @Html.DisplayNameFor(model => model.IsDelete)
+            </label>
+            </div>  *@
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    this.value = Math.floor(this.value);
+                    if (this.value === '') this.value = 0;
+                });
+                if (input.value) {
+                    input.value = Math.floor(input.value);
+                }
+            });
+
+            // Xử lý ẩn/hiện trường Giá trị tối đa
+            const loaiGiamSelect = document.getElementById('LoaiGiam');
+            const giaTriToiDaInput = document.getElementById('GiaTriToiDa');
+            const giaTriToiDaLabel = document.querySelector('label[for="GiaTriToiDa"]');
+            const giaTriToiDaFormGroup = giaTriToiDaInput.closest('.form-group');
+            const tooltip = document.createElement('small');
+            tooltip.className = 'form-text text-muted';
+            tooltip.id = 'giaTriToiDaTooltip';
+            giaTriToiDaFormGroup.appendChild(tooltip);
+
+            function updateGiaTriToiDaState() {
+                if (loaiGiamSelect.value === '0') { // PhanTram
+                    giaTriToiDaInput.disabled = false;
+                    giaTriToiDaInput.required = true;
+                    giaTriToiDaFormGroup.classList.remove('disabled');
+                    tooltip.textContent = 'Nhập giá trị tối đa được giảm (áp dụng cho giảm phần trăm)';
+                } else if (loaiGiamSelect.value === '1') { // Tien
+                    giaTriToiDaInput.disabled = true;
+                    giaTriToiDaInput.value = '';
+                    giaTriToiDaInput.required = false;
+                    giaTriToiDaFormGroup.classList.add('disabled');
+                    tooltip.textContent = 'Không áp dụng giá trị tối đa khi giảm theo tiền';
+                } else {
+                    giaTriToiDaInput.disabled = true;
+                    giaTriToiDaInput.value = '';
+                    giaTriToiDaInput.required = false;
+                    giaTriToiDaFormGroup.classList.add('disabled');
+                    tooltip.textContent = 'Vui lòng chọn loại giảm trước';
+                }
+            }
+
+            // Gọi hàm khi tải trang
+            updateGiaTriToiDaState();
+
+            // Gọi hàm khi thay đổi giá trị
+            loaiGiamSelect.addEventListener('change', updateGiaTriToiDaState);
+
+            // Validation khi submit
+            document.querySelector('form').addEventListener('submit', function (e) {
+                if (loaiGiamSelect.value === '1' && giaTriToiDaInput.value.trim() !== '') {
+                    e.preventDefault();
+                    alert('Không được nhập giá trị tối đa khi chọn giảm theo tiền');
+                    giaTriToiDaInput.focus();
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .form-group.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        input:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+        }
+    </style>
+}

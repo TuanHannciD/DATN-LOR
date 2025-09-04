@@ -1,4 +1,5 @@
-﻿@{
+﻿@using AuthDemo.Models.Enums;
+@{
     ViewData["Title"] = "CheckOut";
     Layout = "~/Views/Shared/_LayoutCheckOut.cshtml";
     var provinces = ViewBag.Provinces;
@@ -215,7 +216,7 @@
             <div class="lg:col-span-1 space-y-6">
                 <div class="checkout__input animate-fade-in-up">
                     <label for="hoten" class="block text-lg font-bold text-gray-800 mb-2 tracking-wide">Họ Tên <span class="text-accent-500">*</span></label>
-                    
+
                     <input type="text" id="hoten" name="hoten" class="w-full px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-400/40 transition-all duration-300 hover:border-accent-500 bg-white/80 shadow-sm hover:shadow-md">
                     <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-hoten"></div>
                 </div>
@@ -239,7 +240,7 @@
                     <div class="text-red-600 mt-1 text-sm hidden error-message" id="error-ward"></div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label>Tỉnh/Thành phố</label>
-                        
+
                         <select id="province">
 
                             <option value="">-- Chọn tỉnh --</option>
@@ -251,13 +252,13 @@
                         </select>
 
                         <label>Quận/Huyện</label>
-                        
+
                         <select id="district">
                             <option value="">-- Chọn quận/huyện --</option>
                         </select>
 
                         <label>Xã/Phường</label>
-                       
+
                         <select id="ward" name="wardCode">
                             <option value="">-- Chọn xã/phường --</option>
                         </select>
@@ -291,8 +292,8 @@
                             </li>
                         }
                     </ul>
-                   
-                    
+
+
                     <div class="checkout__order__total text-2xl font-extrabold text-gray-900 mb-8 relative z-10">
                         Tổng tiền hàng <span class="text-accent-600">@ViewBag.TongTien1.ToString("N0", new System.Globalization.CultureInfo("vi-VN")) ₫</span>
                     </div>
@@ -329,15 +330,26 @@
                         <label class="block mb-2 text-xl font-bold text-gray-900">Chọn Voucher</label>
                         <select id="voucherSelect" class="w-full px-4 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-accent-400 transition">
                             <option value="">-- Không áp dụng voucher --</option>
-                            @foreach (var voucher in ViewBag.Vouchers as List<AuthDemo.Models.Vouchers>)
-                            {
-                                <option value="@voucher.VoucherID"
-                                        data-type="@voucher.LoaiGiam"
-                                        data-value="@voucher.GiaTri"
-                                        data-max="@voucher.GiaTriToiDa">
-                                    @voucher.MaVoucherCode - @voucher.MoTa
-                                </option>
-                            }
+                            
+                                @foreach (var voucher in ViewBag.Vouchers as List<AuthDemo.Models.Vouchers>)
+                                {
+                                    var displayValue = voucher.LoaiGiam == LoaiGiam.PhanTram
+                                ? $"{voucher.GiaTri.ToString("N0", new System.Globalization.CultureInfo("vi-VN"))}%"
+                                    : $"{voucher.GiaTri.ToString("N0", new System.Globalization.CultureInfo("vi-VN"))} ₫";
+
+                                    <option value="@voucher.VoucherID"
+                                            data-type="@voucher.LoaiGiam"
+                                            data-value="@voucher.GiaTri"
+                                            data-max="@voucher.GiaTriToiDa">
+                                        @voucher.MaVoucherCode (Giảm: @displayValue
+                                        @if (voucher.LoaiGiam == LoaiGiam.PhanTram && voucher.GiaTriToiDa > 0)
+                                        {
+                                        <text> - tối đa: @((voucher.GiaTriToiDa.GetValueOrDefault()).ToString("N0", new System.Globalization.CultureInfo("vi-VN"))) ₫</text>
+                                        })
+                                    </option>
+                                }
+                            
+                            
                         </select>
                     </div>
 
@@ -361,7 +373,7 @@
 
 
 <script>
-    
+
 
     document.addEventListener('DOMContentLoaded', function () {
         const radios = document.querySelectorAll('input[name="phuongthuc"]');
@@ -372,7 +384,7 @@
                 hiddenInput.value = this.value;
             });
         });
-        
+
 
         // Chọn tỉnh -> load quận
         $("#province").change(function () {
@@ -504,7 +516,7 @@
             let emailRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             // Regex kiểm tra số điện thoại 10 số
             let sdtRegex = /^0\d{9}$/;
-           
+
 
             // reset lỗi
             document.querySelectorAll('.error-message').forEach(el => {

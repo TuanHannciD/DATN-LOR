@@ -42,8 +42,6 @@ namespace AuthDemo.Controllers
                 if (trangthai == true)
                 {
                     warnings.Add($"Sản phẩm {item.ChiTietGiay.Giay.TenGiay} ({item.ChiTietGiay.MauSac.TenMau}, {item.ChiTietGiay.KichThuoc.TenKichThuoc}) đã ngừng kinh doanh và sẽ không thể đặt hàng.");
-
-
                 }
 
                 if (stock == 0)
@@ -62,7 +60,6 @@ namespace AuthDemo.Controllers
             if (warnings.Any())
             {
                 TempData["CartWarnings"] = string.Join("<br>", warnings);
-
                 _context.SaveChanges();
             }
 

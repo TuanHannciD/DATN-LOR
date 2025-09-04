@@ -21,6 +21,6 @@ namespace AuthDemo.Models
         public bool TrangThai { get; set; } = true;             
 
         // Navigation
-        public ICollection<HoaDon> HoaDons { get; set; }
+        public ICollection<HoaDon>? HoaDons { get; set; }
     }
 }
