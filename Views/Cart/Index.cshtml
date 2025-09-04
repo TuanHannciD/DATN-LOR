@@ -207,7 +207,7 @@
 
 @section Scripts {
     <script>
-        // 1. Select all checkboxes
+        // 1. chọn all checkbox
         document.getElementById("chon-tat-ca").addEventListener("change", function () {
             const checkAll = this.checked;
             document.querySelectorAll(".chon-sp:not([disabled])").forEach(cb => {
@@ -216,7 +216,7 @@
             updateTotal();
         });
 
-        // 2. Update total when checkboxes change
+        // 2. cập nhật lại tổng khi checkbox
         document.querySelectorAll(".chon-sp").forEach(cb => {
             cb.addEventListener("change", updateTotal);
         });
@@ -236,7 +236,7 @@
             document.getElementById("tong-tien").textContent = total.toLocaleString('vi-VN') + " ₫";
         }
 
-        // 3. Prevent form submission if no products are selected
+        // 3. nếu không chọn sp nào
         document.getElementById("checkoutForm").addEventListener("submit", function (e) {
             const selected = document.querySelectorAll(".chon-sp:checked");
             const form = this;
@@ -250,7 +250,7 @@
             // Remove old quantity inputs to prevent duplication
             document.querySelectorAll("input[name='quantities']").forEach(el => el.remove());
 
-            // Add hidden inputs for quantities
+            // nhập số lượng
             selected.forEach(cb => {
                 const id = cb.value;
                 const qtyInput = document.querySelector(`.quantity-input[data-for-id='${id}']`);
@@ -264,7 +264,7 @@
             });
         });
 
-        // 4. Handle quantity increase
+        // 4. tăg
         document.querySelectorAll(".btn-increase").forEach(btn => {
             btn.addEventListener("click", function () {
                 const id = this.getAttribute("data-id");
@@ -284,7 +284,7 @@
             });
         });
 
-        // 5. Handle quantity decrease
+        // 5. giảm
         document.querySelectorAll(".btn-decrease").forEach(btn => {
             btn.addEventListener("click", function () {
                 const id = this.getAttribute("data-id");
@@ -303,7 +303,7 @@
             });
         });
 
-        // 6. Handle manual quantity input
+        // 6. check số lượng kho
         document.querySelectorAll('.quantity-input').forEach(input => {
             input.addEventListener('change', function () {
                 const id = this.getAttribute('data-for-id');
@@ -324,7 +324,7 @@
             });
         });
 
-        // 7. Update server quantity
+        // 7. Update số lượng
         function updateServerQuantity(id, quantity, callback) {
             const formData = new URLSearchParams();
             formData.append("shoeDetailId", id);
@@ -361,7 +361,7 @@
                 });
         }
 
-        // 8. Auto-hide alert after 5 seconds
+        // 8. thông báo
         setTimeout(function () {
             const alert = document.querySelector(".alert");
             if (alert) {
