@@ -14,6 +14,7 @@ namespace AuthDemo.Areas.Admin.Interface
         List<KhachHangDropdownVM> SearchKhachHang(string keyword);
         List<CartItemDisplayVM> GetCartItems(string tenDangNhap);
         ApiResponse<string> UpdateCart(string tenDangNhap, Guid shoeDetailId, string actionType);
+        Task<ApiResponse<string>> UpdateCartQuantity(string tenDangNhap, Guid shoeDetailId, int soLuong);
         void UpdateDiscountCartItem(Guid cartDetailId, decimal? chietKhauPhanTram, decimal? chietKhauTienMat, bool? isTangKem, string reason);
     }
 }

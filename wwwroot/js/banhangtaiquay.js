@@ -27,6 +27,39 @@ import { updateCart } from "./modules/update-cart.js";
 let currentDiscountRow = null;
 
 $(document).ready(function () {
+  // Hàm gọi update giỏ hàng
+  $(".bhq-cart-qty-input").on("change", function () {
+    const cartId = $(this).data("cartid");
+    let qty = parseInt($(this).val()) || 1;
+
+    if (qty < 1) qty = 1; // không cho nhỏ hơn 1
+    $(this).val(qty);
+
+    UpdateCartQuanTiTy(cartId, qty);
+    console.log("Cập nhật số lượng giỏ hàng:", cartId, qty);
+  });
+  function UpdateCartQuanTiTy(cartId, quantity) {
+    $.ajax({
+      url: "/Admin/BanHangTaiQuay/UpdateCartQuanTiTy", // sửa đúng tên action
+      type: "POST",
+      data: { cartDetailId: cartId, soLuong: quantity }, // gửi form-data
+      success: function (response) {
+        if (response.success) {
+          showToast("Cập nhật số lượng thành công!", true);
+          // TODO: cập nhật lại thành tiền dòng nếu cần
+        } else {
+          showToast(
+            "Lỗi: " + (response.message || "Không rõ nguyên nhân"),
+            "error"
+          );
+        }
+      },
+      error: function (xhr, status, error) {
+        showToast("Lỗi khi cập nhật số lượng: " + error, false);
+      },
+    });
+  }
+
   $("#search-input").on("input", function () {
     var keyword = $(this).val().trim();
     if (keyword.length === 0) {
@@ -520,6 +553,10 @@ $(document).ready(function () {
 
     try {
       // ajax tạo hóa đơn thanh toán trước
+      if (selecttedPaymentMethod == "2" || selecttedPaymentMethod == "3") {
+        showToast("Phương thức thanh toán đang được phát triển!", "error");
+        return;
+      }
       if (khachhangId === "") {
         showToast("Vui lòng chọn khách hàng trước khi thanh toán!", "error");
         return;
@@ -532,7 +569,7 @@ $(document).ready(function () {
         body: JSON.stringify({
           userID: khachhangId || null, // Nếu không có khách hàng thì để null
           hinhThucThanhToan: selecttedPaymentMethod,
-          hinhThucVanChuyen: selectedShippingMethod,
+          hinhThucVanChuyen: "3", // Giao hàng tại quầy
           giamGiaPhanTram: giamGiaHoaDon.phanTram,
           giamGiaTienMat: giamGiaHoaDon.tienMat,
           lyDo: giamGiaHoaDon.lyDo,
@@ -647,6 +684,9 @@ $(document).ready(function () {
             }
           }
         }
+      } else {
+        showToast("Phương thức thanh toán đang được phát triển!", "error");
+        return;
       }
     } catch (error) {
       showToast("Lỗi khi tạo hóa đơn: " + error.message, "error");

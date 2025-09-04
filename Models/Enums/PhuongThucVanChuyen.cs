@@ -9,6 +9,8 @@ namespace AuthDemo.Models.Enums
         [Display(Name = "Giao hàng tiết kiệm")]
         GiaoHangTietKiem = 1,
         [Display(Name = "Tự đến lấy")]
-        TuDenLay = 2
+        TuDenLay = 2,
+        [Display(Name = "Tại quầy")]
+        TaiQuay = 3
     }
-} 
+}

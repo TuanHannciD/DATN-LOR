@@ -6,6 +6,7 @@ using AuthDemo.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using AuthDemo.Models.Enums;
 using AuthDemo.Common;
+using System.Threading.Tasks;
 
 namespace DATN_Lor.Areas.Admin.Controllers
 {
@@ -85,6 +86,22 @@ namespace DATN_Lor.Areas.Admin.Controllers
                 code = (string?)null,
                 productQuantity,
                 message = result.Message
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCartQuanTiTy(Guid cartDetailId, int soLuong)
+        {
+            var tenDangNhap = HttpContext.Session.GetString("TenDangNhap");
+            if (string.IsNullOrEmpty(tenDangNhap))
+                return BadRequest("Không tìm thấy thông tin đăng nhập người dùng.");
+
+            var response = await _banHangTaiQuayService.UpdateCartQuantity(tenDangNhap, cartDetailId, soLuong);
+            return Json(new
+            {
+                success = response.Success,
+                code = response.Code,
+                message = response.Message
             });
         }
 
