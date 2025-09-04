@@ -5,7 +5,6 @@ using AuthDemo.Models.ViewModels;
 using AuthDemo.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace AuthDemo.Areas.Admin.Controllers
 {
@@ -191,6 +190,17 @@ namespace AuthDemo.Areas.Admin.Controllers
         {
 
             var result = await _hoaDonService.UpdateTrangThai(HoaDonID.HoaDonID);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(new { success = true, message = result });
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateTrangThaiPOS([FromBody] HoaDonIdDto HoaDonID)
+        {
+
+            var result = await _hoaDonService.UpdateTrangThaiPOS(HoaDonID.HoaDonID);
             if (!result.Success)
             {
                 return BadRequest(result);
