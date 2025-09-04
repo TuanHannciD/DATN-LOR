@@ -1,0 +1,256 @@
+﻿@model IEnumerable<AuthDemo.Models.Vouchers>
+
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .switch-wrapper-basic-2 .tgl-basic-2 {
+        display: none;
+    }
+
+    .switch-wrapper-basic-2,
+    .switch-wrapper-basic-2 *,
+    .switch-wrapper-basic-2 *:after,
+    .switch-wrapper-basic-2 *:before {
+        box-sizing: border-box;
+    }
+
+        .switch-wrapper-basic-2 .tgl-basic-2 + .tgl-btn-basic-2 {
+            outline: 0;
+            display: block;
+            width: 64px;
+            height: 32px;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+            .switch-wrapper-basic-2 .tgl-basic-2 + .tgl-btn-basic-2:after {
+                position: absolute;
+                display: block;
+                content: "";
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                background: #fff;
+                transition: all 0.2s ease;
+                top: 2px;
+                left: 2px;
+            }
+
+        .switch-wrapper-basic-2 .tgl-light-basic-2 + .tgl-btn-basic-2 {
+            background: #f0f0f0;
+            border-radius: 32px;
+            padding: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .switch-wrapper-basic-2 .tgl-light-basic-2:checked + .tgl-btn-basic-2 {
+            background: #28a745;
+        }
+
+            .switch-wrapper-basic-2 .tgl-light-basic-2:checked + .tgl-btn-basic-2:after {
+                left: 34px;
+            }
+
+    .status-active {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-inactive {
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>
+
+<h1>Quản lý Voucher</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Danh sách Voucher</h5>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Tạo mới Voucher
+        </a>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="mb-3">
+            <div class="input-group">
+                <input name="searchString" class="form-control" placeholder="Tìm kiếm mã voucher hoặc mô tả..." value="@ViewBag.CurrentFilter" />
+                <button type="submit" class="btn btn-info">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Mã Voucher</th>
+                        <th>Loại giảm</th>
+                        <th>Giá trị</th>
+                        <th>Giá trị tối đa</th>
+                        <th>Đơn hàng tối thiểu</th>
+                        <th>Số lần sử dụng</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MaVoucherCode</td>
+                            <td>@item.LoaiGiam</td>
+                            <td>@item.GiaTri.ToString("N0") @(item.LoaiGiam == AuthDemo.Models.Enums.LoaiGiam.PhanTram ? "%" : "đ")</td>
+                            <td>@(item.GiaTriToiDa?.ToString("N0") + " đ" ?? "Không giới hạn")</td>
+                            <td>@(item.DonHangToiThieu?.ToString("N0") + " đ" ?? "Không yêu cầu")</td>
+                            <td>@(item.SoLanSuDung?.ToString() ?? "Không giới hạn")</td>
+                            <td>@item.NgayBatDau.ToString("dd/MM/yyyy")</td>
+                            <td>@item.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <div class="switch-wrapper-basic-2 d-flex align-items-center">
+                                    <input type="checkbox" class="tgl-basic-2 tgl-light-basic-2"
+                                           id="status-@item.VoucherID"
+                                    @(item.TrangThai ? "checked" : "")
+                                           data-voucher-id="@item.VoucherID"
+                                           onchange="updateVoucherStatus(this)" />
+                                    <label for="status-@item.VoucherID" class="tgl-btn-basic-2"></label>
+                                    <span id="status-text-@item.VoucherID" class="ms-2 @(item.TrangThai ? "status-active" : "status-inactive")">
+                                        @(item.TrangThai ? "Đang hoạt động" : "Ngừng hoạt động")
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.VoucherID" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateVoucherStatus(checkbox) {
+            const voucherId = checkbox.getAttribute('data-voucher-id');
+            const trangThai = checkbox.checked;
+            const statusText = document.getElementById(`status-text-${voucherId}`);
+
+            // Lưu trạng thái ban đầu để khôi phục nếu có lỗi
+            const originalChecked = !trangThai;
+            const originalText = statusText.textContent;
+            const originalClass = statusText.className;
+
+            // Hiển thị loading
+            statusText.textContent = 'Đang cập nhật...';
+            statusText.className = 'ms-2';
+
+            // Tạo form data để gửi
+            const formData = new FormData();
+            formData.append('id', voucherId);
+            formData.append('trangThai', trangThai);
+
+            fetch('/Admin/Voucher/UpdateStatus', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Cập nhật trạng thái hiển thị
+                        statusText.textContent = trangThai ? "Đang hoạt động" : "Ngừng hoạt động";
+                        statusText.className = trangThai ? "ms-2 status-active" : "ms-2 status-inactive";
+
+                        // Hiển thị thông báo thành công
+                        showToast('success', data.message);
+                    } else {
+                        throw new Error(data.message || 'Cập nhật thất bại');
+                    }
+                })
+                .catch(error => {
+                    // Khôi phục trạng thái checkbox và text
+                    checkbox.checked = originalChecked;
+                    statusText.textContent = originalText;
+                    statusText.className = originalClass;
+
+                    // Hiển thị thông báo lỗi
+                    showToast('error', 'Lỗi: ' + error.message);
+                    console.error('Error updating voucher status:', error);
+                });
+        }
+
+        function showToast(type, message) {
+            // Tạo toast notification
+            const toastContainer = document.getElementById('toast-container') || createToastContainer();
+
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+            toast.style.cssText = 'margin-bottom: 10px;';
+            toast.innerHTML = `
+                                ${message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            `;
+
+            toastContainer.appendChild(toast);
+
+            // Tự động xóa sau 3 giây
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 3000);
+        }
+
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+            document.body.appendChild(container);
+            return container;
+        }
+
+        // Xử lý đóng thông báo
+        document.addEventListener('DOMContentLoaded', function () {
+            const alertList = document.querySelectorAll('.alert');
+            alertList.forEach(function (alert) {
+                new bootstrap.Alert(alert);
+            });
+        });
+    </script>
+
+    @Html.AntiForgeryToken()
+}

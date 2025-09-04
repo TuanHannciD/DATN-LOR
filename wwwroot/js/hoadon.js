@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
               <a class="btn btn-danger btn-sm me-1 huyHoaDonBtn" href="#" data-id="${
                 item.hoaDonID ?? ""
               }">
-                <i class="mdi mdi-delete"></i> Xóa/Hoàn tác
+                <i class="mdi mdi-delete"></i> Từ chối 
               </a>
             </td>
           `;
