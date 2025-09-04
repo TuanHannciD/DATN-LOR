@@ -382,13 +382,15 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn đã được giao hoặc ở trạng thái cuối.");
             }
-            if (currentStatus == TrangThaiHoaDon.ChoXacNhan && hoaDon.DaThanhToan == false && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.ViDienTu)
+            if (currentStatus == TrangThaiHoaDon.DangGiaoHang)
             {
-                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn này chưa được thanh toán cho phương thức thanh toán bằng VnPay");
+                hoaDon.DaThanhToan = true;
+                _db.SaveChanges();
             }
             var errors = new List<string>();
             var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == HoaDonID).ToList();
             var phieugg = _db.Vouchers.FirstOrDefault(x => x.VoucherID == hoaDon.VoucherID);
+
             if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
             {
                 foreach (var ct in hdct)
@@ -403,7 +405,6 @@ namespace AuthDemo.Areas.Admin.Services
                     {
                         errors.Add($"Không tìm thấy chi tiết giày với ID: {ct.ShoeDetailID}");
                         continue; // Bỏ qua nếu không tìmTạo ra mực định phải  thấy giày
-
                     }
                     else
                     {
@@ -411,6 +412,7 @@ namespace AuthDemo.Areas.Admin.Services
                         var mau = giay.MauSac?.TenMau ?? "(Chưa có màu)";
                         var kichThuoc = giay.KichThuoc?.TenKichThuoc ?? "(Chưa có size)";
                         if (giay.SoLuong == 0)
+
                         {
                             errors.Add($"Sản phẩm đã hết hàng: {tenGiay} ({mau}, {kichThuoc})");
                         }
@@ -422,23 +424,29 @@ namespace AuthDemo.Areas.Admin.Services
                         {
                             errors.Add($"Sản phẩm đã ngưng bán: {tenGiay} ({mau}, {kichThuoc})");
                         }
-
-                        else
+                        if (phieugg != null)
                         {
-                            // Trừ số lượng tồn kho
-                            giay.SoLuong -= ct.SoLuong;
-
-                            if (giay.SoLuong < 0)
-                            {
-                                giay.SoLuong = 0; // tránh âm
-                            }
+                            phieugg.SoLanSuDung -= 1;
                         }
+
                     }
+
+
                 }
+                if (phieugg != null && phieugg.SoLanSuDung <= 0)
+                {
+                    errors.Add($"Voucher {phieugg.MaVoucherCode} đã hết , vui lòng cập nhật thêm số lượt sử dụng hoặc từ chối đơn hàng");
+                }
+
             }
             if (errors.Any())
             {
                 return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", string.Join("<br/>", errors));
+            }
+            if (currentStatus == TrangThaiHoaDon.DangGiaoHang && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
+            {
+                hoaDon.DaThanhToan = true;
+                await _db.SaveChangesAsync();
             }
             _db.SaveChanges();
 
