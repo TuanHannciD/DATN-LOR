@@ -7,18 +7,16 @@ $(document).ready(function () {
     allowClear: true,
     width: "100%",
   });
+  // Ngăn height cố định
+  $(".select2")
+    .next(".select2-container")
+    .find(".select2-selection")
+    .css("height", "auto");
 
   // =========================
   // 2️⃣ Quick Add cho select
   // =========================
   function quickAdd(btn, panel, input, select, url, dataBuilder) {
-    // 1️⃣ Bật/tắt panel khi click nút "+"
-    console.log("btn", btn);
-    console.log("panel", panel);
-    console.log("input", input);
-    console.log("select", select);
-    console.log("url", url);
-
     $(btn).click(() => $(panel).toggleClass("d-none"));
 
     // 2️⃣ Khi click "Lưu" trong panel
@@ -56,7 +54,7 @@ $(document).ready(function () {
               $(input).val("");
               $(panel).addClass("d-none");
 
-              showToast(res.message, true); // hoặc dùng toastr
+              showToast(res.message, true);
             } else {
               showToast(res.message, false);
             }
@@ -146,30 +144,55 @@ $(document).ready(function () {
     });
   }
 
-  // Setup row đầu tiên
-  const firstRow = document.querySelector(".chiTietRow");
-  setupRowUpload(firstRow);
-
-  $("#addChiTiet").click(function () {
-    const lastRow = $(".chiTietRow").last();
-    const newRow = lastRow.clone(false, false);
-
-    // copy value, nhưng bỏ qua input[type=file]
-    newRow.find("input, select, textarea").each(function (index) {
-      const $oldField = lastRow.find("input, select, textarea").eq(index);
-
-      if ($oldField.attr("type") === "file") {
-        $(this).val(""); // reset file input
-      } else {
-        $(this).val($oldField.val());
-      }
+  const dataList = [];
+  window.sizeList.forEach((size) => {
+    window.colorList.forEach((color) => {
+      dataList.push({
+        sizeId: size.value,
+        colorId: color.value,
+      });
     });
-
-    $("#chiTietContainer").append(newRow);
-
-    // setup upload cho row mới
-    setupRowUpload(newRow[0]);
   });
+
+  // Thêm row
+  $("#addChiTiet").click(function () {
+    addMultipleChiTietRows(dataList);
+  });
+
+  // Hàm thêm nhiều row với dữ liệu cụ thể
+  function addMultipleChiTietRows(dataList) {
+    const container = $("#chiTietContainer");
+
+    dataList.forEach((data) => {
+      // Kiểm tra trùng: có row nào đã có sizeId + colorId giống không
+      const isDuplicate = container
+        .find(".chiTietRow")
+        .toArray()
+        .some((row) => {
+          const rowSize = $(row).find("select.sizeSelect").val();
+          const rowColor = $(row).find("select.colorSelect").val();
+          return rowSize == data.sizeId && rowColor == data.colorId;
+        });
+
+      if (isDuplicate) {
+        return; // bỏ qua row trùng
+      }
+
+      // Nếu chưa trùng, thêm row mới
+      const lastRow = container.find(".chiTietRow").last();
+      const newRow = lastRow.clone(false, false);
+
+      newRow.find("select.sizeSelect").val(data.sizeId);
+      newRow.find("select.colorSelect").val(data.colorId);
+
+      newRow.find("input[type=file]").val("");
+      newRow.find(".previewDiv").empty();
+      newRow.find(".imageUrls").val("");
+
+      container.append(newRow);
+      setupRowUpload(newRow[0]);
+    });
+  }
 
   // Xóa row
   $("#chiTietContainer").on("click", ".removeRow", function () {
