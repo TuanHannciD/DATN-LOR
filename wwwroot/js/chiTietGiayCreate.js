@@ -111,6 +111,7 @@ $(document).ready(function () {
   // =========================
   //  Thêm/Xóa chi tiết giày
   // =========================
+
   function setupRowUpload(row) {
     const fileInput = row.querySelector(".imageInput");
     const hiddenInput = row.querySelector(".imageUrls");
@@ -152,6 +153,10 @@ $(document).ready(function () {
         colorId: color.value,
       });
     });
+  });
+  // Gắn upload cho tất cả row có sẵn (bao gồm row đầu tiên trong Razor)
+  document.querySelectorAll(".chiTietRow").forEach((row) => {
+    setupRowUpload(row);
   });
 
   // Thêm row
