@@ -328,5 +328,53 @@ namespace AuthDemo.Areas.Admin.Services
             return ApiResponse<QuickAddCustomerVM>.SuccessResponse(result, "Tạo khách hàng thành công.");
         }
 
+        public async Task<ApiResponse<string>> UpdateCartQuantity(string tenDangNhap, Guid shoeDetailId, int soLuong)
+        {
+            if (soLuong < 1)
+            {
+                return ApiResponse<string>.FailResponse("Invalid_Quantity", "Số lượng phải lớn hơn 0.");
+            }
+            var user = _db.NguoiDungs.FirstOrDefault(u => u.TenDangNhap == tenDangNhap);
+            if (user == null)
+                return ApiResponse<string>.FailResponse("User_Not_Found", "Không tìm thấy người dùng với tên đăng nhập: " + tenDangNhap);
+            var cart = _db.GioHangs.FirstOrDefault(g => g.UserID == user.UserID);
+            if (cart == null)
+            {
+                return ApiResponse<string>.FailResponse("Cart_Not_Found", "Không tìm thấy giỏ hàng của người dùng.");
+            }
+            var chiTietGiay = _db.ChiTietGiays
+                        .FirstOrDefault(ctg => ctg.ShoeDetailID == shoeDetailId);
+            if (chiTietGiay == null)
+            {
+                return ApiResponse<string>.FailResponse("ShoeDetail_Not_Found", "Không tìm thấy chi tiết giày với ID: " + shoeDetailId);
+            }
+            var cartItem = _db.ChiTietGioHangs.FirstOrDefault(c => c.CartID == cart.CartID && c.ShoeDetailID == shoeDetailId);
+            if (cartItem == null)
+            {
+                return ApiResponse<string>.FailResponse("CartItem_Not_Found", "Không tìm thấy mục giỏ hàng với sản phẩm yêu cầu.");
+            }
+            int soLuongHienTai = cartItem.SoLuong;
+            if (soLuong > soLuongHienTai)
+            {
+                int soLuongCanTang = soLuong - soLuongHienTai;
+                if (soLuongCanTang > chiTietGiay.SoLuong)
+                {
+                    return ApiResponse<string>.FailResponse("Quantity_Exceeded", "Số lượng yêu cầu vượt quá số lượng có sẵn trong kho.");
+                }
+                cartItem.SoLuong = soLuong;
+                chiTietGiay.SoLuong -= soLuongCanTang; // Giảm số lượng trong kho
+            }
+            else if (soLuong < soLuongHienTai)
+            {
+                int soLuongCanGiam = soLuongHienTai - soLuong;
+                cartItem.SoLuong = soLuong;
+                chiTietGiay.SoLuong += soLuongCanGiam; // Trả lại kho
+            }
+            _db.ChiTietGioHangs.Update(cartItem);
+            _db.ChiTietGiays.Update(chiTietGiay);
+            await _db.SaveChangesAsync();
+            return ApiResponse<string>.SuccessResponse("Cập nhật số lượng giỏ hàng thành công.");
+            
+        }
     }
 }
