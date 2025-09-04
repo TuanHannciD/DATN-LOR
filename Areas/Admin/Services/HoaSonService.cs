@@ -512,18 +512,7 @@ namespace AuthDemo.Areas.Admin.Services
                         {
                             errors.Add($"Sản phẩm đã ngưng bán: {tenGiay} ({mau}, {kichThuoc})");
                         }
-                        if (phieugg != null)
-                        {
-                            phieugg.SoLanSuDung -= 1;
-                        }
-
                     }
-
-
-                }
-                if (phieugg != null && phieugg.SoLanSuDung <= 0)
-                {
-                    errors.Add($"Voucher {phieugg.MaVoucherCode} đã hết , vui lòng cập nhật thêm số lượt sử dụng hoặc từ chối đơn hàng");
                 }
 
             }
@@ -563,9 +552,9 @@ namespace AuthDemo.Areas.Admin.Services
             var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == hoadon.BillID).ToList();
             var phieugg = _db.Vouchers.FirstOrDefault(x => x.VoucherID == hoadon.VoucherID);
             var currentStatus = hoadon.TrangThai;
-           
+
             // thanh toán khi nhận
-           
+
             if (hoadon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
             {
                 if (currentStatus == TrangThaiHoaDon.DaXacNhan || currentStatus == TrangThaiHoaDon.DangGiaoHang)
@@ -576,11 +565,11 @@ namespace AuthDemo.Areas.Admin.Services
                         var giay = _db.ChiTietGiays
                             .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
                         // Trừ số lượng tồn kho
-                        if(giay != null)
+                        if (giay != null)
                         {
-                            giay.SoLuong += ct.SoLuong;                   
+                            giay.SoLuong += ct.SoLuong;
                         }
-                        
+
                     }
                     if (phieugg != null)
                     {
