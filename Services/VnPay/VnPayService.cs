@@ -31,6 +31,7 @@ namespace AuthDemo.Services.VnPay
             pay.AddRequestData("vnp_OrderType", model.OrderType ?? "other");
             pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
             pay.AddRequestData("vnp_TxnRef", model.OrderId.ToString("N"));
+            
 
             var paymentUrl =
                 pay.CreateRequestUrl(_configuration["Vnpay2:BaseUrl"], _configuration["Vnpay2:HashSecret"]);

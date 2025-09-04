@@ -272,7 +272,10 @@ public class HomeController : Controller
        
         return Json(result);
     }
-
+    public IActionResult LienHe()
+    {
+        return View();
+    }
     public IActionResult Privacy()
     {
         return View();
