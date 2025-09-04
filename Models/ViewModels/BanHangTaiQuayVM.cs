@@ -15,6 +15,16 @@ namespace AuthDemo.Models.ViewModels
         public string? DanhMuc { get; set; }
         public string? Giay { get; set; }
     }
+    public class QuickAddCustomerVM
+    {
+        public string Fullname { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string? Email { get; set; }
+
+        public string? Address { get; set; }
+    }
 
     public class KhachHangDropdownVM
     {

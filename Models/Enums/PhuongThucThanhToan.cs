@@ -4,7 +4,7 @@ namespace AuthDemo.Models.Enums
 {
     public enum PhuongThucThanhToan
     {
-        [Display(Name = "Thanh toán khi nhận")]
+        [Display(Name = "Tiền mặt")]
         TienMat = 0,
         [Display(Name = "Chuyển khoản")]
         ChuyenKhoan = 1,
@@ -13,4 +13,4 @@ namespace AuthDemo.Models.Enums
         [Display(Name = "Ví điện tử")]
         ViDienTu = 3
     }
-} 
+}

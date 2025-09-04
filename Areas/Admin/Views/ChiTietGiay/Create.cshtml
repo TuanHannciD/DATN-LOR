@@ -17,11 +17,12 @@
                         <div asp-validation-summary="All" class="text-danger mb-3"></div>
                         <div class="row g-3">
                             <!-- sản phẩm-->
-                            <div class="col-md-6">
+                            <div class="col-md-6 ">
                                 <label asp-for="ShoeID" class="form-label fw-bold">Sản phẩm</label>
-                                <div class="d-flex gap-2">
-                                    <select asp-for="ShoeID" class="form-select" asp-items="ViewBag.GiayList"></select>
-                                    <button type="button" id="btnAddShoe" class="btn btn-success mt-2">
+                                <div class="d-flex gap-2 ">
+                                    <select asp-for="ShoeID" class="form-select select2"
+                                        asp-items="ViewBag.GiayList"></select>
+                                    <button type="button" id="btnAddShoe" class="btn btn-success mt-2 ">
                                         <i class="mdi mdi-plus"></i>
                                     </button>
                                 </div>
@@ -39,7 +40,7 @@
                             <div class="col-md-6">
                                 <label asp-for="MaterialID" class="form-label fw-bold">Chất liệu</label>
                                 <div class="d-flex gap-2">
-                                    <select asp-for="MaterialID" class="form-select "
+                                    <select asp-for="MaterialID" class="form-select select2 "
                                         asp-items="ViewBag.MaterialList"></select>
                                     <button type="button" id="btnAddMaterial" class=" btn btn-success mt-2">
                                         <i class="mdi mdi-plus"></i>
@@ -61,7 +62,7 @@
                             <div class="col-md-6">
                                 <label asp-for="BrandID" class="form-label fw-bold">Thương hiệu</label>
                                 <div class="d-flex gap-2">
-                                    <select asp-for="BrandID" class="form-select"
+                                    <select asp-for="BrandID" class="form-select select2"
                                         asp-items="ViewBag.BrandList"></select>
                                     <button type="button" id="btnAddBrand" class="btn btn-success"><i
                                             class="mdi mdi-plus"></i></button>
@@ -81,7 +82,7 @@
                             <div class="col-md-6">
                                 <label asp-for="CategoryID" class="form-label fw-bold">Danh mục</label>
                                 <div class="d-flex gap-2">
-                                    <select asp-for="CategoryID" class="form-select"
+                                    <select asp-for="CategoryID" class="form-select select2"
                                         asp-items="ViewBag.CategoryList"></select>
                                     <button type="button" id="btnAddCategory" class="btn btn-success"><i
                                             class="mdi mdi-plus"></i></button>
@@ -171,3 +172,8 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    // serialize ViewBag sang JSON
+    window.sizeList = @Html.Raw(Json.Serialize(ViewBag.SizeList));
+    window.colorList = @Html.Raw(Json.Serialize(ViewBag.ColorList));
+</script>

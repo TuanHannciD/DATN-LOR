@@ -39,6 +39,14 @@ namespace AuthDemo.Models.ViewModels
 
     public class CreateHoaDonVM
     {
+        [JsonPropertyName("hoTen")]
+        public string? HoTen { get; set; }
+        [JsonPropertyName("email")]
+        public string? Email { get; set; }
+        [JsonPropertyName("soDienThoai")]
+        public string? SoDienThoai { get; set; }
+        [JsonPropertyName("diaChi")]
+        public string? DiaChi { get; set; }
 
         [JsonPropertyName("userID")]
         public Guid? UserID { get; set; }

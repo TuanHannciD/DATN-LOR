@@ -1,5 +1,7 @@
 using AuthDemo.Areas.Admin.Helpers;
 using AuthDemo.Areas.Admin.Interface;
+using AuthDemo.Data;
+using AuthDemo.Models.Enums;
 using AuthDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -14,11 +16,15 @@ namespace AuthDemo.Areas.Admin.Services
     {
         private readonly VNPayConfig _vnpConfig;
         private readonly ILogger<VNPayService> _logger;
+        private readonly IHoaDonService _hoaDonService;
+        private readonly ApplicationDbContext _db;
 
-        public VNPayService(IOptions<VNPayConfig> options, ILogger<VNPayService> logger)
+        public VNPayService(IOptions<VNPayConfig> options, ILogger<VNPayService> logger, IHoaDonService hoaDonService, ApplicationDbContext db)
         {
             _vnpConfig = options.Value;
             _logger = logger;
+            _hoaDonService = hoaDonService;
+            _db = db;
         }
 
         public string CreatePaymentUrl(VnpayOrderRequest model, HttpContext context)
@@ -68,7 +74,7 @@ namespace AuthDemo.Areas.Admin.Services
                     Message = "Thiếu VNPay SecureHash."
                 };
             }
-            var calculatedHash = vnpay.CreateReturnUrl(queryParams,_vnpConfig.HashSecret);
+            var calculatedHash = vnpay.CreateReturnUrl(queryParams, _vnpConfig.HashSecret);
 
             if (!calculatedHash.Equals(secureHash, StringComparison.OrdinalIgnoreCase))
             {
@@ -80,6 +86,14 @@ namespace AuthDemo.Areas.Admin.Services
             }
 
             queryParams.TryGetValue("vnp_TxnRef", out var orderId);
+            if (string.IsNullOrEmpty(orderId) || !Guid.TryParse(orderId, out var orderGuid))
+            {
+                return new VNPayReturnResult
+                {
+                    IsSuccess = false,
+                    Message = "VNPay TxnRef không hợp lệ."
+                };
+            }
             queryParams.TryGetValue("vnp_ResponseCode", out var responseCode);
             queryParams.TryGetValue("vnp_TransactionNo", out var transactionNo);
             queryParams.TryGetValue("vnp_Amount", out var amountStr);
@@ -88,6 +102,43 @@ namespace AuthDemo.Areas.Admin.Services
             if (decimal.TryParse(amountStr, out var parsedAmount))
             {
                 amount = parsedAmount / 100;
+            }
+
+            // Cập nhật trạng thái hóa đơn nếu thanh toán thành công
+            if (responseCode == "00")
+            {
+                var updateRelust = _db.HoaDons.Find(orderGuid);
+
+                if (updateRelust == null)
+                {
+                    return new VNPayReturnResult
+                    {
+                        IsSuccess = false,
+                        Message = "Hóa đơn không tồn tại."
+                    };
+                }
+
+                // Kiểm tra nếu đã thanh toán trước đó
+                if (updateRelust.DaThanhToan)
+                {
+                    return new VNPayReturnResult
+                    {
+                        IsSuccess = false,
+                        Message = "Hóa đơn đã được thanh toán trước đó."
+                    };
+                }
+
+                // Cập nhật trạng thái nếu đang ở Chờ Xác Nhận
+                if (updateRelust.TrangThai == TrangThaiHoaDon.ChoXacNhan)
+                {
+                    updateRelust.TrangThai = TrangThaiHoaDon.DaXacNhan;
+                }
+
+                // Đánh dấu đã thanh toán
+                updateRelust.DaThanhToan = true;
+
+                // Lưu thay đổi chỉ 1 lần
+                _db.SaveChanges();
             }
 
             return new VNPayReturnResult
