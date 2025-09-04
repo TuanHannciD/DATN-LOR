@@ -29,7 +29,7 @@
             <div class="card mb-3 p-3">
                 <div class="fw-bold mb-2">Giỏ hàng</div>
                 <div class="table-responsive bhq-cart-table">
-                    <table class="table table-bordered rounded shadow-sm align-middle">
+                    <table class="table table-sm table-bordered rounded shadow-sm align-middle w-100">
                         <thead class="table-light">
                             <tr class="text-center fw-bold">
                                 <th class="bhq-cart-product">Sản phẩm</th>
@@ -38,6 +38,7 @@
                                 <th class="bhq-cart-total">Thành tiền</th>
                                 <th class="bhq-cart-reason">Lý do giảm giá</th>
                                 <th class="bhq-cart-action"></th>
+                                <th class="bhq-cart-remove"></th>
 
                             </tr>
                         </thead>
@@ -69,6 +70,10 @@
                                     <td class="bhq-cart-action">
                                         <button type="button" class="btn btn-outline-secondary btn-sm ms-1 bhq-btn-discount" title="Chiết khấu/Tặng" data-cartid="@item.CartDetailID">🎁 %</button>
                                     </td>
+                                    <td class="bhq-cart-remove text-center">
+                                        <button type="button" class="btn btn-outline-danger btn-sm btn-update-cart"
+                                            data-id="@item.ShoeDetailID" data-action="remove" title="Xóa sản phẩm">X</button>
+                                    </td>
                                     
                                 </tr>
                             }
@@ -85,7 +90,7 @@
             </div>
             <!-- Danh sách sản phẩm -->
             <div class="card p-3">
-                <div class="fw-bold mb-2">Danh sách sản phẩm</div>
+                <div class="fw-bold mb-2">Sản phẩm đề xuất</div>
                 <div class="row g-2">
                     @if (!tuVanList.Any())
                     {
@@ -93,7 +98,7 @@
                     }
                     else
                     {
-                        @foreach (var sp in tuVanList)
+                        @foreach (var sp in tuVanList.Take(4))
                     {
                         var cartItem = cartItems.FirstOrDefault(x => x.ShoeDetailID == sp.ShoeDetailID);
                         var qty = cartItem?.SoLuong ?? 0;
@@ -143,9 +148,18 @@
                 <div class="fw-bold mb-2">Hóa đơn</div>
                 <div class="bhq-invoice-content">
                     <div class="mb-2 position-relative">
-                        <input id="search-khachhang" type="text" class="form-control"
-                            placeholder="(F4) SĐT, tên khách hàng..." autocomplete="off" />
-                        <input type="hidden" id="selected-khachhang-id" name="KhachHangID" />
+                        <div class="input-group">
+                            <!-- Ô tìm kiếm khách hàng -->
+                            <input id="search-khachhang" type="text" class="form-control" 
+                                    placeholder="(F4) SĐT, tên khách hàng..." autocomplete="off" />
+                            <input type="hidden" id="selected-khachhang-id" name="KhachHangID" />
+
+                            <!-- Nút thêm khách hàng nhanh -->
+                            <button id="btn-add-khachhang" type="button" class="btn btn-outline-primary rounded-end"
+                                data-bs-toggle="modal" data-bs-target="#addCustomerModal" title="Thêm khách hàng mới">
+                                <i class="mdi mdi-plus"></i>
+                            </button>
+                        </div>
                         <div id="dropdown-khachhang" class="dropdown-menu"
                             style="width:100%; max-height:250px; overflow-y:auto;"></div>
                     </div>
@@ -228,8 +242,6 @@
                     </div>
                     <button class="btn btn-success" id="btn-thanhtoan"><i class="mdi mdi-cash-multiple"></i> Thanh
                         toán</button>
-                    <button id="btn-test-vnpay" class="btn btn-warning" type="button" style="margin-left: 8px;">Tạo đơn
-                        test VNPay</button>
                 </div>
             </div>
         </div>
@@ -239,6 +251,64 @@
         <input type="hidden" name="shoeDetailId" id="hidden-shoeDetailId" />
         <input type="hidden" name="actionType" value="add" />
     </form> *@
+</div>
+
+<!-- Modal thêm khách hàng nhanh -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-3 shadow border-0">
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold" id="addCustomerModalLabel">
+          <i class="bi bi-person-plus-fill me-2"></i>Thêm khách hàng
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <form id="add-customer-form" class="row g-3">
+          <!-- Họ tên -->
+          <div class="col-12">
+            <label for="customer-name" class="form-label fw-semibold">Tên khách hàng <span class="text-danger">*</span></label>
+            <input type="text" class="form-control shadow-sm" id="customer-name" name="TenKhachHang"
+              data-validate="required|min:3" data-label="Tên khách hàng" placeholder="Nhập tên khách hàng" />
+          </div>
+
+          <!-- Số điện thoại -->
+          <div class="col-12">
+            <label for="customer-phone" class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+            <input type="number" class="form-control shadow-sm" id="customer-phone" name="SoDienThoai" required
+              data-validate="required|min:10" data-label="Số điện thoại" placeholder="Nhập số điện thoại" />
+          </div>
+
+          <!-- Email -->
+          <div class="col-12">
+            <label for="customer-email" class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control shadow-sm" id="customer-email" name="Email"
+              placeholder="Nhập email (nếu có)" />
+          </div>
+
+          <!-- Địa chỉ -->
+          <div class="col-12">
+            <label for="customer-address" class="form-label fw-semibold">Địa chỉ</label>
+            <input type="text" class="form-control shadow-sm" id="customer-address" name="DiaChi"
+              placeholder="Nhập địa chỉ khách hàng" />
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-1"></i>Đóng
+        </button>
+        <button type="button" class="btn btn-primary px-3" id="btn-save-customer">
+          <i class="bi bi-check-circle me-1"></i>Lưu
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal chiết khấu/tặng sản phẩm -->

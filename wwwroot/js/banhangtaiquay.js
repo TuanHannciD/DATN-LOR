@@ -27,7 +27,6 @@ import { updateCart } from "./modules/update-cart.js";
 let currentDiscountRow = null;
 
 $(document).ready(function () {
-  console.log("✅ Document ready");
   $("#search-input").on("input", function () {
     var keyword = $(this).val().trim();
     if (keyword.length === 0) {
@@ -69,6 +68,50 @@ $(document).ready(function () {
         }
       }
     );
+  });
+
+  // Thêm nhanh khách hàng
+  $("#btn-save-customer").click(function () {
+    // Lấy dữ liệu từ form
+    // Validate
+    const form = document.getElementById("add-customer-form");
+    if (!validateForm(form)) return; // Nếu không hợp lệ, dừng lại
+    var data = {
+      Fullname: $("#customer-name").val().trim(),
+      PhoneNumber: $("#customer-phone").val().trim(),
+      Email: $("#customer-email").val().trim(),
+      Address: $("#customer-address").val().trim(),
+    };
+    // ajax
+    $.ajax({
+      url: "/Admin/BanHangTaiQuay/CreateKhachHang",
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(data),
+      success: function (response) {
+        if (response.success) {
+          showToast("Thêm khách hàng thành công!", true);
+          // Chọn khách hàng mới thêm
+          $("#selected-khachhang-id").val(response.khachHang.khachHangID);
+          // Hiển thị trong input
+          $("#search-khachhang").val(
+            response.khachHang.fullname + " - " + response.khachHang.phoneNumber
+          );
+          // Ẩn dropdown
+          $("#dropdown-khachhang").removeClass("show").empty();
+          // Đóng modal
+          $("#addCustomerModal").modal("hide");
+        } else {
+          showToast(
+            "Lỗi: " + (response.message || "Không rõ nguyên nhân"),
+            "error"
+          );
+        }
+      },
+      error: function (xhr, status, error) {
+        showToast("Lỗi khi thêm khách hàng: " + error, false);
+      },
+    });
   });
 
   // // Khi click vào 1 sản phẩm trong dropdown
@@ -470,12 +513,11 @@ $(document).ready(function () {
     const tongTienText = $("#thanh-tien-sau-giam").text();
     const khachhangId = $("#selected-khachhang-id").val();
     const tongTien = parseInt(tongTienText.replace(/[^0-9]/g, "")) || 0;
+    const tenKhachHang = $("#nguoinhan-ten").val().trim();
+    const sdtKhachHang = $("#nguoinhan-sdt").val().trim();
+    const diaChiKhachHang = $("#nguoinhan-diachi").val().trim();
+    const emailKhachHang = $("#nguoinhan-email").val().trim();
 
-    console.log("[FE] Bắt đầu xử lý thanh toán...");
-    console.log("[FE] Phương thức vận chuyển:", selectedShippingMethod);
-    console.log("[FE] Phương thức thanh toán:", selecttedPaymentMethod);
-    console.log("[FE] Tổng tiền:", tongTien);
-    console.log("[FE] ID khách hàng:", khachhangId);
     try {
       // ajax tạo hóa đơn thanh toán trước
       if (khachhangId === "") {
@@ -494,6 +536,10 @@ $(document).ready(function () {
           giamGiaPhanTram: giamGiaHoaDon.phanTram,
           giamGiaTienMat: giamGiaHoaDon.tienMat,
           lyDo: giamGiaHoaDon.lyDo,
+          hoTen: tenKhachHang,
+          soDienThoai: sdtKhachHang,
+          diaChi: diaChiKhachHang,
+          email: emailKhachHang,
         }),
       });
       const createOrderData = await createOrderResponse.json(); // parse JSON trước
