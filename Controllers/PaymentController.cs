@@ -47,25 +47,27 @@ namespace DuAnTotNghiep2024.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            if (response.VnPayResponseCode == "00") // ✅ Thanh toán thành công
+            if (response.VnPayResponseCode == "00") 
             {
                 foreach (var ct in hoaDon.ChiTietHoaDons)
                 {
                     var spct = _context.ChiTietGiays.FirstOrDefault(s => s.ShoeDetailID == ct.ShoeDetailID);
                     if (spct != null)
                     {
-                        spct.SoLuong -= ct.SoLuong; // 👉 trừ kho lúc này
+                        spct.SoLuong -= ct.SoLuong; 
                     }
                 }
-
-                
-                hoaDon.DaThanhToan = true;
-                
-            }
-           
-
+                if (hoaDon.VoucherID != null)
+                {
+                    var voucher = _context.Vouchers.FirstOrDefault(v => v.VoucherID == hoaDon.VoucherID);
+                    if (voucher != null && voucher.SoLanSuDung > 0)
+                    {
+                        voucher.SoLanSuDung -= 1;
+                    }
+                }
+                hoaDon.DaThanhToan = true;      
+            }          
             _context.SaveChanges();
-
             return RedirectToAction("DonHang", "HoaDon");
         }
 
