@@ -31,7 +31,6 @@ namespace AuthDemo.Areas.Admin.Services
                         text = displayAttr?.Name ?? e.ToString()
                     };
                 }).ToList<object>();
-
             return list;
         }
 
@@ -96,13 +95,13 @@ namespace AuthDemo.Areas.Admin.Services
 
             if (!string.IsNullOrEmpty(filter.NameCreateFilter))
                 hoaDons = hoaDons.Where(h => !string.IsNullOrEmpty(h.NguoiTao) &&
-                                              h.NguoiTao.StartsWith(filter.NameCreateFilter, StringComparison.OrdinalIgnoreCase));
+                h.NguoiTao.StartsWith(filter.NameCreateFilter, StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrEmpty(filter.NameFilter))
             {
                 var keywords = filter.NameFilter.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 hoaDons = hoaDons.Where(h => h.UserID != Guid.Empty &&
-                                              keywords.All(k => h.HoTen.Contains(k, StringComparison.OrdinalIgnoreCase)));
+                keywords.All(k => h.HoTen.Contains(k, StringComparison.OrdinalIgnoreCase)));
             }
 
             if (filter.TrangThaiTT.HasValue)
@@ -146,6 +145,11 @@ namespace AuthDemo.Areas.Admin.Services
         {
             // Kiểm tra thông tin đăng nhập
             var userCrete = await _db.NguoiDungs.FirstOrDefaultAsync(u => u.TenDangNhap == tenDangNhap);
+            var userCusTomer = await _db.NguoiDungs
+                .Include(u => u.DiaChis)
+                .FirstOrDefaultAsync(u => u.UserID == createHoaDonVM.UserID);
+            if (userCusTomer == null)
+                return Result<HoaDonDTO>.Fail("Không tìm thấy khách hàng với ID đã cung cấp.");
 
             if (userCrete == null)
                 return Result<HoaDonDTO>.Fail("Không tìm thấy người dùng.");
@@ -193,11 +197,11 @@ namespace AuthDemo.Areas.Admin.Services
             var hoaDon = new HoaDon
             {
                 BillID = Guid.NewGuid(),
-                UserID = createHoaDonVM.UserID ?? userCrete.UserID,
-                HoTen = userCrete.HoTen ?? "Chưa có tên",
-                Email = userCrete.Email ?? "Chưa có email",
-                SoDienThoai = userCrete.SoDienThoai ?? "Chưa có số điện thoại",
-                DiaChi = userCrete.DiaChis?.FirstOrDefault()?.DiaChiDayDu ?? "Chưa có địa chỉ",
+                UserID = userCusTomer.UserID,
+                HoTen = createHoaDonVM.HoTen ?? userCusTomer.HoTen ?? "Khách vãng lai",
+                Email = createHoaDonVM.Email ?? userCrete.Email ?? "Chưa có email",
+                SoDienThoai = createHoaDonVM.SoDienThoai ?? userCusTomer.SoDienThoai ?? "Chưa có số điện thoại",
+                DiaChi = createHoaDonVM.DiaChi ?? userCrete.DiaChis?.FirstOrDefault()?.DiaChiDayDu ?? "Chưa có địa chỉ",
                 DaThanhToan = false,
                 PhuongThucThanhToan = Enum.Parse<PhuongThucThanhToan>(createHoaDonVM.HinhThucThanhToan),
                 PhuongThucVanChuyen = Enum.Parse<PhuongThucVanChuyen>(createHoaDonVM.HinhThucVanChuyen),
@@ -245,20 +249,20 @@ namespace AuthDemo.Areas.Admin.Services
                     _db.ChiTietHoaDons.Add(chiTietHoaDon);
                 }
 
-                // Cập nhật số lượng sản phẩm trong kho
-                foreach (var item in gioHang.ChiTietGioHangs)
-                {
-                    var chiTietGiay = await _db.ChiTietGiays.FirstOrDefaultAsync(c => c.ShoeDetailID == item.ShoeDetailID);
-                    if (chiTietGiay != null)
-                    {
-                        chiTietGiay.SoLuong -= item.SoLuong;
-                        if (chiTietGiay.SoLuong < 0)
-                        {
-                            chiTietGiay.SoLuong = 0; // Đảm bảo số lượng tồn không âm
-                        }
-                        _db.ChiTietGiays.Update(chiTietGiay);
-                    }
-                }
+                // // Cập nhật số lượng sản phẩm trong kho
+                // foreach (var item in gioHang.ChiTietGioHangs)
+                // {
+                //     var chiTietGiay = await _db.ChiTietGiays.FirstOrDefaultAsync(c => c.ShoeDetailID == item.ShoeDetailID);
+                //     if (chiTietGiay != null)
+                //     {
+                //         chiTietGiay.SoLuong -= item.SoLuong;
+                //         if (chiTietGiay.SoLuong < 0)
+                //         {
+                //             chiTietGiay.SoLuong = 0; // Đảm bảo số lượng tồn không âm
+                //         }
+                //         _db.ChiTietGiays.Update(chiTietGiay);
+                //     }
+                // }
 
                 _db.ChiTietGioHangs.RemoveRange(gioHang.ChiTietGioHangs); // Xóa chi tiết giỏ hàng
                 await _db.SaveChangesAsync();
@@ -351,17 +355,17 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 return Result<string>.Fail("Hóa đơn đã bị hủy, không thể cập nhật trạng thái thanh toán.");
             }
-            //if (hoaDon.TrangThai == TrangThaiHoaDon.DaThanhToan)
-            //{
-            //    return Result<string>.Fail("Hóa đơn đã được thanh toán trước đó.");
-            //}
-            //hoaDon.TrangThai = TrangThaiHoaDon.DaThanhToan;
-            //hoaDon.DaThanhToan = true;
+            if (hoaDon.DaThanhToan == true)
+            {
+                return Result<string>.Fail("Hóa đơn đã được thanh toán trước đó.");
+            }
+            hoaDon.DaThanhToan = true;
+            hoaDon.TrangThai = TrangThaiHoaDon.DaGiao;
             await _db.SaveChangesAsync();
 
             return Result<string>.Success("Cập nhật trạng thái thanh toán thành công.");
         }
-
+        // Cập nhật trạng thái hóa đơn tại hóa đơn
         public async Task<ApiResponse<UpdateTrangThaiResponse>> UpdateTrangThai(Guid HoaDonID)
         {
             var hoaDon = _db.HoaDons.Find(HoaDonID);
@@ -395,31 +399,118 @@ namespace AuthDemo.Areas.Admin.Services
                         .Include(ct => ct.MauSac)
                         .Include(ct => ct.KichThuoc)
                         .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
-
-                    if (ct.SoLuong > giay.SoLuong)
+                    if (giay == null)
                     {
+                        errors.Add($"Không tìm thấy chi tiết giày với ID: {ct.ShoeDetailID}");
+                        continue; // Bỏ qua nếu không tìmTạo ra mực định phải  thấy giày
 
-                        errors.Add($"Số lượng trong kho không đủ cho sản phẩm: {giay.Giay.TenGiay} ({giay.MauSac.TenMau}, {giay.KichThuoc.TenKichThuoc})");
-                        continue;
-
-                    }
-                    if (giay.SoLuong == 0)
-                    {
-                        errors.Add($"Sản phẩm đã hết hàng: {giay.Giay.TenGiay} ({giay.MauSac.TenMau}, {giay.KichThuoc.TenKichThuoc})");
-                        continue;
-                    }
-                    if (giay.IsDelete == true)
-                    {
-                        errors.Add($"Sản phẩm đã ngưng bán: {giay.Giay.TenGiay} ({giay.MauSac.TenMau}, {giay.KichThuoc.TenKichThuoc})");
-                        continue;
                     }
                     else
                     {
-                        // Trừ số lượng tồn kho
-                        giay.SoLuong -= ct.SoLuong;
-                        if (giay.SoLuong < 0)
+                        var tenGiay = giay.Giay?.TenGiay ?? "(Chưa có tên)";
+                        var mau = giay.MauSac?.TenMau ?? "(Chưa có màu)";
+                        var kichThuoc = giay.KichThuoc?.TenKichThuoc ?? "(Chưa có size)";
+                        if (giay.SoLuong == 0)
                         {
-                            giay.SoLuong = 0; // tránh âm
+                            errors.Add($"Sản phẩm đã hết hàng: {tenGiay} ({mau}, {kichThuoc})");
+                        }
+                        if (ct.SoLuong > giay.SoLuong)
+                        {
+                            errors.Add($"Số lượng trong kho không đủ cho sản phẩm: {tenGiay} ({mau}, {kichThuoc})");
+                        }
+                        if (giay.IsDelete == true)
+                        {
+                            errors.Add($"Sản phẩm đã ngưng bán: {tenGiay} ({mau}, {kichThuoc})");
+                        }
+
+                        else
+                        {
+                            // Trừ số lượng tồn kho
+                            giay.SoLuong -= ct.SoLuong;
+
+                            if (giay.SoLuong < 0)
+                            {
+                                giay.SoLuong = 0; // tránh âm
+                            }
+                        }
+                    }
+                }
+            }
+            if (errors.Any())
+            {
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", string.Join("<br/>", errors));
+            }
+            _db.SaveChanges();
+
+            hoaDon.TrangThai = (TrangThaiHoaDon)nextStatus;
+            await _db.SaveChangesAsync();
+
+            var responseData = new UpdateTrangThaiResponse
+            {
+                Id = hoaDon.BillID,
+                NewStatus = hoaDon.TrangThai,
+                NewStatusDisplay = hoaDon.TrangThai.GetDisplayName()
+            };
+
+            return ApiResponse<UpdateTrangThaiResponse>.SuccessResponse(responseData, "Cập nhật trạng thái thành công");
+        }
+
+        // Cập nhật trạng thái hóa đơn tại quầy 
+        public async Task<ApiResponse<UpdateTrangThaiResponse>> UpdateTrangThaiPOS(Guid HoaDonID)
+        {
+            var hoaDon = _db.HoaDons.Find(HoaDonID);
+
+            if (hoaDon == null)
+            {
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Null", "Không tìm thấy hóa đơn");
+            }
+
+            var currentStatus = hoaDon.TrangThai;
+            int nextStatus = (int)currentStatus + 1;
+
+            if (currentStatus == TrangThaiHoaDon.DaGiao || currentStatus == TrangThaiHoaDon.DaHuy)
+            {
+                return ApiResponse<UpdateTrangThaiResponse>.FailResponse("Error", "Hóa đơn đã được giao hoặc ở trạng thái cuối.");
+            }
+            if (currentStatus == TrangThaiHoaDon.DangGiaoHang)
+            {
+                hoaDon.DaThanhToan = true;
+                _db.SaveChanges();
+            }
+            var errors = new List<string>();
+            var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == HoaDonID).ToList();
+            if (hoaDon.TrangThai == TrangThaiHoaDon.ChoXacNhan && hoaDon.PhuongThucThanhToan == PhuongThucThanhToan.TienMat)
+            {
+                foreach (var ct in hdct)
+                {
+                    // Lấy chi tiết giày trong kho theo ShoeDetailID
+                    var giay = _db.ChiTietGiays
+                        .Include(ct => ct.Giay)
+                        .Include(ct => ct.MauSac)
+                        .Include(ct => ct.KichThuoc)
+                        .FirstOrDefault(g => g.ShoeDetailID == ct.ShoeDetailID);
+                    if (giay == null)
+                    {
+                        errors.Add($"Không tìm thấy chi tiết giày với ID: {ct.ShoeDetailID}");
+                        continue; // Bỏ qua nếu không tìmTạo ra mực định phải  thấy giày
+                    }
+                    else
+                    {
+                        var tenGiay = giay.Giay?.TenGiay ?? "(Chưa có tên)";
+                        var mau = giay.MauSac?.TenMau ?? "(Chưa có màu)";
+                        var kichThuoc = giay.KichThuoc?.TenKichThuoc ?? "(Chưa có size)";
+                        if (giay.SoLuong == 0)
+
+                        {
+                            errors.Add($"Sản phẩm đã hết hàng: {tenGiay} ({mau}, {kichThuoc})");
+                        }
+                        if (ct.SoLuong > giay.SoLuong)
+                        {
+                            errors.Add($"Số lượng trong kho không đủ cho sản phẩm: {tenGiay} ({mau}, {kichThuoc})");
+                        }
+                        if (giay.IsDelete == true)
+                        {
+                            errors.Add($"Sản phẩm đã ngưng bán: {tenGiay} ({mau}, {kichThuoc})");
                         }
                         if (phieugg != null)
                         {
@@ -434,8 +525,6 @@ namespace AuthDemo.Areas.Admin.Services
                 {
                     errors.Add($"Voucher {phieugg.MaVoucherCode} đã hết , vui lòng cập nhật thêm số lượt sử dụng hoặc từ chối đơn hàng");
                 }
-
-
 
             }
             if (errors.Any())
@@ -462,12 +551,14 @@ namespace AuthDemo.Areas.Admin.Services
             return ApiResponse<UpdateTrangThaiResponse>.SuccessResponse(responseData, "Cập nhật trạng thái thành công");
         }
 
+
         public async Task<ApiResponse<object>> HuyHoaDon(Guid id)
         {
             var hoadon = await _db.HoaDons.FindAsync(id);
             if (hoadon == null)
                 return ApiResponse<object>.FailResponse("ID_HoaDon_Not_Found", "Không tìm thấy hóa đơn");
             string message;
+
 
             var hdct = _db.ChiTietHoaDons.Where(c => c.BillID == hoadon.BillID).ToList();
             var phieugg = _db.Vouchers.FirstOrDefault(x => x.VoucherID == hoadon.VoucherID);
@@ -479,7 +570,6 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 if (currentStatus == TrangThaiHoaDon.DaXacNhan || currentStatus == TrangThaiHoaDon.DangGiaoHang)
                 {
-
                     foreach (var ct in hdct)
                     {
                         // Lấy chi tiết giày trong kho theo ShoeDetailID

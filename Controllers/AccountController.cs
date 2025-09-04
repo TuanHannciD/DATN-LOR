@@ -53,7 +53,7 @@ namespace AuthDemo.Controllers
                 return View(model);
             }
             // Hash mật khẩu nhập vào và so sánh với DB
-            var passwordHash = HashPassword(model.MatKhau);
+            var passwordHash = Utilities.HashPassword(model.MatKhau);
             _logger.LogInformation($"Password check attempted for user: {model.TenDangNhap}");
             if (user.MatKhau != passwordHash)
             {
@@ -123,54 +123,45 @@ namespace AuthDemo.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(NguoiDung model)
         {
-            if (ModelState.IsValid)
+            if (await _context.NguoiDungs.AnyAsync(u => u.TenDangNhap == model.TenDangNhap))
             {
-                if (await _context.NguoiDungs.AnyAsync(u => u.TenDangNhap == model.TenDangNhap))
-                {
-                    ModelState.AddModelError("TenDangNhap", "Tên đăng nhập đã tồn tại");
-                    return View(model);
-                }
-                if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
-                {
-                    ModelState.AddModelError("Email", "Email đã được sử dụng");
-                    return View(model);
-                }
-                if (await _context.NguoiDungs.AnyAsync(u => u.SoDienThoai == model.SoDienThoai))
-                {
-                    ModelState.AddModelError("SoDienThoai", "Số điện thoại đã được sử dụng");
-                    return View(model);
-                }
-
-                model.MatKhau = HashPassword(model.MatKhau);
-                model.UserID = Guid.NewGuid();
-                model.NguoiTao = model.TenDangNhap;
-                model.NgayTao = DateTime.Now;
-                _context.NguoiDungs.Add(model);
-                await _context.SaveChangesAsync();
-
-                // Lấy role mặc định là "User"
-                var roleUser = await _context.VaiTros
-                    .FirstOrDefaultAsync(r => r.TenVaiTro == "User");
-
-                if (roleUser == null)
-                {
-                    throw new Exception("Vai trò 'User' chưa được khởi tạo trong hệ thống.");
-                }
-
-                // Gán quyền cho user
-                var vaiTroNguoiDung = new VaiTroNguoiDung
-                {
-                    UserID = model.UserID,
-                    RoleID = roleUser.RoleID,
-                };
-
-                _context.VaiTroNguoiDungs.Add(vaiTroNguoiDung);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Login");
+                ModelState.AddModelError("TenDangNhap", "Tên đăng nhập đã tồn tại");
+                return View(model);
+            }
+            if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "Email đã được sử dụng");
+                return View(model);
+            }
+            if (await _context.NguoiDungs.AnyAsync(u => u.SoDienThoai == model.SoDienThoai))
+            {
+                ModelState.AddModelError("SoDienThoai", "Số điện thoại đã được sử dụng");
+                return View(model);
             }
 
-            return View(model);
+            model.MatKhau = Utilities.HashPassword(model.MatKhau);
+            model.UserID = Guid.NewGuid();
+            model.NguoiTao = model.TenDangNhap;
+            model.NgayTao = DateTime.Now;
+            _context.NguoiDungs.Add(model);
+            await _context.SaveChangesAsync();
+
+            // Lấy role mặc định là "User"
+            var roleUser = await _context.VaiTros
+                .FirstOrDefaultAsync(r => r.TenVaiTro == "User") ?? throw new Exception("Vai trò 'User' chưa được khởi tạo trong hệ thống.");
+
+            // Gán quyền cho user
+            var vaiTroNguoiDung = new VaiTroNguoiDung
+            {
+                UserID = model.UserID,
+                RoleID = roleUser.RoleID,
+            };
+
+            _context.VaiTroNguoiDungs.Add(vaiTroNguoiDung);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Login");
+
         }
 
         public IActionResult Logout()
@@ -187,7 +178,7 @@ namespace AuthDemo.Controllers
                 return Content("Vui lòng nhập mật khẩu: /Account/DebugHash?password=yourpassword");
             }
 
-            var hash = HashPassword(password);
+            var hash = Utilities.HashPassword(password);
             return Content($"Password: {password}\nHash: {hash}");
         }
 
@@ -262,15 +253,6 @@ namespace AuthDemo.Controllers
                 return RedirectToAction("Index", "Home");
             else
                 return RedirectToAction("Login");
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
         }
 
         public IActionResult UserProfile()

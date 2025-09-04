@@ -101,5 +101,18 @@ namespace DATN_Lor.Areas.Admin.Controllers
             var users = _banHangTaiQuayService.SearchKhachHang(keyword);
             return Json(users);
         }
+
+        [HttpPost]
+        public async Task<JsonResult> CreateKhachHang([FromBody] QuickAddCustomerVM model)
+        {
+            var result = await _banHangTaiQuayService.CreateKhachHang(model);
+            return Json(new
+            {
+                success = result.Success,
+                code = result.Code,
+                message = result.Message,
+                data = result.Data
+            });
+        }
     }
 }
