@@ -260,8 +260,33 @@ $(document).ready(function () {
   // Khi click vào sản phẩm trong dropdown
   $("#search-dropdown").on("click", ".dropdown-item", function () {
     var shoeDetailID = $(this).data("id");
-    $("#hidden-shoeDetailId").val(shoeDetailID);
-    $("#add-to-cart-form").submit();
+
+    $.ajax({
+      url: "/Admin/BanHangTaiQuay/UpdateCart",
+      type: "POST",
+      contentType: "application/json",
+      dataType: "json", // thêm dòng này
+      data: JSON.stringify({
+        ShoeDetailID: shoeDetailID, // viết PascalCase giống model
+        ActionType: "add",
+      }),
+      success: function (response) {
+        if (response.success) {
+          showToast("Thêm sản phẩm vào giỏ hàng thành công!", "success");
+          // Cập nhật lại giỏ hàng trên UI
+          updateCart(shoeDetailID, "add");
+        } else {
+          showToast(
+            "Lỗi: " + (response.message || "Không rõ nguyên nhân"),
+            "error"
+          );
+        }
+      },
+      error: function (xhr) {
+        showToast("Lỗi khi thêm sản phẩm vào giỏ hàng!", "error");
+      },
+    });
+    // Reset UI
     $("#search-dropdown").removeClass("show").empty();
     $("#search-input").val("");
   });

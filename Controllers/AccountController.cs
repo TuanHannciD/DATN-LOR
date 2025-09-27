@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using AuthDemo.Helpers;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace AuthDemo.Controllers
 {
@@ -62,6 +64,22 @@ namespace AuthDemo.Controllers
                 ModelState.AddModelError("", "Mật khẩu không đúng");
                 return View(model);
             }
+
+            var claims = new List<Claim>
+            {
+                new (ClaimTypes.Name, user.TenDangNhap),
+                new (ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                // Thêm các claim khác nếu cần
+            };
+            foreach (var role in user.VaiTroNguoiDungs?.Select(vtnd => vtnd.VaiTro?.TenVaiTro).Where(r => r != null) ?? Enumerable.Empty<string?>())
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role!));
+            }
+
+            var claimsIdentity = new ClaimsIdentity(claims, "MyCookieAuth");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            await HttpContext.SignInAsync("MyCookieAuth", claimsPrincipal);
+            _logger.LogInformation($"User {model.TenDangNhap} logged in successfully.");
             // Lấy danh sách tên vai trò của user (có thể chứa null)
             var tenVaiTroList = user.VaiTroNguoiDungs?
                     .Select(x => x.VaiTro?.TenVaiTro)
@@ -102,7 +120,7 @@ namespace AuthDemo.Controllers
             // Nếu chỉ có admin, chuyển thẳng vào trang admin
             if (RoleHelper.IsAdmin(vaiTroListNonNull))
             {
-                return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
+                return RedirectToAction("Index", "BanHangTaiQuay", new { area = "Admin" });
             }
             // Nếu chỉ có user, chuyển vào trang người dùng
             if (RoleHelper.IsUser(vaiTroListNonNull))
@@ -166,6 +184,9 @@ namespace AuthDemo.Controllers
 
         public IActionResult Logout()
         {
+            //Logout cookie
+            HttpContext.SignOutAsync("MyCookieAuth").Wait();
+
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }

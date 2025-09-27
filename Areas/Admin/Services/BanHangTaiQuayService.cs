@@ -176,7 +176,7 @@ namespace AuthDemo.Areas.Admin.Services
             {
                 return ApiResponse<string>.FailResponse("ShoeDetail_Not_Found", "Không tìm thấy chi tiết giày với ID: " + shoeDetailId);
             }
-            if (chiTietGiay.SoLuong <= 0)
+            if ((actionType == "add" || actionType == "increase") && chiTietGiay.SoLuong <= 0)
             {
                 return ApiResponse<string>.FailResponse("Out_Of_Stock", "Sản phẩm đã hết hàng.");
             }
@@ -374,7 +374,7 @@ namespace AuthDemo.Areas.Admin.Services
             _db.ChiTietGiays.Update(chiTietGiay);
             await _db.SaveChangesAsync();
             return ApiResponse<string>.SuccessResponse("Cập nhật số lượng giỏ hàng thành công.");
-            
+
         }
     }
 }

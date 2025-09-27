@@ -36,6 +36,13 @@ namespace AuthDemo.Areas.Admin.Controllers
                     Text = x.GetDisplayName()
                 }).ToList();
 
+            ViewBag.PhuongThucVanChuyenList = Enum.GetValues(typeof(PhuongThucVanChuyen))
+                .Cast<PhuongThucVanChuyen>()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.ToString(),
+                    Text = x.GetDisplayName()
+                }).ToList();
             return View(); // Không truyền Model trực tiếp, dữ liệu load bằng AJAX
         }
 
@@ -51,7 +58,8 @@ namespace AuthDemo.Areas.Admin.Controllers
             string nameFilter = "",
             bool? trangThaiTT = null,
             string nameCreateFilter = "",
-            string tongTienFilter = ""
+            string tongTienFilter = "",
+            string vanChuyen = ""
         )
         {
             // 1️⃣ Tạo filter object
@@ -66,7 +74,8 @@ namespace AuthDemo.Areas.Admin.Controllers
                 NameFilter = nameFilter,
                 TrangThaiTT = trangThaiTT,
                 NameCreateFilter = nameCreateFilter,
-                TongTienFilter = tongTienFilter
+                TongTienFilter = tongTienFilter,
+                VanChuyen = vanChuyen
             };
 
             // 2️⃣ Lấy danh sách đã map display name

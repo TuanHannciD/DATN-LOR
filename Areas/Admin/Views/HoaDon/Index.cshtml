@@ -42,6 +42,7 @@
                         <th>Khách hàng</th>
                         <th>SĐT</th>
                         <th>Trạng thái đơn hàng</th>
+                        <th>Phương thức vận chuyển</th>
                         <th>Hình thức thanh toán</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái thanh toán</th>
@@ -69,6 +70,14 @@
                                 }
                             </select>
                         </th>
+                        <th>
+                            <select class="form-select form-select-sm filter-input" id="phuongThucVCSelect">
+                                <option value="">Tất cả</option>
+                                @foreach (var item in (List<SelectListItem>)ViewBag.PhuongThucVanChuyenList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
                         <th>
                             <select class="form-select form-select-sm filter-input" id="hinhThucSelect">
                                 <option value="">Tất cả</option>
