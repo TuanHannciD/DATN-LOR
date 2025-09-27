@@ -7,9 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using AuthDemo.Models.Enums;
 using AuthDemo.Common;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DATN_Lor.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     public class BanHangTaiQuayController : Controller
     {

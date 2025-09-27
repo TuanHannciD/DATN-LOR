@@ -23,10 +23,7 @@ export function updateCart(shoeDetailId, actionType, clickedBtn) {
         showToast(data.message, "error", "Lỗi");
         return;
       }
-      showToast(
-        "Cập nhật giỏ hàng thành công. Reload lại sau 2 giây",
-        "success"
-      );
+      showToast("Cập nhật giỏ hàng thành công. Reload lại ", "success");
       // const qty =
       //   typeof data.productQuantity === "number" ? data.productQuantity : 0;
       // window.cartState[shoeDetailId] = qty;
@@ -45,7 +42,7 @@ export function updateCart(shoeDetailId, actionType, clickedBtn) {
       // }
 
       // Reload trang sau 2s
-      setTimeout(() => location.reload(), 2000);
+      setTimeout(() => location.reload(), 200);
     })
     .catch((err) => {
       console.error("updateCart: error", err);

@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const nameFilter = document.getElementById("nameFilter");
   const trangThaiTT = document.getElementById("trangThaiTT");
   const nameCreateFilter = document.getElementById("nameCreateFilter");
+  const vanchuyen = document.getElementById("phuongThucVCSelect");
 
   // Format ngày + giờ
   function formatDate(date) {
@@ -87,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
       nameFilter: nameFilter.value,
       trangThaiTT: trangThaiTT.value,
       nameCreateFilter: nameCreateFilter.value,
+      vanchuyen: vanchuyen.value,
     });
     console.log("Dữ liệu gửi đi:", {
       startDate: startDate.value,
@@ -119,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ${item.trangThaiDisplay ?? ""}
               </span>
             </td>
+            <td>${item.hinhThucVanChuyenDisplay ?? ""}</td>
             <td>${item.hinhThucThanhToanDisplay ?? ""}</td>
             <td>${
               item.tongTien != null ? item.tongTien.toLocaleString() : "0"
@@ -212,7 +215,8 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("huyhoaDonID:", huyhoaDonID);
 
       if (!huyhoaDonID) return;
-      if (!confirm("Bạn có chắc chắn muốn chuyển trạng thái hóa đơn này?")) return;
+      if (!confirm("Bạn có chắc chắn muốn chuyển trạng thái hóa đơn này?"))
+        return;
       fetch(`/Admin/HoaDon/HuyHoaDon`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

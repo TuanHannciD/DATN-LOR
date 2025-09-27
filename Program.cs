@@ -11,6 +11,28 @@ using AuthDemo.Services.VnPay;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Add Cookie Policy
+builder.Services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
+{
+    options.Cookie.Name = "MyCookieAuth";
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/Logout";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    options.SlidingExpiration = true;
+    //cho phép JavaScript truy cập cookie (nếu cần)
+    options.Cookie.HttpOnly = true;
+    // Đảm bảo cookie được gửi qua HTTPS
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    // SameSite policy
+    // SameSiteMode.Lax: Cookie sẽ được gửi trong các yêu cầu cùng site và một số yêu cầu cross-site nhất định (như GET từ liên kết bên ngoài).
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<GhnService>();
@@ -96,11 +118,14 @@ app.UseRouting();
 
 app.UseSession();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=HomeAdmin}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=BanHangTaiQuay}/{action=Index}/{id?}")
+    .RequireAuthorization("AdminOnly");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

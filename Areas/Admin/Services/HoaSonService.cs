@@ -78,6 +78,12 @@ namespace AuthDemo.Areas.Admin.Services
                 {
                     hoaDons = hoaDons.Where(h => h.TrangThai == trangthaiEnum);
                 }
+            // Filter vận chuyển
+            if (!string.IsNullOrEmpty(filter.VanChuyen))
+                if (Enum.TryParse<PhuongThucVanChuyen>(filter.VanChuyen, out var vanchuyenEnum))
+                {
+                    hoaDons = hoaDons.Where(h => h.PhuongThucVanChuyen == vanchuyenEnum);
+                }
 
             // Filter phương thức thanh toán
             if (!string.IsNullOrEmpty(filter.HinhThuc) &&
@@ -436,7 +442,7 @@ namespace AuthDemo.Areas.Admin.Services
 
                         }
                     }
-                   
+
 
                 }
                 if (phieugg != null && phieugg.SoLanSuDung > 0)
