@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -91,6 +94,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        html,
         body {
             background-color: #F8F8F8;
             color: #1A1A1A;
@@ -121,43 +125,43 @@
             transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-            .nav-link::after {
-                content: '';
-                position: absolute;
-                bottom: -4px;
-                left: 0;
-                width: 0;
-                height: 2px;
-                background-color: #FF6B6B;
-                transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #FF6B6B;
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
 
-            .nav-link:hover::after,
-            .nav-link.active::after {
-                width: 100%;
-            }
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
 
         .product-card {
             transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-            .product-card:hover,
-            .product-card:active {
-                transform: translateY(-10px) scale(1.02);
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-                animation: touchPulse 0.3s ease-out;
-            }
+        .product-card:hover,
+        .product-card:active {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            animation: touchPulse 0.3s ease-out;
+        }
 
         .category-card {
             transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             transform-style: preserve-3d;
         }
 
-            .category-card:hover,
-            .category-card:active {
-                transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.03);
-                animation: touchPulse 0.3s ease-out;
-            }
+        .category-card:hover,
+        .category-card:active {
+            transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.03);
+            animation: touchPulse 0.3s ease-out;
+        }
 
         .gradient-text {
             background-clip: text;
@@ -223,7 +227,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 100%);
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 100%);
             pointer-events: none;
             z-index: 100;
             mix-blend-mode: overlay;
@@ -258,29 +262,31 @@
         }
 
         .dropdown {
-            display: none; /* Ẩn mặc định */
+            display: none;
+            /* Ẩn mặc định */
             position: absolute;
             top: 100%;
             left: 0;
             background: #fff;
             border: 1px solid #ccc;
             min-width: 180px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             z-index: 100;
         }
 
-            .dropdown a {
-                display: block;
-                padding: 8px 12px;
-                text-decoration: none;
-                color: #333;
-            }
+        .dropdown a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #333;
+        }
 
-                .dropdown a:hover {
-                    background: #f2f2f2;
-                }
+        .dropdown a:hover {
+            background: #f2f2f2;
+        }
     </style>
 </head>
+
 <body class="font-sans antialiased relative overflow-x-hidden">
     <!-- Dream background elements -->
     <div class="dream-bg"></div>
@@ -290,19 +296,22 @@
     <div class="dream-element dream-4"></div>
     <!-- Floating sneakers in background -->
     <img src="https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-         alt="Giày Bay" class="floating-sneaker" style="top:15%; left:5%; animation-delay: 0s;">
+        alt="Giày Bay" class="floating-sneaker" style="top:15%; left:5%; animation-delay: 0s;">
     <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-         alt="Giày Bay" class="floating-sneaker" style="top:25%; right:8%; animation-delay: 2s;">
+        alt="Giày Bay" class="floating-sneaker" style="top:25%; right:8%; animation-delay: 2s;">
     <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-         alt="Giày Bay" class="floating-sneaker" style="bottom:20%; left:10%; animation-delay: 4s;">
+        alt="Giày Bay" class="floating-sneaker" style="bottom:20%; left:10%; animation-delay: 4s;">
     <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80"
-         alt="Giày Bay" class="floating-sneaker" style="bottom:30%; right:15%; animation-delay: 6s;">
+        alt="Giày Bay" class="floating-sneaker" style="bottom:30%; right:15%; animation-delay: 6s;">
     <!-- Dream overlay effect -->
     <div class="dream-overlay"></div>
     <!-- Preloader -->
-    <div id="preloader" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center transition-opacity duration-1000">
+    <div id="preloader"
+        class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center transition-opacity duration-1000">
         <div class="animate-pulse mb-8">
-            <span class="text-4xl font-serif font-bold bg-gradient-to-r from-accent-600 to-accent-400 gradient-text">PATT SHOES</span>
+            <span
+                class="text-4xl font-serif font-bold bg-gradient-to-r from-accent-600 to-accent-400 gradient-text">PATT
+                SHOES</span>
         </div>
         <div class="w-48 h-1 bg-gray-200 rounded-full overflow-hidden">
             <div class="h-full bg-gradient-to-r from-accent-400 to-accent-600 animate-loading-bar"></div>
@@ -314,8 +323,12 @@
             <div class="flex items-center justify-between h-24">
                 <!-- Logo -->
                 <a href="/" class="flex items-center group">
-                    <span class="text-4xl md:text-5xl font-serif font-extrabold bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600 gradient-text transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-lg">PATT SHOES</span>
-                    <div class="absolute w-32 h-32 bg-accent-200/30 rounded-full blur-2xl -z-10 animate-pulse-slow group-hover:scale-110 transition-all duration-500"></div>
+                    <span
+                        class="text-4xl md:text-5xl font-serif font-extrabold bg-gradient-to-r from-accent-600 via-accent-400 to-accent-600 gradient-text transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-lg">PATT
+                        SHOES</span>
+                    <div
+                        class="absolute w-32 h-32 bg-accent-200/30 rounded-full blur-2xl -z-10 animate-pulse-slow group-hover:scale-110 transition-all duration-500">
+                    </div>
                 </a>
                 <!-- Desktop Navigation -->
                 <nav class="hidden lg:flex items-center space-x-12">
@@ -324,19 +337,19 @@
                         string currentAction = ViewContext.RouteData.Values["action"]?.ToString();
                     }
                     <a asp-controller="Home" asp-action="Index"
-                       class="nav-link nav-item text-lg font-medium @(currentController == "Home" && currentAction == "Index" ? "active text-accent-600" : "hover:text-accent-600")">
+                        class="nav-link nav-item text-lg font-medium @(currentController == "Home" && currentAction == "Index" ? "active text-accent-600" : "hover:text-accent-600")">
                         TRANG CHỦ
                     </a>
                     <a asp-controller="Shop" asp-action="Index"
-                       class="nav-link nav-item text-lg font-medium @(currentController == "Shop" && currentAction == "Index" ? "active text-accent-600" : "hover:text-accent-600")">
+                        class="nav-link nav-item text-lg font-medium @(currentController == "Shop" && currentAction == "Index" ? "active text-accent-600" : "hover:text-accent-600")">
                         CỬA HÀNG
                     </a>
                     <a asp-controller="HoaDon" asp-action="DonHang"
-                       class="nav-link nav-item text-lg font-medium @(currentController == "HoaDon" && currentAction == "DonHang" ? "active text-accent-600" : "hover:text-accent-600")">
+                        class="nav-link nav-item text-lg font-medium @(currentController == "HoaDon" && currentAction == "DonHang" ? "active text-accent-600" : "hover:text-accent-600")">
                         ĐƠN HÀNG
                     </a>
                     <a asp-controller="Home" asp-action="LienHe"
-                       class="nav-link nav-item text-lg font-medium @(currentController == "Home" && currentAction == "LienHe" ? "active text-accent-600" : "hover:text-accent-600")">
+                        class="nav-link nav-item text-lg font-medium @(currentController == "Home" && currentAction == "LienHe" ? "active text-accent-600" : "hover:text-accent-600")">
                         LIÊN HỆ
                     </a>
                 </nav>
@@ -346,16 +359,19 @@
                         <button class="p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
                             <i class="far fa-heart text-xl text-accent-600"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 p-4 animate-fade-in border border-primary-100">
+                        <div
+                            class="absolute hidden group-hover:block right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 p-4 animate-fade-in border border-primary-100">
                             <h4 class="font-medium text-primary-800 mb-2">Danh Sách Yêu Thích</h4>
                             <p class="text-sm text-primary-500">Bộ sưu tập giày mơ ước của bạn</p>
                         </div>
                     </div>
                     <div class="relative group">
                         <button class="p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
-                            <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-bag text-xl text-accent-600"></i></a>
+                            <a asp-controller="Cart" asp-action="Index"><i
+                                    class="fas fa-shopping-bag text-xl text-accent-600"></i></a>
                         </button>
-                        <div class="absolute hidden group-hover:block right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 p-4 animate-fade-in border border-primary-100">
+                        <div
+                            class="absolute hidden group-hover:block right-0 mt-2 w-72 bg-white rounded-xl shadow-xl z-50 p-4 animate-fade-in border border-primary-100">
                             <h4 class="font-medium text-primary-800 mb-2">Giỏ Hàng</h4>
                             <p class="text-sm text-primary-500">Sản phẩm trong giỏ hàng của bạn</p>
                         </div>
@@ -397,18 +413,28 @@
                         else
                         {
                             <!-- Chưa đăng nhập -->
-                            <a href="@Url.Action("Login", "Account")" class="hidden md:inline-flex items-center px-8 py-3 border border-accent-500 rounded-full text-sm font-medium bg-accent-100/50 hover:bg-accent-200 text-accent-700 transition-all duration-300 hover:shadow-md transform hover:scale-105">
+                            <a href="@Url.Action("Login", "Account")"
+                                class="hidden md:inline-flex items-center px-8 py-3 border border-accent-500 rounded-full text-sm font-medium bg-accent-100/50 hover:bg-accent-200 text-accent-700 transition-all duration-300 hover:shadow-md transform hover:scale-105">
                                 <i class="far fa-user mr-2"></i> Đăng Nhập
                             </a>
                         }
                     </div>
-                    <button class="lg:hidden p-3 rounded-full hover:bg-accent-100 transition transform hover:scale-110">
+                    <!-- Nút hamburger (chỉ hiện trên mobile) -->
+                    <button id="menu-toggle"
+                        class="lg:hidden rounded-full hover:bg-accent-100 transition transform hover:scale-110">
                         <i class="fas fa-bars text-xl text-accent-600"></i>
                     </button>
                 </div>
             </div>
         </div>
     </header>
+    <!-- Menu mobile (ẩn mặc định bằng hidden) -->
+    <nav id="mobile-menu" class="hidden flex-col bg-white shadow-md p-4 space-y-3 fixed top-28 left-0 w-full z-50">
+        <a href="/" class="block text-primary-700 hover:text-accent-600">Trang chủ</a>
+        <a href="/Shop" class="block text-primary-700 hover:text-accent-600">Cửa hàng</a>
+        <a href="/HoaDon/DonHang" class="block text-primary-700 hover:text-accent-600">Đơn hàng</a>
+        <a href="/Home/LienHe" class="block text-primary-700 hover:text-accent-600">Liên hệ</a>
+    </nav>
 
     @RenderBody()
 
@@ -418,26 +444,35 @@
 
     <!-- Footer -->
     <footer class="bg-dark text-white pt-20 pb-12 relative overflow-hidden">
-        <div class="dream-element" style="width:350px; height:350px; background:#E8F4FF; bottom:-100px; right:-100px; animation:spin-slow 40s linear infinite;"></div>
+        <div class="dream-element"
+            style="width:350px; height:350px; background:#E8F4FF; bottom:-100px; right:-100px; animation:spin-slow 40s linear infinite;">
+        </div>
         <div class="container mx-auto px-6 relative z-10">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                 <!-- About -->
                 <div>
                     <a href="/" class="flex items-center mb-8">
-                        <span class="text-3xl font-serif font-bold bg-gradient-to-r from-accent-400 to-accent-600 gradient-text">PATT SHOES</span>
+                        <span
+                            class="text-3xl font-serif font-bold bg-gradient-to-r from-accent-400 to-accent-600 gradient-text">PATT
+                            SHOES</span>
                     </a>
-                    <p class="text-primary-400 mb-8">Nơi giấc mơ trở thành nghệ thuật có thể mang trên chân. Những đôi giày được tuyển chọn cho tâm hồn giàu trí tưởng tượng.</p>
+                    <p class="text-primary-400 mb-8">Nơi giấc mơ trở thành nghệ thuật có thể mang trên chân. Những đôi
+                        giày được tuyển chọn cho tâm hồn giàu trí tưởng tượng.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
+                        <a href="#"
+                            class="w-10 h-10 bg-primary-800 hover:bg-accent-600 rounded-full flex items-center justify-center transition">
                             <i class="fab fa-pinterest"></i>
                         </a>
                     </div>
@@ -449,7 +484,8 @@
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Về Chúng Tôi</a></li>
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Về Cửa Hàng</a></li>
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Mua Sắm An Toàn</a></li>
-                        <li><a href="#" class="text-primary-400 hover:text-white transition">Thông Tin Giao Hàng</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Thông Tin Giao Hàng</a>
+                        </li>
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Chính Sách Bảo Mật</a></li>
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Sơ Đồ Trang Web</a></li>
                     </ul>
@@ -459,7 +495,8 @@
                     <h4 class="text-lg font-bold mb-6 uppercase tracking-wider">Thêm Thông Tin</h4>
                     <ul class="space-y-3">
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Chúng Tôi Là Ai</a></li>
-                        <li><a href="#" class="text-primary-400 hover:text-white transition">Dịch Vụ Của Chúng Tôi</a></li>
+                        <li><a href="#" class="text-primary-400 hover:text-white transition">Dịch Vụ Của Chúng Tôi</a>
+                        </li>
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Dự Án</a></li>
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Liên Hệ</a></li>
                         <li><a href="#" class="text-primary-400 hover:text-white transition">Đổi Mới</a></li>
@@ -473,14 +510,16 @@
                         <p>60-49 Road 11378 New York</p>
                         <p>Phone: <a href="tel:+6511188888" class="hover:text-white transition">+65 11.188.888</a></p>
                         <p>Hotline: <a href="tel:0987567544" class="hover:text-white transition">0987-567-544</a></p>
-                        <p>Email: <a href="mailto:hello@colorlib.com" class="hover:text-white transition">hello@colorlib.com</a></p>
+                        <p>Email: <a href="mailto:hello@colorlib.com"
+                                class="hover:text-white transition">hello@colorlib.com</a></p>
                     </address>
                 </div>
             </div>
             <div class="border-t border-primary-800 pt-8">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <p class="text-primary-500 text-sm mb-4 md:mb-0">
-                        &copy; <span id="copyright-year">2025</span> PATT SHOES. Mọi giấc mơ được bảo lưu. | Tạo bởi <a href="https://colorlib.com" target="_blank" class="hover:text-white transition">Colorlib</a>
+                        &copy; <span id="copyright-year">2025</span> PATT SHOES. Mọi giấc mơ được bảo lưu. | Tạo bởi <a
+                            href="https://colorlib.com" target="_blank" class="hover:text-white transition">Colorlib</a>
                     </p>
                     <div class="flex flex-wrap justify-center gap-6">
                         <a href="#" class="text-primary-500 hover:text-white text-sm transition">Chính Sách Mộng Mơ</a>
@@ -492,7 +531,9 @@
         </div>
     </footer>
     <!-- Back to top -->
-    <a href="#" class="fixed bottom-8 right-8 w-12 h-12 bg-accent-600 hover:bg-accent-700 rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-300 opacity-0 invisible transform translate-y-4" id="back-to-top">
+    <a href="#"
+        class="fixed bottom-8 right-8 w-12 h-12 bg-accent-600 hover:bg-accent-700 rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-300 opacity-0 invisible transform translate-y-4"
+        id="back-to-top">
         <i class="fas fa-arrow-up"></i>
     </a>
     <!-- Scripts -->
@@ -506,7 +547,7 @@
                 setTimeout(() => {
                     preloader.style.display = 'none';
                 }, 1000);
-            }, 2000);
+            }, 1000);
         });
         // Back to top button
         const backToTopButton = document.getElementById('back-to-top');
@@ -524,8 +565,11 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         // Mobile menu toggle (placeholder)
-        document.querySelector('.lg\\:hidden').addEventListener('click', function () {
-            console.log('Mobile menu clicked');
+        const toggleBtn = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        toggleBtn.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
         });
         // Update copyright year
         document.getElementById('copyright-year').textContent = new Date().getFullYear();
@@ -550,4 +594,5 @@
         createDreamElements();
     </script>
 </body>
+
 </html>
