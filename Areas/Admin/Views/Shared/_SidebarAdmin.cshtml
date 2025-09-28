@@ -1,4 +1,4 @@
-<nav class="sidebar sidebar-offcanvas position-relative" id="sidebar">
+<nav class="sidebar sidebar-offcanvas " id="sidebar">
   <!-- Thông tin user login -->
   <div class="sidebar-user-info text-center py-4">
     <img
@@ -79,12 +79,11 @@
     </a>
   </li>
   <li class="nav-item">
-  <a class="nav-link fw-bold text-dark d-flex align-items-center position-relative" href="~/Admin/Voucher/Index">
-    <span class="sidebar-icon-left position-absolute start-0 ps-3"><i
-        class="fa-solid fa-ticket"></i></span>
-    <span class="menu-title w-100 text-center">Quản lý voucher</span>
-  </a>
-</li>
+    <a class="nav-link fw-bold text-dark d-flex align-items-center position-relative" href="~/Admin/Voucher/Index">
+      <span class="sidebar-icon-left position-absolute start-0 ps-3"><i class="fa-solid fa-ticket"></i></span>
+      <span class="menu-title w-100 text-center">Quản lý voucher</span>
+    </a>
+  </li>
 
   <li class="nav-item">
     <a class="nav-link fw-bold text-dark d-flex align-items-center position-relative" href="~/Admin/UserManager/Index">
@@ -108,9 +107,10 @@
 </nav>
 <style>
   /* Loại bỏ mũi tên ở các item con */
-  @* #sidebar .nav .nav-item .nav-link:before {
+  #sidebar .nav .nav-item .nav-link:before {
     content: none !important;
-  } *@
+  }
+
   .sidebar .nav-link {
     min-height: 44px;
     padding-left: 2.5rem !important;
