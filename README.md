@@ -112,8 +112,8 @@ Nếu bạn muốn đóng góp cho dự án, hãy tạo pull request hoặc liê
 
 ## Liên hệ
 
-- Email: [your-email@example.com]
-- Facebook: [link-facebook]
+- Email: dobatuan.dev@gmail.com
+- Facebook: https://www.facebook.com/dobatuan.2k3
 
 ---
 
