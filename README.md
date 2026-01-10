@@ -3,7 +3,7 @@
 ## Giới thiệu dự án
 
 **DATN Lor** là hệ thống quản lý bán hàng thời trang, hỗ trợ quản lý sản phẩm, hóa đơn, người dùng, báo cáo và nhiều chức năng khác dành cho quản trị viên và người dùng cuối. Dự án được phát triển trên nền tảng ASP.NET Core MVC, sử dụng Entity Framework Core để quản lý dữ liệu.
-
+-- Demo Link : https://dobatuandev.up.railway.app/project/1
 ---
 
 ## Các chức năng nổi bật
