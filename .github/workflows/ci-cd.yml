@@ -110,7 +110,7 @@ jobs:
 
                 export IMAGE_TAG=${{ needs.docker.outputs.image_tag }}
 
-                 sudo docker compose --env-file .env.prod -f docker-compose.prod.yml config
+                sudo docker compose --env-file .env.prod -f docker-compose.prod.yml config
                 sudo docker compose --env-file .env.prod -f docker-compose.prod.yml pull app
                 sudo docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
 
