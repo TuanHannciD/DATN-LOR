@@ -74,7 +74,9 @@ if (string.IsNullOrWhiteSpace(connectionString) || connectionString == "__SET_BY
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
-    
+
+
+
 // Vnpay configuration
 builder.Services.Configure<VNPayConfig>(builder.Configuration.GetSection("VnPay"));
 // vnpay khách
@@ -106,6 +108,12 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 10485760; // Giới hạn 10MB cho upload file
 });
 var app = builder.Build();
+// Kiểm tra migration trước khi chạy
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
