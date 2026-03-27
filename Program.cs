@@ -108,6 +108,7 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 10485760; // Giới hạn 10MB cho upload file
 });
 var app = builder.Build();
+
 // Kiểm tra migration trước khi chạy
 using (var scope = app.Services.CreateScope())
 {
