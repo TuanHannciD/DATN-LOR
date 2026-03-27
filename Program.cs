@@ -65,11 +65,16 @@ builder.Services.AddSingleton(new Cloudinary(
     new Account(cloudinarySettings.CloudName, cloudinarySettings.ApiKey, cloudinarySettings.ApiSecret)
 ));
 // Add DbContext
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(connectionString) || connectionString == "__SET_BY_ENV__")
+{
+    throw new InvalidOperationException("DefaultConnection chưa được cấu hình.");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
+    options.UseSqlServer(connectionString));
+    
 // Vnpay configuration
 builder.Services.Configure<VNPayConfig>(builder.Configuration.GetSection("VnPay"));
 // vnpay khách
